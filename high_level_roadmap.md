@@ -10,17 +10,20 @@ PotionWorld is a narrative-driven RPG that follows the complete life journey of 
 ### Phase 1: Foundation & Core Systems (Months 1-4)
 
 #### 1.1 Technical Infrastructure
-- **Game Engine Setup**
-  - Select and configure game engine (Unity/Godot recommended)
-  - Establish project structure and version control
-  - Set up build pipeline and testing framework
-  - Configure development environment
+- **Godot Engine Setup**
+  - Install Godot 4.x and configure project
+  - Establish project structure (scenes, scripts, resources, data)
+  - Set up version control (Git with .gitignore for Godot)
+  - Configure export templates for target platforms
+  - Install essential plugins (Dialogue Manager, etc.)
 
 - **ESENS Parser Integration**
-  - Complete ESENS parser implementation ✓ (partially complete)
+  - Complete Python ESENS parser implementation ✓ (partially complete)
   - Add comprehensive unit tests for all notation patterns
+  - **Option A**: Port ESENS parser to GDScript for native integration
+  - **Option B**: Create GDScript wrapper to call Python parser
   - Optimize parser performance for real-time use
-  - Create visual debugging tools for status effects
+  - Create visual debugging tools for status effects in Godot UI
 
 - **Data Management System**
   - Design JSON/database schema for game data
@@ -358,12 +361,14 @@ PotionWorld is a narrative-driven RPG that follows the complete life journey of 
 - **1 QA Tester** (part-time in later phases)
 
 ### Technology Stack
-- **Game Engine**: Unity or Godot
-- **Languages**: C# (Unity) or Python/GDScript (Godot)
-- **Data Management**: JSON or SQLite
-- **Dialogue System**: Yarn Spinner or Ink
+- **Game Engine**: Godot 4.x
+- **Languages**: GDScript (primary), Python (ESENS parser)
+- **Data Management**: JSON (Godot's built-in JSON parser)
+- **Dialogue System**: Godot Dialogue Manager plugin or custom GDScript
 - **Version Control**: Git (GitHub/GitLab)
-- **Project Management**: Trello, Notion, or Jira
+- **Project Management**: Trello, Notion, or GitHub Projects
+- **Art Tools**: Aseprite (pixel art), GIMP/Krita (2D art), or Inkscape (vector)
+- **Testing**: Godot's built-in unit testing framework (GUT)
 
 ### Asset Requirements
 - **Sprites/Models**:

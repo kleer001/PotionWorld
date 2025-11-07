@@ -1,52 +1,44 @@
 # PotionWorld: Game Design Document
 
-## Game Format: Retro Text-Only RPG
+## Game Format: 2D RPG in Godot Engine
 
-PotionWorld is designed as a **text-based, command-line style RPG** in the tradition of classic interactive fiction and early CRPGs. This design choice offers several advantages:
+PotionWorld is designed as a **2D narrative RPG** built in Godot Engine. This approach offers excellent flexibility for the game's needs:
 
-### Text-Based Design Benefits
-- **Focus on Systems**: Deep crafting and relationship mechanics without graphics overhead
-- **Imagination-Driven**: Players visualize their journey, making it more personal
-- **Rapid Development**: Iterate on systems and content quickly
-- **Accessibility**: Runs on any platform, minimal system requirements
-- **Mod-Friendly**: Easy for community to add content via text files
-- **ESENS Clarity**: Notation system displayed directly without visual translation
+### Why Godot?
+- **Free & Open Source**: No licensing costs, full control
+- **GDScript**: Python-like scripting language (easy integration with existing ESENS parser)
+- **Excellent 2D Tools**: Built-in sprite handling, animation, UI systems
+- **Cross-Platform**: Export to Windows, Mac, Linux, and even web/mobile
+- **Lightweight**: Fast iteration and testing
+- **Strong Community**: Great documentation and asset libraries
+- **Dialogue Systems**: Easy integration with Yarn Spinner or custom dialogue
+- **JSON Support**: Perfect for data-driven design (NPCs, recipes, items)
 
-### Interface Style
-- **Menu-Driven Navigation**: Number or letter choices for actions
-- **ASCII Art** (Optional): Simple ingredient/potion representations
-- **Status Displays**: Text-based character sheets, inventory lists
-- **Color Coding** (Terminal Colors): Different colors for elements, effects, NPCs
-- **Clear Prompts**: "What would you like to do? [1] Craft [2] Talk [3] Explore [4] Rest"
+### Visual Style Options
+**Option A: Pixel Art** (Recommended for scope)
+- Retro aesthetic fits potion-making theme
+- Smaller asset requirements
+- Can be charming and expressive
+- Examples: Stardew Valley, Moonlighter
 
-### Example Gameplay Screen
-```
-═══════════════════════════════════════════════════════════════
-POTIONWORLD - Season 1: The Apprentice - Day 15 - Morning
-Location: Academy Laboratory
-═══════════════════════════════════════════════════════════════
+**Option B: Hand-Drawn 2D**
+- More artistic, storybook feel
+- Higher art requirements
+- Beautiful but slower production
+- Examples: Spiritfarer, Gris
 
-Your Stats: Knowledge: 25/100 | Precision: 18/100 | Gold: 150
-Active Quest: Master the Healing Potion for tomorrow's exam
+**Option C: Minimalist/Geometric**
+- Focus on UI and systems over detailed art
+- Very fast production
+- Clean, modern look
+- Examples: Reigns, Card Thief
 
-You stand at your workbench. Instructor Thornwood watches nearby.
-Your mortar and pestle are ready. The recipe book lies open.
-
-What would you like to do?
-[1] Craft a potion
-[2] Talk to Instructor Thornwood (Affinity: +1)
-[3] Review recipe book
-[4] Check inventory
-[5] Leave laboratory
-
-> _
-```
-
-### Technical Implementation
-- **Python-Based**: Leverages existing ESENS_Parser.py and ESENS_cli.py
-- **Save Files**: JSON-based character/world state
-- **Modular Design**: Easy to extend with new content
-- **Cross-Platform**: Works on Windows, Mac, Linux terminals
+### Technical Integration
+- **ESENS Parser**: Python ESENS_Parser.py can be called from GDScript via OS.execute() or rewritten in GDScript
+- **Alternative**: Port ESENS parser directly to GDScript for tighter integration
+- **Save System**: Godot's built-in JSON and ConfigFile systems
+- **UI Framework**: Godot's Control nodes for inventory, crafting screens
+- **Dialogue**: Godot Dialogue Manager plugin or Yarn Spinner
 
 ## Table of Contents
 1. [Core Pillars](#core-pillars)
@@ -1111,6 +1103,24 @@ APPLY: Personality modifiers (E affects enthusiasm, A affects warmth)
 3. **Efficient Navigation**: Quick access to common functions
 4. **Visual Feedback**: Clear indication of success, failure, changes
 5. **Accessibility**: Colorblind modes, text scaling, remappable controls
+
+### Godot-Specific UI Implementation
+
+**Control Nodes Used:**
+- **Panel/MarginContainer**: Main UI containers
+- **VBoxContainer/HBoxContainer**: Organized layouts
+- **ItemList/Tree**: Inventory and recipe displays
+- **RichTextLabel**: Formatted dialogue and descriptions with ESENS notation highlighting
+- **TabContainer**: Switching between inventory sections
+- **ProgressBar**: Crafting progress, stat displays, affinity meters
+- **TextureRect**: Item icons, character portraits, ingredient images
+- **PopupPanel**: Tooltips, detail windows, confirmation dialogs
+
+**UI Theme:**
+- Custom Godot theme for consistent styling
+- Color palette for elements (Fire=red, Water=blue, etc.)
+- Custom fonts for readability and atmosphere
+- Particle effects for crafting success/failure
 
 ### Key UI Screens
 

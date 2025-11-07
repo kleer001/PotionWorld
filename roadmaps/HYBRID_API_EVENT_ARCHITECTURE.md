@@ -1,15 +1,15 @@
-# PotionWorld: Hybrid API + Event Architecture Roadmap
+# PotionWorld: Hybrid API + Event Architecture
 
-## Vision: Systems as APIs, Not Minigames
+## Vision
 
-Instead of building 7 separate "minigames," we're building **7 system libraries** with:
-- **Clean APIs** (clear input/output contracts)
-- **Pure logic** (testable formulas)
-- **Event emission** (for side effects and system integration)
-- **Comprehensive tests** (unit + integration)
-- **Simple testbeds** (god-mode UIs for manual validation)
+Build **7 system libraries** with:
+- **Clean APIs** - Clear input/output contracts
+- **Pure logic** - Testable formulas and state machines
+- **Event emission** - Side effects and cross-system communication
+- **Comprehensive tests** - Unit + integration coverage
+- **CLI testbeds** - Developer tools for validation
 
-**Timeline: 6-8 weeks total** (not 35 weeks)
+**Implementation:** Progressive, starting with core systems
 
 ---
 
@@ -73,31 +73,84 @@ Instead of building 7 separate "minigames," we're building **7 system libraries*
 
 ---
 
-## Development Timeline (6-8 Weeks)
+## Implementation Pattern
 
-### Week 1: Architecture + Core Contracts
-**Goal:** Define all APIs and event types
+Each system follows a 3-step pattern:
+
+### Step 1: Core Logic
+Pure functions and formulas with no dependencies. All business logic lives here.
+
+```python
+def calculate_success_chance(knowledge: int, difficulty: int, ...) -> float:
+    """Pure calculation - no side effects"""
+    return max(0.0, min(1.0, 0.5 + (knowledge/200) - (difficulty/100)))
+```
+
+### Step 2: API + Events
+System class wraps core logic, exposes APIs, emits events.
+
+```python
+class CraftingSystem:
+    def __init__(self, event_bus: EventBus):
+        self.event_bus = event_bus
+
+    def craft(self, input: CraftInput) -> CraftResult:
+        # Call pure logic
+        success_chance = calculate_success_chance(...)
+
+        # Calculate result
+        result = self._execute_craft(success_chance, input)
+
+        # Emit events
+        self.event_bus.emit(CraftCompleted(result))
+        if result.success:
+            self.event_bus.emit(PotionCreated(result.potion))
+
+        return result
+```
+
+### Step 3: Testbed + Integration
+CLI developer tools for validation and cross-system integration tests.
+
+```python
+class CraftingTestbed:
+    """Developer tool for testing crafting formulas"""
+    def run(self):
+        while True:
+            cmd = input("> ")
+            if cmd == "craft":
+                self._craft_and_show_breakdown()
+            elif cmd == "batch":
+                self._batch_craft_statistics()
+```
+
+---
+
+## Development Phases
+
+### Phase 1: Foundation
+**Event bus + Shared data structures**
 
 **Deliverables:**
-- Event bus implementation (simple pub/sub)
-- All API signatures defined (Python dataclasses)
-- Event type definitions
+- Event bus implementation (pub/sub)
+- All event type definitions
 - Shared data structures (Recipe, NPC, Potion, etc.)
+- Base test framework
 
 **Files:**
 ```
 core/
-├── event_bus.py           # Pub/sub event system
-├── events.py              # All event definitions
-├── data_structures.py     # Shared models (Recipe, NPC, etc.)
+├── event_bus.py
+├── events.py
+├── data_structures.py
 └── tests/
     └── test_event_bus.py
 ```
 
 ---
 
-### Week 2: Crafting + Progression Systems
-**Goal:** Implement and test core number crunching
+### Phase 2: Core Systems (Crafting + Progression)
+**Number-crunching systems with formulas**
 
 #### Crafting System
 ```python
@@ -107,33 +160,34 @@ class CraftingSystem:
 
     def craft(self, input: CraftInput) -> CraftResult:
         """
-        Pure calculation: success chance, quality, potency
-        Emits: CraftCompleted, PotionCreated, RecipeMasteryGained
+        API: Craft a potion
+
+        1. Calculate success chance
+        2. Roll dice
+        3. Determine quality (if success)
+        4. Create potion
+        5. Calculate rewards
+        6. Emit events
         """
-        success_chance = self._calculate_success(input)
-        roll = random.randint(1, 20)
-
-        if self._check_success(success_chance, roll):
-            quality = self._determine_quality(...)
-            potion = self._create_potion(...)
-
-            # Emit events
-            self.event_bus.emit(CraftCompleted(success=True, ...))
-            self.event_bus.emit(PotionCreated(potion))
-
-            return CraftResult(success=True, potion=potion, ...)
-        else:
-            self.event_bus.emit(CraftCompleted(success=False, ...))
-            return CraftResult(success=False, ...)
-
-    def _calculate_success(self, input: CraftInput) -> float:
-        """Pure function - no side effects"""
-        return (
-            0.5 +  # Base
-            (input.stats.knowledge / 2 / 100) +
-            input.tool_bonus -
-            (input.recipe.difficulty / 100)
+        success_chance = calculate_success_chance(
+            knowledge=input.stats.knowledge,
+            difficulty=input.recipe.difficulty,
+            tool_bonus=input.tool_bonus
         )
+
+        success, roll = roll_craft_attempt(success_chance)
+
+        if success:
+            quality = determine_quality(...)
+            potion = create_potion(...)
+
+            self.event_bus.emit(PotionCreated(potion))
+            self.event_bus.emit(CraftCompleted(success=True, quality=quality))
+
+            return CraftResult(success=True, potion=potion, quality=quality)
+        else:
+            self.event_bus.emit(CraftCompleted(success=False))
+            return CraftResult(success=False)
 ```
 
 #### Progression System
@@ -141,29 +195,19 @@ class CraftingSystem:
 class ProgressionSystem:
     def __init__(self, event_bus: EventBus):
         self.event_bus = event_bus
-        # Listen to other systems
+        # Listen to crafting events
         event_bus.subscribe(CraftCompleted, self.on_craft_completed)
 
     def add_xp(self, stat: str, amount: int, current_xp: int) -> StatChange:
-        """Pure XP calculation"""
+        """API: Add XP and check for stat increases"""
         new_xp = current_xp + amount
-        old_stat = self._xp_to_stat(current_xp)
-        new_stat = self._xp_to_stat(new_xp)
+        old_stat = xp_to_stat(current_xp)
+        new_stat = xp_to_stat(new_xp)
 
-        result = StatChange(
-            stat=stat,
-            xp_gained=amount,
-            new_xp=new_xp,
-            stat_increased=(new_stat > old_stat),
-            new_stat_value=new_stat
-        )
+        if new_stat > old_stat:
+            self.event_bus.emit(StatIncreased(stat, old_stat, new_stat))
 
-        self.event_bus.emit(StatIncreased(result))
-
-        if self._check_milestone(old_stat, new_stat):
-            self.event_bus.emit(MilestoneReached(...))
-
-        return result
+        return StatChange(xp_gained=amount, new_stat=new_stat)
 
     def on_craft_completed(self, event: CraftCompleted):
         """React to crafting events"""
@@ -174,41 +218,45 @@ class ProgressionSystem:
 **Tests:**
 ```python
 def test_crafting_success_formula():
+    """Validate success calculation"""
     bus = EventBus()
     crafting = CraftingSystem(bus)
 
-    input = CraftInput(
-        recipe=Recipe(difficulty=60),
-        ingredients=[...],
-        stats=CrafterStats(knowledge=50, precision=40, intuition=30),
-        tool_bonus=0.1
-    )
+    # High stats, easy recipe → high success
+    results = [crafting.craft(easy_input) for _ in range(1000)]
+    assert 0.70 <= success_rate(results) <= 0.80
 
-    # Run 10000 times
-    results = [crafting.craft(input) for _ in range(10000)]
-    success_rate = sum(r.success for r in results) / 10000
-
-    # Expected: 50% + 25% + 10% - 60% = 25% base + d20 variance
-    assert 0.20 <= success_rate <= 0.30
-
-def test_xp_to_stat_conversion():
+def test_xp_progression_curve():
+    """Validate XP → stat conversion"""
     progression = ProgressionSystem(EventBus())
 
-    assert progression._xp_to_stat(0) == 0
-    assert progression._xp_to_stat(1000) == 20  # Novice threshold
-    assert progression._xp_to_stat(10000) == 100  # Master
+    assert xp_to_stat(0) == 0
+    assert xp_to_stat(1000) == 20
+    assert xp_to_stat(10000) == 100
+
+def test_crafting_progression_integration():
+    """Test event flow: craft → xp → stat increase"""
+    bus = EventBus()
+    crafting = CraftingSystem(bus)
+    progression = ProgressionSystem(bus)
+
+    player = Player(xp={'knowledge': 0})
+
+    crafting.craft(test_input)
+
+    assert player.xp['knowledge'] > 0
 ```
 
 **Deliverables:**
 - Crafting system API + tests
 - Progression system API + tests
-- Integration test (craft → xp gain → stat increase)
-- Simple testbed CLI for crafting
+- Integration test (craft → XP → stat increase)
+- Crafting CLI testbed
 
 ---
 
-### Week 3: Relationship + Quest Systems
-**Goal:** State machines and consequence tracking
+### Phase 3: State Systems (Relationship + Quest)
+**State machines and consequence tracking**
 
 #### Relationship System
 ```python
@@ -223,47 +271,24 @@ class RelationshipSystem:
         current_affinity: float
     ) -> AffinityChange:
         """Calculate personality-based affinity change"""
-        delta = self._calculate_affinity_delta(npc.personality, action)
-        new_affinity = self._clamp(current_affinity + delta, -5, 5)
+        delta = calculate_reaction(npc.personality, action)
+        new_affinity = clamp(current_affinity + delta, -5, 5)
 
         # Check threshold crossings
-        threshold_crossed = self._check_threshold(current_affinity, new_affinity)
+        threshold = check_threshold(current_affinity, new_affinity)
 
         # Create memory if significant
         memory = None
         if abs(delta) >= 1.0:
-            memory = Memory(action=action.id, delta=delta, ...)
+            memory = Memory(action=action.id, delta=delta)
             self.event_bus.emit(MemoryCreated(npc.id, memory))
 
-        result = AffinityChange(
-            npc_id=npc.id,
-            delta=delta,
-            new_affinity=new_affinity,
-            threshold_crossed=threshold_crossed,
-            memory_created=memory
-        )
+        self.event_bus.emit(AffinityChanged(npc.id, delta, new_affinity))
 
-        self.event_bus.emit(AffinityChanged(result))
+        if threshold:
+            self.event_bus.emit(ThresholdCrossed(npc.id, threshold))
 
-        if threshold_crossed:
-            self.event_bus.emit(ThresholdCrossed(npc.id, new_affinity))
-
-        return result
-
-    def apply_decay(self, npc: NPC, days_passed: int) -> AffinityChange:
-        """Time-based decay toward neutral"""
-        decay_amount = days_passed * 0.5 * (1 if npc.affinity > 0 else -1)
-        new_affinity = npc.affinity - min(abs(decay_amount), abs(npc.affinity))
-
-        result = AffinityChange(
-            npc_id=npc.id,
-            delta=-decay_amount,
-            new_affinity=new_affinity,
-            reason="decay"
-        )
-
-        self.event_bus.emit(AffinityChanged(result))
-        return result
+        return AffinityChange(delta=delta, new_affinity=new_affinity)
 ```
 
 #### Quest System
@@ -274,7 +299,6 @@ class QuestSystem:
         # Listen to many events
         event_bus.subscribe(PotionCreated, self.on_potion_created)
         event_bus.subscribe(AffinityChanged, self.on_affinity_changed)
-        # etc.
 
     def update_objective(
         self,
@@ -295,61 +319,23 @@ class QuestSystem:
         return QuestUpdate(quest=quest, objective_updated=objective_id)
 
     def on_potion_created(self, event: PotionCreated):
-        """Auto-update crafting quest objectives"""
+        """Auto-update crafting objectives"""
         for quest in self.active_quests:
             if quest.tracks_potion_creation(event.potion):
                 self.update_objective(quest, "craft", ...)
-```
-
-**Tests:**
-```python
-def test_personality_affects_affinity():
-    bus = EventBus()
-    rel = RelationshipSystem(bus)
-
-    # High Openness NPC
-    npc_open = NPC(personality=Personality(O=1, C=0, E=0, A=0, N=0))
-    # Low Openness NPC
-    npc_traditional = NPC(personality=Personality(O=-1, C=0, E=0, A=0, N=0))
-
-    action = Action("InnovativePotion", personality_impacts={"O": 1.0})
-
-    result_open = rel.apply_action(npc_open, action, current_affinity=0)
-    result_trad = rel.apply_action(npc_traditional, action, current_affinity=0)
-
-    assert result_open.delta > 0  # Likes innovation
-    assert result_trad.delta < 0  # Dislikes innovation
-
-def test_quest_objective_tracking():
-    bus = EventBus()
-    quest_sys = QuestSystem(bus)
-
-    quest = Quest(objectives=[
-        Objective(id="craft_3_potions", target=3, current=0)
-    ])
-
-    # Emit potion creation events
-    bus.emit(PotionCreated(Potion("healing")))
-    bus.emit(PotionCreated(Potion("healing")))
-
-    assert quest.get_objective("craft_3_potions").current == 2
-    assert not quest.is_completed()
-
-    bus.emit(PotionCreated(Potion("healing")))
-
-    assert quest.is_completed()
 ```
 
 **Deliverables:**
 - Relationship system API + tests
 - Quest system API + tests
 - Integration tests (actions → affinity → quest unlocks)
-- Testbed for relationship testing
+- Relationship CLI testbed
+- Quest CLI testbed
 
 ---
 
-### Week 4: Combat + Economy Systems
-**Goal:** Turn-based logic and pricing algorithms
+### Phase 4: Gameplay Systems (Combat + Economy)
+**Complex interactions and formulas**
 
 #### Combat System
 ```python
@@ -366,46 +352,22 @@ class CombatSystem:
         state: CombatState
     ) -> TurnResult:
         """Execute one turn of combat"""
-
         # Apply start-of-turn triggers
-        self._evaluate_triggers("^S", actor, state)
+        evaluate_triggers("^S", actor, state)
 
         # Execute action
         if action.type == "USE_POTION":
-            potion_result = self._apply_potion(action.potion, actor, target)
+            effects = self.parser.parse(action.potion.esens)
+            result = apply_effects(effects, actor, target)
+
             self.event_bus.emit(PotionUsed(actor.id, action.potion))
-
-            if potion_result.damage > 0:
-                self.event_bus.emit(DamageDealt(
-                    source=actor.id,
-                    target=target.id,
-                    amount=potion_result.damage
-                ))
-
-            for status in potion_result.statuses:
-                self.event_bus.emit(StatusApplied(target.id, status))
-
-        # Apply end-of-turn triggers
-        self._evaluate_triggers("vE", actor, state)
-
-        # Update status durations
-        self._update_statuses(actor)
+            self.event_bus.emit(DamageDealt(actor.id, target.id, result.damage))
 
         # Check victory
         if target.health <= 0:
             self.event_bus.emit(CombatEnded(winner=actor.id))
 
         return TurnResult(...)
-
-    def _apply_potion(self, potion: Potion, actor: Combatant, target: Combatant):
-        """Parse ESENS and apply effects"""
-        effects = self.parser.parse(potion.esens_notation)
-
-        for effect in effects:
-            if effect.target == "P":  # Player/self
-                self._apply_status(actor, effect)
-            elif effect.target == "E":  # Enemy
-                self._apply_status(target, effect)
 ```
 
 #### Economy System
@@ -422,37 +384,15 @@ class EconomySystem:
         shop_reputation: int
     ) -> Price:
         """Dynamic pricing formula"""
+        base = ingredient_cost(potion) * difficulty_multiplier(potion)
 
-        base_price = self._ingredient_cost(potion) * self._difficulty_multiplier(potion)
-
-        # Quality bonus
-        quality_bonus = {
-            Quality.POOR: 0.75,
-            Quality.STANDARD: 1.0,
-            Quality.FINE: 1.25,
-            Quality.EXCEPTIONAL: 1.5,
-            Quality.MASTERWORK: 2.0
-        }[potion.quality]
-
-        # Supply/demand
+        quality_bonus = QUALITY_MULTIPLIERS[potion.quality]
         supply_demand = market_state.get_modifier(potion.type)
+        rep_bonus = 1.0 + (shop_reputation / 500)
 
-        # Reputation
-        rep_bonus = 1.0 + (shop_reputation / 500)  # 0-20% bonus
+        final = base * quality_bonus * supply_demand * rep_bonus
 
-        final_price = base_price * quality_bonus * supply_demand * rep_bonus
-
-        return Price(
-            base=base_price,
-            final=final_price,
-            breakdown={
-                "ingredients": self._ingredient_cost(potion),
-                "difficulty": self._difficulty_multiplier(potion),
-                "quality": quality_bonus,
-                "supply_demand": supply_demand,
-                "reputation": rep_bonus
-            }
-        )
+        return Price(base=base, final=final, breakdown={...})
 
     def make_sale(
         self,
@@ -461,72 +401,26 @@ class EconomySystem:
         customer: Customer
     ) -> SaleResult:
         """Execute transaction"""
-
-        # Update market state
-        market_update = self._update_supply_demand(potion.type, sold=True)
-
-        result = SaleResult(
-            gold_earned=price.final,
-            reputation_change=self._calculate_rep_change(customer, price),
-            market_update=market_update
-        )
+        market_update = update_supply_demand(potion.type, sold=True)
 
         self.event_bus.emit(SaleMade(potion, price, customer))
         self.event_bus.emit(MarketShifted(market_update))
 
-        return result
-```
-
-**Tests:**
-```python
-def test_combat_turn_structure():
-    bus = EventBus()
-    combat = CombatSystem(bus, ESENS_Parser())
-
-    actor = Combatant(health=100, ...)
-    target = Combatant(health=100, ...)
-
-    potion = Potion(esens="E#Damage10")  # Direct damage
-    action = CombatAction(type="USE_POTION", potion=potion)
-
-    result = combat.execute_turn(actor, action, target, CombatState())
-
-    assert target.health == 90
-    assert result.damage_dealt == 10
-
-def test_price_calculation_formula():
-    bus = EventBus()
-    economy = EconomySystem(bus)
-
-    potion = Potion(
-        type="healing",
-        quality=Quality.FINE,
-        ingredient_cost=100
-    )
-
-    market = MarketState(supply_demand={"healing": 1.2})  # High demand
-
-    price = economy.calculate_price(potion, market, reputation=50)
-
-    # Base=100, Difficulty=2.0, Quality=1.25, Demand=1.2, Rep=1.1
-    expected = 100 * 2.0 * 1.25 * 1.2 * 1.1
-
-    assert abs(price.final - expected) < 0.01
+        return SaleResult(gold=price.final, market=market_update)
 ```
 
 **Deliverables:**
 - Combat system API + tests
 - Economy system API + tests
 - ESENS parser integration tests
-- Combat testbed
-- Economy testbed
+- Combat CLI testbed
+- Economy CLI testbed
 
 ---
 
-### Week 5: Inventory System + Integration
-**Goal:** State management and cross-system testing
+### Phase 5: Support System (Inventory)
+**State management and time-based mechanics**
 
-#### Inventory System
 ```python
 class InventorySystem:
     def __init__(self, event_bus: EventBus):
@@ -541,111 +435,92 @@ class InventorySystem:
         timestamp: int
     ) -> InventoryChange:
         """Add item with capacity and freshness tracking"""
-
         if inventory.is_full():
             self.event_bus.emit(CapacityReached(inventory.id))
             return InventoryChange(success=False, reason="full")
 
-        # Set acquisition time for freshness
         if isinstance(item, Ingredient):
             item.acquired_at = timestamp
 
         inventory.items.append(item)
 
-        result = InventoryChange(
-            success=True,
-            item=item,
-            new_count=inventory.count()
-        )
-
         self.event_bus.emit(ItemAdded(item, inventory.id))
 
-        return result
+        return InventoryChange(success=True, item=item)
 
     def update_freshness(self, inventory: Inventory, current_time: int):
         """Apply time-based degradation"""
         for item in inventory.items:
             if isinstance(item, Ingredient) and item.can_spoil:
                 days_old = current_time - item.acquired_at
-                old_freshness = item.freshness
-                item.freshness = self._calculate_freshness(days_old, item.type)
+                item.freshness = calculate_freshness(days_old, item.type)
 
-                if item.freshness <= 0 and old_freshness > 0:
+                if item.freshness <= 0:
                     self.event_bus.emit(ItemSpoiled(item))
 ```
+
+**Deliverables:**
+- Inventory system API + tests
+- Inventory CLI testbed
+
+---
+
+### Phase 6: Integration & Testing
+**Full cross-system validation**
 
 **Integration Tests:**
 ```python
 def test_full_crafting_flow():
-    """Test: Craft potion → gain XP → increase stats → unlock recipe"""
+    """Craft potion → gain XP → increase stats → unlock recipe"""
     bus = EventBus()
-
     crafting = CraftingSystem(bus)
     progression = ProgressionSystem(bus)
     inventory = InventorySystem(bus)
 
-    player = Player(stats={"knowledge": 10}, inventory=Inventory())
+    player = Player(stats={'knowledge': 10})
 
     # Craft a potion
-    recipe = Recipe(difficulty=20, xp_reward=100)
-    ingredients = [Ingredient("root"), Ingredient("berry")]
+    result = crafting.craft(CraftInput(...))
 
-    craft_result = crafting.craft(CraftInput(
-        recipe=recipe,
-        ingredients=ingredients,
-        stats=player.stats,
-        tool_bonus=0
-    ))
-
-    # Verify potion created
-    assert craft_result.success
+    # Verify potion added to inventory
     assert len(player.inventory.items) == 1
 
     # Verify XP gained
-    assert player.stats["knowledge"] == 20  # Increased from XP
+    assert player.stats['knowledge'] == 20
 
 def test_relationship_affects_economy():
-    """Test: High affinity → better prices"""
+    """High affinity → better prices"""
     bus = EventBus()
-
     economy = EconomySystem(bus)
     relationship = RelationshipSystem(bus)
 
     merchant = NPC(id="merchant", affinity=0)
 
     # Build relationship
-    relationship.apply_action(
-        merchant,
-        Action("gift", personality_impacts={"A": 1.0}),
-        current_affinity=0
-    )
+    relationship.apply_action(merchant, gift_action, 0)
 
     # Check price improvement
-    base_price = economy.get_merchant_price(merchant, Ingredient("crystal"))
+    price_low = economy.get_merchant_price(merchant, item)
 
-    # After +affinity
-    relationship.apply_action(merchant, Action("gift"), current_affinity=1.0)
-    better_price = economy.get_merchant_price(merchant, Ingredient("crystal"))
+    relationship.apply_action(merchant, gift_action, 1.0)
 
-    assert better_price < base_price
+    price_high = economy.get_merchant_price(merchant, item)
+
+    assert price_high < price_low
 ```
 
 **Deliverables:**
-- Inventory system API + tests
 - Full integration test suite
 - Performance tests (1000s of operations)
 - Data persistence (save/load)
+- Cross-system event flow validation
 
 ---
 
-### Week 6: Testbeds + Documentation
-**Goal:** Manual validation tools and API docs
+### Phase 7: Polish & Documentation
+**Production-ready implementation**
 
-#### Testbed Requirements
-
-Each system gets a simple CLI testbed:
-
-**Crafting Testbed:**
+**CLI Testbed Example:**
 ```
 CRAFTING TESTBED
 ================
@@ -653,8 +528,8 @@ Commands:
   stats <K> <P> <I>     Set stats
   tool <0-3>            Set tool quality
   craft <recipe_id>     Craft once, show breakdown
-  batch <recipe_id> <n> Craft N times, stats
-  test                  Run full test suite
+  batch <recipe_id> <n> Craft N times, statistics
+  test                  Run test suite
 
 > craft healing_basic
 Stats: Knowledge=50, Precision=40, Intuition=30
@@ -663,10 +538,10 @@ Recipe: Basic Healing (Difficulty=20)
 
 Success Calculation:
   Base:           50.0%
-  + Knowledge/2:  +25.0%  (50/2)
+  + Knowledge/2:  +25.0%
   + Tool:         +10.0%
   - Difficulty:   -20.0%
-  + d20 (15):     +5.0%   ((15-10)/20)
+  + d20 (15):     +5.0%
   ─────────────────────
   TOTAL:          70.0%
 
@@ -677,47 +552,6 @@ Potion: Basic Healing Potion (Fine, 110% potency)
 Events emitted:
   - CraftCompleted(success=True)
   - PotionCreated(potion_id="...")
-  - RecipeMasteryGained(recipe="healing_basic", +5 mastery)
-```
-
-**Relationship Testbed:**
-```
-RELATIONSHIP TESTBED
-====================
-NPCs:
-  1. Thornwood (O:-1, C:+1, E:0, A:-1, N:0) - Affinity: 0.0
-  2. Wisteria (O:0, C:+1, E:-1, A:+1, N:-1) - Affinity: 0.0
-
-Actions:
-  1. InnovativePotion (O:+1.0, E:+0.5, N:-0.5)
-  2. TraditionalPotion (O:-0.5, C:+0.5)
-  3. Gift (E:+1.0, A:+0.5)
-  4. Haggle (C:-0.5, A:-1.0)
-
-> apply 1 1
-Applying "InnovativePotion" to Thornwood...
-
-Personality Calculation:
-  Openness:      -1 * 1.0 = -1.0
-  Extraversion:   0 * 0.5 =  0.0
-  Neuroticism:    0 * -0.5 = 0.0
-  ─────────────────────────
-  Total Delta:           -1.0
-
-Result:
-  Old Affinity: 0.0
-  New Affinity: -1.0
-  Threshold Crossed: 0→-1 (Becomes Cooler)
-
-Events emitted:
-  - AffinityChanged(npc=thornwood, delta=-1.0)
-  - ThresholdCrossed(npc=thornwood, new_level=-1)
-
-> time 7
-Advancing time 7 days...
-Applying decay to all NPCs...
-
-Thornwood: -1.0 → -0.5 (moved 0.5 toward neutral)
 ```
 
 **Deliverables:**
@@ -725,18 +559,7 @@ Thornwood: -1.0 → -0.5 (moved 0.5 toward neutral)
 - API documentation (docstrings + examples)
 - Integration examples
 - Performance benchmarks
-
----
-
-### Week 7-8: Polish + Godot Prep (Optional)
-**Goal:** Production-ready Python implementation
-
-- Code cleanup and refactoring
-- Comprehensive documentation
-- Example integrations
-- Godot port planning
-- Performance optimization
-- Edge case handling
+- Godot port guide
 
 ---
 
@@ -804,67 +627,52 @@ potionworld_systems/
 
 ---
 
-## Benefits of This Approach
+## Architecture Benefits
 
-### ✅ Faster Development
-- **6-8 weeks** instead of 35 weeks
-- No redundant UI work
-- Focus on pure logic
+### Faster Development
+- Focus on pure logic first
+- No UI/UX dependencies
+- Parallel system development
 
-### ✅ Better Testing
+### Better Testing
 - Unit tests for every formula
 - Integration tests for system composition
-- Automated validation vs. manual playtesting
+- Automated validation
 
-### ✅ Easier Godot Port
-- Clean APIs to port 1:1
+### Easier Godot Port
+- Clean APIs port 1:1 to GDScript
 - Events map to Godot signals
 - Logic already validated
 
-### ✅ Cleaner Architecture
-- Systems don't depend on each other
-- Easy to modify one system without breaking others
-- Events provide flexibility
-
-### ✅ Reusable
-- Systems can be used in multiple games
-- Testbeds useful for game designers
+### Cleaner Architecture
+- Systems loosely coupled via events
+- Easy to modify one system independently
 - Clear contracts for collaboration
+
+### Reusable
+- Systems work in multiple contexts
+- Testbeds useful for designers
+- Clear documentation for team
 
 ---
 
-## What Gets Validated
+## Validation Targets
 
 ✅ **Formulas** - Math is correct
 ✅ **Balance** - Numbers feel right
 ✅ **Interactions** - Systems compose correctly
 ✅ **Edge cases** - Bugs caught early
-✅ **Performance** - Fast enough for real game
-
-❌ **Feel/Polish** - Still needs playtesting in Godot
-❌ **Art/Animation** - Separate concern
-❌ **Story** - Writing happens in Godot
+✅ **Performance** - Fast enough for production
 
 ---
 
 ## Success Criteria
 
-Each system is "done" when:
+Each system is complete when:
+
 1. ✅ All APIs implemented and documented
 2. ✅ 90%+ test coverage
-3. ✅ Testbed validates behavior manually
+3. ✅ CLI testbed validates behavior
 4. ✅ Integration tests pass
 5. ✅ Performance benchmarks met
-6. ✅ Team can use it confidently in Godot
-
----
-
-## Next Steps
-
-1. **Review this architecture** - Does it make sense?
-2. **Start with Week 1** - Event bus + contracts
-3. **Pick first system** - Crafting or Progression?
-4. **Build incrementally** - One system at a time
-5. **Test continuously** - Write tests as you go
-
-**Ready to start?** Which system should we tackle first?
+6. ✅ Ready for Godot port

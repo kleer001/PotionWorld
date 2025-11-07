@@ -1,7 +1,17 @@
 # PotionWorld - High Level Roadmap
 
 ## Project Overview
-PotionWorld is a game centered around potion crafting, ingredient gathering, and magical experimentation. This roadmap outlines the development phases from initial prototype to full release.
+PotionWorld is a text-based game centered around potion crafting, ingredient gathering, and magical experimentation. Built with Python and featuring a clean CLI interface, this roadmap outlines the development phases from initial prototype to full release.
+
+**Interface Type:** Text-based / Command-Line Interface (CLI)
+**Primary Framework:** Python with Rich library for terminal formatting
+
+### Technology Stack
+- **Python 3.8+**: Core language
+- **Rich**: Terminal formatting and beautiful text UI
+- **Standard Library**: json, random, datetime, dataclasses
+- **pytest**: Testing framework
+- **pip**: Package distribution
 
 ---
 
@@ -11,7 +21,10 @@ PotionWorld is a game centered around potion crafting, ingredient gathering, and
 - [x] Initialize repository structure
 - [x] Set up basic Python environment
 - [x] Create initial test framework
+- [x] Create game design documentation
+- [ ] Add Rich library dependency
 - [ ] Configure build and deployment pipeline
+- [ ] Set up virtual environment template
 
 ### 1.2 Core Game Engine
 - [ ] Implement basic game loop
@@ -39,10 +52,11 @@ PotionWorld is a game centered around potion crafting, ingredient gathering, and
 ### 2.2 Potion Crafting System
 - [ ] Implement basic potion crafting mechanics
 - [ ] Create recipe discovery system
-- [ ] Build crafting UI/interface
+- [ ] Build crafting text menus and interaction flow
 - [ ] Implement potion effects system
 - [ ] Add crafting success/failure mechanics
 - [ ] Create potion quality tiers
+- [ ] Design text-based crafting feedback and animations
 
 ### 2.3 Player Progression
 - [ ] Design experience/leveling system
@@ -64,8 +78,8 @@ PotionWorld is a game centered around potion crafting, ingredient gathering, and
 - [ ] Design NPC system
 - [ ] Implement customer/buyer mechanics
 - [ ] Create quest/mission system
-- [ ] Build dialogue system
-- [ ] Add trading mechanics
+- [ ] Build text-based dialogue system
+- [ ] Add trading mechanics with text menus
 
 ### 3.3 Economy System
 - [ ] Implement currency system
@@ -99,18 +113,23 @@ PotionWorld is a game centered around potion crafting, ingredient gathering, and
 
 ## Phase 5: Polish & Content Expansion (Weeks 17-20)
 
-### 5.1 UI/UX Improvements
-- [ ] Refine user interface
-- [ ] Add animations and transitions
-- [ ] Implement tutorial system
-- [ ] Create help/guide documentation
-- [ ] Add accessibility features
+### 5.1 Text Interface Improvements
+- [ ] Refine menu layouts and navigation flow
+- [ ] Add text animations (letter-by-letter, progress bars)
+- [ ] Implement tutorial system with guided prompts
+- [ ] Create comprehensive help/guide system
+- [ ] Add accessibility features (colorblind mode, screen reader friendly)
+- [ ] Implement Rich library features (tables, panels, syntax highlighting)
+- [ ] Add ASCII art for key moments
 
-### 5.2 Audio & Visual Polish
-- [ ] Add sound effects
-- [ ] Implement background music
-- [ ] Create visual effects for potions
-- [ ] Add particle effects
+### 5.2 Text Presentation Polish
+- [ ] Refine color scheme for readability
+- [ ] Improve table formatting and alignment
+- [ ] Add descriptive flavor text for atmosphere
+- [ ] Create satisfying text feedback for crafting success/failure
+- [ ] Polish progress indicators and status displays
+- [ ] Optional: Add terminal beep for important events
+- [ ] Enhance Unicode symbol usage for visual interest
 
 ### 5.3 Content Expansion
 - [ ] Add 50+ unique ingredients
@@ -188,10 +207,12 @@ PotionWorld is a game centered around potion crafting, ingredient gathering, and
 ## Success Metrics
 
 ### Technical Metrics
-- < 100ms average frame time
+- < 50ms menu navigation response time
+- < 2s game load time
 - < 5% crash rate
 - < 3 critical bugs at launch
-- 95%+ test coverage
+- 85%+ test coverage
+- Works on Windows, Mac, Linux terminals
 
 ### Player Engagement Metrics
 - 5+ hours average playtime

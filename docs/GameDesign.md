@@ -4,8 +4,9 @@
 
 **Game Title:** PotionWorld
 **Genre:** Crafting Simulation / Resource Management / Adventure
-**Platform:** PC (Python-based)
+**Platform:** PC (Python-based, Text/CLI Interface)
 **Target Audience:** Casual to mid-core gamers interested in crafting, experimentation, and progression systems
+**Interface:** Text-based command-line interface with menu-driven navigation
 **Core Loop:** Gather ingredients → Craft potions → Sell/use potions → Unlock new recipes/areas → Repeat
 
 ---
@@ -310,43 +311,188 @@ A magical realm where alchemy is an essential part of society. From healing the 
 
 ## 8. User Interface & Experience
 
-### 8.1 Main Screens
+### 8.1 Text-Based Interface Design
 
-#### Workshop View
-- Crafting station in center
-- Ingredient storage accessible
-- Current orders displayed
-- Customer queue visible
+PotionWorld uses a clean, menu-driven text interface that's easy to navigate and provides all necessary information through well-formatted text output.
+
+#### Main Menu Structure
+```
+=== POTIONWORLD - YOUR ALCHEMY WORKSHOP ===
+Day 15 | Season: Spring | Gold: 245 | Reputation: ⭐⭐⭐
+
+1. Workshop (Craft Potions)
+2. Inventory (View ingredients & potions)
+3. Explore (Gather ingredients)
+4. Customers (View orders & sell potions)
+5. Journal (Recipes & lore)
+6. Shop (Buy/Sell)
+7. Character (Skills & progression)
+8. Save/Load
+9. Quit
+
+> _
+```
+
+### 8.2 Screen Examples
+
+#### Workshop/Crafting Screen
+```
+=== ALCHEMY WORKSHOP ===
+Active Orders: 2 | Ingredients Available: 23
+
+Select Action:
+1. Craft new potion
+2. View active orders
+3. Experiment (free crafting)
+4. View recipe book
+5. Return to main menu
+
+> 1
+
+Available Recipes:
+1. Health Potion (⭐⭐) - [Ingredients available: ✓]
+2. Mana Elixir (⭐⭐⭐) - [Ingredients available: ✓]
+3. Strength Tonic (⭐⭐) - [Ingredients available: ✗]
+4. Experiment with ingredients
+
+> _
+```
 
 #### Inventory Screen
-- Organized by ingredient type and quality
-- Potion storage separate
-- Quick search and filtering
-- Detailed item information
+```
+=== INVENTORY ===
+Ingredients: 23/50 | Potions: 8/20
 
-#### World Map
-- Available locations
-- Ingredient distribution hints
-- Travel time indicators
-- Unlockable areas grayed out
+INGREDIENTS:
+[Common Herbs]
+1. Moonpetal (x12) - Quality: ⭐⭐⭐ - Mana/Calm
+2. Sunleaf (x8) - Quality: ⭐⭐ - Healing/Warmth
 
-#### Customer Interface
-- Order details and requirements
-- Customer profile and history
-- Negotiation options
-- Delivery confirmation
+[Rare Minerals]
+3. Crystal Dust (x3) - Quality: ⭐⭐⭐⭐ - Magic/Focus
 
-### 8.2 Crafting Interface
-- Clear visual feedback during crafting
-- Ingredient combination preview
-- Success probability indicator
-- Step-by-step process visualization
+POTIONS:
+1. Health Potion (x3) - Quality: ⭐⭐⭐ - 50g each
+2. Mana Elixir (x2) - Quality: ⭐⭐⭐⭐ - 120g each
 
-### 8.3 Tutorial & Learning
-- Gentle introduction to mechanics
-- Tooltips and help system
-- Practice mode for experimentation
-- Alchemy journal with discovered recipes
+Actions: [V]iew details | [S]ort | [F]ilter | [B]ack
+> _
+```
+
+#### Exploration Screen
+```
+=== EXPLORATION - WHISPERING FOREST ===
+Time: Evening | Weather: Clear
+
+You stand at the edge of the Whispering Forest.
+Moonpetals should be blooming at this hour...
+
+Available Actions:
+1. Search for herbs (30 min)
+2. Look for minerals (45 min)
+3. Deep exploration (2 hours) - Risky, rare finds
+4. Return to town
+5. View location info
+
+> 1
+
+Searching for herbs...
+
+You found: Moonpetal (Quality: ⭐⭐⭐⭐) x2
+You found: Nightshade (Quality: ⭐⭐) x1
+Time passed: 30 minutes
+
+Continue exploring? (y/n) > _
+```
+
+#### Customer/Orders Screen
+```
+=== CUSTOMERS & ORDERS ===
+Active Orders: 2 | Reputation: ⭐⭐⭐ (Apprentice)
+
+ACTIVE ORDERS:
+1. [Regular] Village Healer
+   Needs: Health Potion (⭐⭐+)
+   Quantity: 3
+   Payment: 45g each
+   Deadline: 2 days
+
+2. [Special] Traveling Wizard
+   Needs: Mana restoration potion
+   Quality: ⭐⭐⭐⭐+
+   Payment: 200g
+   Deadline: 5 days
+   Note: "I need something powerful for my journey..."
+
+Actions:
+1. View order details
+2. Fulfill order (select from inventory)
+3. Decline order
+4. Talk to customer
+5. Return to main menu
+
+> _
+```
+
+#### Crafting Process
+```
+=== CRAFTING: HEALTH POTION ===
+
+Recipe: Health Potion
+Base: Water
+Required: Sunleaf (x2), Honey (x1)
+
+Your ingredients:
+1. Sunleaf (⭐⭐⭐) x2
+2. Sunleaf (⭐⭐) x3
+3. Honey (⭐⭐⭐⭐) x1
+4. Honey (⭐⭐) x2
+
+Select Sunleaf #1 (or 'auto' for automatic): > 1
+Select Sunleaf #2: > 1
+Select Honey: > 1
+
+Method:
+1. Boil (Basic)
+2. Simmer (Better quality, longer)
+3. Distill (Highest quality, requires skill 5+)
+
+Select method: > 2
+
+Brewing potion...
+████████████████░░░░ 80%
+
+Success!
+Created: Health Potion (⭐⭐⭐⭐)
+Effect: Restores 80 HP (standard: 50 HP)
+Quality bonus: +60% effectiveness
+
+Continue crafting? (y/n) > _
+```
+
+### 8.3 Information Display Principles
+- **Clear Headers**: Every screen has a clear title and context
+- **Status Bar**: Important info (day, gold, time) always visible
+- **Numbered Menus**: Easy selection with number keys
+- **Symbols**: Unicode symbols for quality (⭐), status (✓/✗), rarity
+- **Tables**: Aligned columns for easy scanning
+- **Progress Bars**: ASCII progress bars for time-based actions
+- **Color Coding** (optional): Terminal colors for rarity, quality, alerts
+- **Breadcrumbs**: Show current location in menu hierarchy
+
+### 8.4 Input Methods
+- **Numbered Selection**: Primary navigation (1-9)
+- **Letter Commands**: Quick actions (v/s/f for view/sort/filter)
+- **Text Input**: For naming, searching, custom amounts
+- **Yes/No Prompts**: Simple confirmations
+- **Help Command**: Type 'help' or '?' from any screen
+
+### 8.5 Tutorial & Learning
+- **Gentle Introduction**: First-time play triggers tutorial mode
+- **Contextual Help**: '?' command shows help for current screen
+- **Tool Tips**: Brief descriptions next to menu items
+- **Journal System**: In-game encyclopedia for mechanics
+- **Practice Mode**: Safe experimentation without resource loss
 
 ---
 
@@ -393,16 +539,48 @@ A magical realm where alchemy is an essential part of society. From healing the 
 - Save file integrity checks
 
 ### 10.2 Performance Targets
-- Smooth 60 FPS gameplay
-- Fast load times (<3 seconds)
-- Responsive UI (<100ms input response)
-- Efficient resource management
+- Instant menu navigation (<50ms)
+- Fast load times (<2 seconds)
+- Responsive input handling (<100ms)
+- Efficient memory usage for save files
+- Smooth text rendering and animations
 
 ### 10.3 Accessibility
-- Colorblind-friendly design
-- Adjustable text size
-- Keyboard/mouse and controller support
-- Difficulty options
+- Works in any terminal (cross-platform)
+- Optional color mode for colorblind users or monochrome terminals
+- Screen reader friendly text output
+- Adjustable text density (verbose/compact modes)
+- Keyboard-only navigation
+- Clear text hierarchy and formatting
+
+### 10.4 Technology Stack
+
+#### Core
+- **Python 3.8+**: Main programming language
+- **Standard Library**: Built-in modules for core functionality
+  - `json`: Save file handling
+  - `random`: Procedural generation
+  - `datetime`: Time/calendar system
+  - `dataclasses`: Clean data models
+
+#### Terminal UI (Recommended)
+- **[Rich](https://rich.readthedocs.io/)**: Beautiful terminal formatting
+  - Tables, panels, progress bars
+  - Color and style support
+  - Cross-platform compatibility
+  - Minimal dependency footprint
+
+#### Testing & Quality
+- **pytest**: Unit and integration testing
+- **black**: Code formatting
+- **mypy**: Optional type checking
+
+#### Why This Stack?
+- **Minimal Dependencies**: Rich is the only external dependency needed
+- **Cross-Platform**: Works on Windows, Mac, Linux
+- **Easy Distribution**: Simple pip install
+- **Learning Friendly**: Standard Python, easy to understand
+- **Future Proof**: Can add GUI later if desired
 
 ---
 
@@ -426,19 +604,40 @@ A magical realm where alchemy is an essential part of society. From healing the 
 
 ---
 
-## 12. Audio & Visual Direction
+## 12. Text Presentation & Aesthetics
 
-### 12.1 Visual Style
-- Whimsical fantasy aesthetic
-- Colorful ingredients and potions
-- Satisfying particle effects for crafting
-- Clear visual feedback for success/failure
+### 12.1 Visual Design (Text-Based)
+- **Clean Layout**: Well-spaced menus with clear separators
+- **Box Drawing**: Unicode box characters for panels and borders
+- **Color Palette** (optional terminal colors):
+  - Common items: White/Gray
+  - Uncommon: Green
+  - Rare: Blue
+  - Epic: Purple
+  - Legendary: Gold/Yellow
+  - Success: Green highlights
+  - Failure: Red highlights
+  - Info: Cyan
+- **Typography**: ASCII art for title screen and major achievements
+- **Icons**: Unicode symbols (⭐ 🧪 🌿 💎 ⚗️ 📜) for visual interest
+- **Progress Indicators**: ASCII progress bars and spinners
+- **Tables**: Aligned columns for inventory and stats
 
-### 12.2 Audio Design
-- Ambient sounds for different locations
-- Satisfying crafting sound effects
-- Calming background music
-- Audio cues for important events
+### 12.2 Text Effects & Feedback
+- **Animation** (optional): Letter-by-letter reveal for story text
+- **Emphasis**: Bold/italic terminal formatting for important text
+- **Success/Failure**: Clear visual markers (✓/✗, SUCCESS!/FAILED!)
+- **Discoveries**: Special formatting for recipe discoveries
+- **Narrative Flavor**: Descriptive text for atmosphere
+  - "The potion bubbles ominously..."
+  - "A sweet aroma fills your workshop..."
+  - "The mixture explodes in a cloud of purple smoke!"
+
+### 12.3 Audio (Future/Optional)
+- **Terminal Beep**: Optional beep for important events
+- **Text-to-Speech**: Could read descriptions aloud (accessibility)
+- **Background Music**: Could be separate media player recommendation
+- Note: Audio is low priority for initial release
 
 ---
 

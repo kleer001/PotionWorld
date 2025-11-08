@@ -15,6 +15,7 @@ Examples:
   python systest.py --relationship      Launch relationship testbed
   python systest.py --combat            Launch combat testbed
   python systest.py --economy           Launch economy testbed
+  python systest.py --progression       Launch progression testbed
         """
     )
 
@@ -45,7 +46,7 @@ Examples:
     parser.add_argument(
         '--progression',
         action='store_true',
-        help='Launch the progression system testbed (coming soon)'
+        help='Launch the progression system testbed'
     )
 
     parser.add_argument(
@@ -109,9 +110,11 @@ Examples:
         testbed.interactive_mode()
 
     elif args.progression:
-        print("Progression system not yet implemented.")
-        print("Coming in Phase 2!")
-        sys.exit(1)
+        print("PotionWorld - Phase 5: Progression System")
+        print("Launching Progression Testbed...\n")
+        from src.progression.testbed import ProgressionTestbed
+        testbed = ProgressionTestbed()
+        testbed.run()
 
     elif args.inventory:
         print("Inventory system not yet implemented.")

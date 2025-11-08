@@ -10,12 +10,14 @@ python systest.py --<system>
 
 ## Available Systems
 
-### Phase 1 (Current)
+### Phase 1 (Complete)
 - `--crafting` - Potion crafting system testbed ✓
 
+### Phase 2 (Complete)
+- `--relationship` - NPC relationship and affinity ✓
+
 ### Coming Soon
-- `--progression` - Character stat progression (Phase 2)
-- `--relationship` - NPC relationship and affinity (Phase 3)
+- `--progression` - Character stat progression (Phase 3)
 - `--quest` - Quest and objective tracking (Phase 3)
 - `--combat` - Turn-based potion combat (Phase 4)
 - `--economy` - Pricing and market dynamics (Phase 4)

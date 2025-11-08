@@ -41,3 +41,34 @@ class IngredientsConsumed:
     ingredient_ids: List[str]
     recipe_id: str
     crafter_id: str
+
+
+@dataclass
+class AffinityChanged:
+    npc_id: str
+    delta: float
+    new_affinity: float
+    reason: str
+    timestamp: int
+
+
+@dataclass
+class ThresholdCrossed:
+    npc_id: str
+    old_level: int
+    new_level: int
+    direction: str
+
+
+@dataclass
+class MemoryCreated:
+    npc_id: str
+    memory: 'Memory'
+
+
+@dataclass
+class RelationshipDecayed:
+    npc_id: str
+    old_affinity: float
+    new_affinity: float
+    days_passed: int

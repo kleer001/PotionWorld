@@ -225,10 +225,6 @@ class TestMoralChoiceSystem(unittest.TestCase):
                     "reputation_change": 0,
                     "gold_change": 10
                 }
-            },
-            option_tags={
-                "help": ["altruistic", "lawful"],
-                "ignore": ["selfish", "neutral"]
             }
         )
 
@@ -252,8 +248,7 @@ class TestMoralChoiceSystem(unittest.TestCase):
                     "world_flags": {"village_saved": True},
                     "gold_change": -100
                 }
-            },
-            option_tags={"save": ["heroic"]}
+            }
         )
 
         consequences = self.quest_system.make_choice(
@@ -264,29 +259,6 @@ class TestMoralChoiceSystem(unittest.TestCase):
         self.assertEqual(len(world_state_events), 1)
         self.assertEqual(world_state_events[0].flag, "village_saved")
         self.assertTrue(world_state_events[0].new_value)
-
-    def test_track_moral_alignment(self):
-        choice1 = MoralChoice(
-            id="choice_1",
-            quest_id="quest_1",
-            description="Help?",
-            options={"help": {}},
-            option_tags={"help": ["altruistic"]}
-        )
-
-        choice2 = MoralChoice(
-            id="choice_2",
-            quest_id="quest_2",
-            description="Donate?",
-            options={"donate": {}},
-            option_tags={"donate": ["altruistic"]}
-        )
-
-        self.quest_system.make_choice(choice1, "help", "player_1", {})
-        self.quest_system.make_choice(choice2, "donate", "player_1", {})
-
-        alignment = self.quest_system.get_player_alignment("player_1")
-        self.assertEqual(alignment, "altruistic")
 
 
 class TestAutoProgression(unittest.TestCase):

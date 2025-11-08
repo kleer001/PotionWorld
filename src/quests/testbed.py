@@ -4,6 +4,7 @@ from src.quests.data_structures import (
     Quest, QuestState, Objective, ObjectiveType, MoralChoice
 )
 from src.quests.formulas import check_objective_complete
+from src.quests.builder import QuestBuilder
 
 
 class QuestTestbed:
@@ -36,105 +37,45 @@ class QuestTestbed:
 
     def _create_test_quests(self):
         return {
-            "craft_quest": Quest(
-                id="craft_quest",
-                name="The Apprentice's Trial",
-                description="Craft 5 healing potions to prove your skill",
-                objectives=[
-                    Objective(
-                        id="obj_0",
-                        type=ObjectiveType.CRAFT_POTION,
-                        target="healing_potion",
-                        quantity=5,
-                        description="Craft 5 healing potions"
-                    )
-                ],
-                state=QuestState.AVAILABLE,
-                prerequisites={}
+            "craft_quest": (
+                QuestBuilder("craft_quest")
+                .name("The Apprentice's Trial")
+                .description("Craft 5 healing potions to prove your skill")
+                .craft_objective("healing_potion", 5)
+                .build()
             ),
-            "gather_quest": Quest(
-                id="gather_quest",
-                name="Herb Collector",
-                description="Gather ingredients for the elder",
-                objectives=[
-                    Objective(
-                        id="obj_0",
-                        type=ObjectiveType.GATHER_ITEM,
-                        target="moonleaf",
-                        quantity=20,
-                        description="Gather 20 moonleaf"
-                    ),
-                    Objective(
-                        id="obj_1",
-                        type=ObjectiveType.DELIVER_ITEM,
-                        target="elder",
-                        description="Deliver herbs to the elder"
-                    )
-                ],
-                state=QuestState.AVAILABLE,
-                prerequisites={}
+            "gather_quest": (
+                QuestBuilder("gather_quest")
+                .name("Herb Collector")
+                .description("Gather ingredients for the elder")
+                .gather_objective("moonleaf", 20)
+                .deliver_objective("elder")
+                .build()
             ),
-            "advanced_quest": Quest(
-                id="advanced_quest",
-                name="Master Alchemist",
-                description="Achieve mastery in alchemy",
-                objectives=[
-                    Objective(
-                        id="obj_0",
-                        type=ObjectiveType.REACH_STAT,
-                        target="knowledge",
-                        value=80,
-                        description="Reach knowledge level 80"
-                    ),
-                    Objective(
-                        id="obj_1",
-                        type=ObjectiveType.CRAFT_POTION,
-                        target="any",
-                        quantity=50,
-                        description="Craft 50 potions of any type"
-                    )
-                ],
-                state=QuestState.LOCKED,
-                prerequisites={"required_stats": {"knowledge": 60}}
+            "advanced_quest": (
+                QuestBuilder("advanced_quest")
+                .name("Master Alchemist")
+                .description("Achieve mastery in alchemy")
+                .stat_objective("knowledge", 80)
+                .craft_objective("any", 50, "Craft 50 potions of any type")
+                .require_stat("knowledge", 60)
+                .state(QuestState.LOCKED)
+                .build()
             ),
-            "duel_quest": Quest(
-                id="duel_quest",
-                name="Tournament Champion",
-                description="Win the local tournament",
-                objectives=[
-                    Objective(
-                        id="obj_0",
-                        type=ObjectiveType.WIN_DUEL,
-                        target="any",
-                        quantity=3,
-                        description="Win 3 duels"
-                    )
-                ],
-                state=QuestState.AVAILABLE,
-                prerequisites={}
+            "duel_quest": (
+                QuestBuilder("duel_quest")
+                .name("Tournament Champion")
+                .description("Win the local tournament")
+                .duel_objective(3)
+                .build()
             ),
-            "merchant_quest": Quest(
-                id="merchant_quest",
-                name="Business Tycoon",
-                description="Build your trading empire",
-                objectives=[
-                    Objective(
-                        id="obj_0",
-                        type=ObjectiveType.EARN_GOLD,
-                        target="any",
-                        value=1000,
-                        description="Earn 1000 gold from sales"
-                    ),
-                    Objective(
-                        id="obj_1",
-                        type=ObjectiveType.REACH_AFFINITY,
-                        target="merchant",
-                        value=2.0,
-                        description="Build strong relationship with merchant"
-                    )
-                ],
-                state=QuestState.AVAILABLE,
-                prerequisites={}
+            "merchant_quest": (
+                QuestBuilder("merchant_quest")
+                .name("Business Tycoon")
+                .description("Build your trading empire")
+                .gold_objective(1000, "Earn 1000 gold from sales")
+                .affinity_objective("merchant", 2.0, "Build strong relationship with merchant")
+                .build()
             )
         }
 
@@ -165,12 +106,6 @@ class QuestTestbed:
                         "reputation_change": -15,
                         "gold_change": 0
                     }
-                },
-                option_tags={
-                    "help_free": ["altruistic", "lawful"],
-                    "charge_half": ["pragmatic", "neutral"],
-                    "charge_full": ["greedy", "neutral"],
-                    "refuse": ["selfish", "chaotic"]
                 }
             )
         }
@@ -240,9 +175,6 @@ class QuestTestbed:
         print(f"  Elder:    {self.player_state['affinity_elder']:>5.1f}")
         print(f"  Merchant: {self.player_state['affinity_merchant']:>5.1f}")
         print(f"  Rival:    {self.player_state['affinity_rival']:>5.1f}")
-
-        alignment = self.quest_system.get_player_alignment("player")
-        print(f"\nMoral Alignment: {alignment.capitalize()}")
 
         if self.active_quest:
             print(f"\nActive Quest: {self.active_quest.name}")
@@ -468,17 +400,6 @@ class QuestTestbed:
         quest = self.quests["advanced_quest"]
         success, _ = self.quest_system.start_quest(quest, "test", {"knowledge": 30})
         if not success:
-            print("  ✓ PASS")
-            passed += 1
-        else:
-            print("  ✗ FAIL")
-
-        total += 1
-        print("\nTest 3: Moral choice tracking")
-        choice = self.choices["help_villager"]
-        self.quest_system.make_choice(choice, "help_free", "test", {})
-        alignment = self.quest_system.get_player_alignment("test")
-        if alignment == "altruistic":
             print("  ✓ PASS")
             passed += 1
         else:

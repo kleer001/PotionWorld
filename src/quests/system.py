@@ -14,8 +14,7 @@ from src.quests.data_structures import (
 from src.quests.formulas import (
     can_start_quest, calculate_next_state, check_objective_complete,
     calculate_quest_progress, are_all_objectives_complete,
-    calculate_choice_consequences, apply_consequences_to_state,
-    track_moral_pattern, get_dominant_alignment
+    calculate_choice_consequences, apply_consequences_to_state
 )
 
 
@@ -24,7 +23,6 @@ class QuestSystem:
         self.event_bus = event_bus
         self.active_quests: Dict[str, Dict[str, Quest]] = {}
         self.completed_quests: Dict[str, List[str]] = {}
-        self.moral_choices: Dict[str, List[str]] = {}
 
         event_bus.subscribe(PotionCreated, self.on_potion_created)
         event_bus.subscribe(ItemAdded, self.on_item_added)
@@ -230,17 +228,6 @@ class QuestSystem:
                 source_quest=choice.quest_id
             ))
 
-        if player_id not in self.moral_choices:
-            self.moral_choices[player_id] = []
-
-        option_tags = choice.option_tags.get(selected_option, [])
-        self.moral_choices[player_id] = track_moral_pattern(
-            self.moral_choices[player_id],
-            choice.id,
-            selected_option,
-            option_tags
-        )
-
         return consequences
 
     def get_quest_progress(
@@ -285,9 +272,6 @@ class QuestSystem:
 
     def get_active_quests(self, player_id: str) -> List[Quest]:
         return list(self.active_quests.get(player_id, {}).values())
-
-    def get_player_alignment(self, player_id: str) -> str:
-        return get_dominant_alignment(self.moral_choices.get(player_id, []))
 
     def on_potion_created(self, event: PotionCreated):
         for quest in self.get_active_quests(event.crafter_id):

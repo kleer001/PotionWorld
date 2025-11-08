@@ -2,8 +2,7 @@ import unittest
 from src.quests.formulas import (
     can_start_quest, calculate_next_state, check_objective_complete,
     calculate_quest_progress, are_all_objectives_complete,
-    calculate_choice_consequences, apply_consequences_to_state,
-    track_moral_pattern, analyze_moral_alignment, get_dominant_alignment
+    calculate_choice_consequences, apply_consequences_to_state
 )
 from src.quests.data_structures import QuestState, ObjectiveType
 
@@ -316,40 +315,6 @@ class TestMoralChoices(unittest.TestCase):
         new_state = apply_consequences_to_state(state, consequences)
         self.assertTrue(new_state["flag_village_saved"])
         self.assertFalse(new_state["flag_merchant_angry"])
-
-    def test_track_moral_pattern(self):
-        history = []
-        new_history = track_moral_pattern(
-            history, "choice_1", "help", ["altruistic", "lawful"]
-        )
-        self.assertEqual(len(new_history), 1)
-        self.assertIn("choice_1", new_history[0])
-        self.assertIn("altruistic", new_history[0])
-
-    def test_analyze_moral_alignment(self):
-        history = [
-            "choice_1:help:altruistic,lawful",
-            "choice_2:donate:altruistic",
-            "choice_3:steal:greedy,chaotic"
-        ]
-        alignment = analyze_moral_alignment(history)
-        self.assertEqual(alignment["altruistic"], 2)
-        self.assertEqual(alignment["lawful"], 1)
-        self.assertEqual(alignment["greedy"], 1)
-        self.assertEqual(alignment["chaotic"], 1)
-
-    def test_get_dominant_alignment_empty(self):
-        alignment = get_dominant_alignment([])
-        self.assertEqual(alignment, "neutral")
-
-    def test_get_dominant_alignment(self):
-        history = [
-            "choice_1:help:altruistic",
-            "choice_2:help:altruistic",
-            "choice_3:steal:greedy"
-        ]
-        alignment = get_dominant_alignment(history)
-        self.assertEqual(alignment, "altruistic")
 
 
 if __name__ == "__main__":

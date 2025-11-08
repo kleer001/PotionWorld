@@ -7,7 +7,7 @@ Phase 7 implementation of PotionWorld's quest system with state management, obje
 - **Quest State Machine**: LOCKED → AVAILABLE → ACTIVE → COMPLETED/FAILED
 - **8 Objective Types**: Craft, gather, talk, affinity, stats, delivery, duels, gold
 - **Prerequisite System**: Quest chains, stat requirements, affinity gates, item requirements
-- **Moral Choice System**: Consequence tracking with alignment patterns
+- **Moral Choice System**: Consequence tracking with world state persistence
 - **Auto-Progression**: Automatic objective updates from game events
 - **Event-Driven**: Emits events for cross-system integration
 
@@ -20,7 +20,6 @@ Phase 7 implementation of PotionWorld's quest system with state management, obje
    - State machine transitions
    - Objective completion logic
    - Moral choice consequences
-   - Alignment pattern analysis
 
 2. **System** (`system.py`): QuestSystem API with event emission
    - `unlock_quest()` - Unlock locked quests
@@ -312,11 +311,6 @@ choice = MoralChoice(
             "world_flags": {"village_saved": False}
         }
     },
-    option_tags={
-        "help_free": ["altruistic", "lawful"],
-        "charge_half": ["pragmatic", "neutral"],
-        "charge_full": ["greedy", "neutral"],
-        "refuse": ["selfish", "chaotic"]
     }
 )
 ```
@@ -354,21 +348,11 @@ consequences = quest_system.make_choice(
 "world_flags": {"flag_name": value}
 ```
 
-### Moral Alignment Tracking
-
 The system tracks player choices and determines dominant alignment:
 
 ```python
 alignment = quest_system.get_player_alignment("player")
 ```
-
-Alignments based on tags:
-- `altruistic` - Helping others
-- `selfish` - Self-interest
-- `lawful` - Following rules
-- `chaotic` - Breaking rules
-- `pragmatic` - Balanced approach
-- `greedy` - Profit-focused
 
 ## Auto-Progression
 
@@ -516,7 +500,6 @@ Affinities:
   Merchant:   0.0
   Rival:      0.0
 
-Moral Alignment: Neutral
 
 > list
 
@@ -591,7 +574,7 @@ Following SOLID, DRY, and KISS principles:
 ✅ **Moral choices create consequences** - Affinity/reputation/gold changes apply
 ✅ **World state flags persist** - Choices affect future gameplay
 ✅ **Auto-progression works** - Events trigger objective updates
-✅ **Alignment tracking works** - Player patterns are analyzed
+✅ **Moral choices create consequences** - Choices persist in world state
 ✅ **Testbed validates all flows** - Can test complex scenarios
 ✅ **Events integrate properly** - Other systems respond to quest events
 ✅ **Tests pass completely** - 100% formula and system coverage

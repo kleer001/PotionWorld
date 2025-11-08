@@ -50,7 +50,6 @@ class MoralChoice:
     quest_id: str
     description: str
     options: Dict[str, dict]
-    option_tags: Dict[str, List[str]]
 
 
 @dataclass

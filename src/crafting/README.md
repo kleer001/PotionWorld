@@ -41,6 +41,11 @@ Phase 1 implementation of PotionWorld's potion crafting system following the Hyb
 ### Run the Testbed
 
 ```bash
+python systest.py --crafting
+```
+
+Or directly:
+```bash
 python -m src.crafting.testbed
 ```
 

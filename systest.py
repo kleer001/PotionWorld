@@ -16,6 +16,8 @@ Examples:
   python systest.py --combat            Launch combat testbed
   python systest.py --economy           Launch economy testbed
   python systest.py --progression       Launch progression testbed
+  python systest.py --inventory         Launch inventory testbed
+  python systest.py --quest             Launch quest testbed
         """
     )
 
@@ -52,13 +54,13 @@ Examples:
     parser.add_argument(
         '--inventory',
         action='store_true',
-        help='Launch the inventory system testbed (coming soon)'
+        help='Launch the inventory system testbed'
     )
 
     parser.add_argument(
         '--quest',
         action='store_true',
-        help='Launch the quest system testbed (coming soon)'
+        help='Launch the quest system testbed'
     )
 
     args = parser.parse_args()
@@ -117,14 +119,18 @@ Examples:
         testbed.run()
 
     elif args.inventory:
-        print("Inventory system not yet implemented.")
-        print("Coming in Phase 5!")
-        sys.exit(1)
+        print("PotionWorld - Phase 6: Inventory System")
+        print("Launching Inventory Testbed...\n")
+        from src.inventory.testbed import InventoryTestbed
+        testbed = InventoryTestbed()
+        testbed.run()
 
     elif args.quest:
-        print("Quest system not yet implemented.")
-        print("Coming in Phase 3!")
-        sys.exit(1)
+        print("PotionWorld - Phase 7: Quest System")
+        print("Launching Quest Testbed...\n")
+        from src.quests.testbed import QuestTestbed
+        testbed = QuestTestbed()
+        testbed.run()
 
 
 if __name__ == "__main__":

@@ -232,3 +232,62 @@ class InventoryFull:
     owner_id: str
     attempted_item_id: str
     attempted_quantity: int
+
+
+@dataclass
+class QuestUnlocked:
+    quest_id: str
+    quest_name: str
+    player_id: str
+
+
+@dataclass
+class QuestStarted:
+    quest_id: str
+    quest_name: str
+    player_id: str
+    timestamp: int
+
+
+@dataclass
+class ObjectiveUpdated:
+    quest_id: str
+    objective_id: str
+    old_progress: int
+    new_progress: int
+    complete: bool
+    player_id: str
+
+
+@dataclass
+class QuestCompleted:
+    quest_id: str
+    quest_name: str
+    player_id: str
+    timestamp: int
+    choices_made: List[str]
+
+
+@dataclass
+class QuestFailed:
+    quest_id: str
+    quest_name: str
+    reason: str
+    player_id: str
+
+
+@dataclass
+class MoralChoiceMade:
+    quest_id: str
+    choice_id: str
+    selected_option: str
+    consequences: dict
+    player_id: str
+
+
+@dataclass
+class WorldStateChanged:
+    flag: str
+    old_value: Optional[str]
+    new_value: str
+    source_quest: str

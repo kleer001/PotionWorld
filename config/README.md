@@ -2,76 +2,120 @@
 
 PotionWorld uses .ini files for high-level game balance tuning without code changes.
 
+## Philosophy
+
+Only **essential balance knobs** that playtesters need. Not every magic number - just the ones that affect game feel.
+
 ## Files
+
+### `crafting.ini`
+
+**Success_Chance:**
+- Base chance and stat modifiers
+- Critical roll values (natural 1/20)
+
+**Quality_Thresholds:**
+- Margins for each quality tier
+
+**XP_Rewards:**
+- Failure XP percentages
+- Quality multipliers
+
+### `relationships.ini`
+
+**Affinity:**
+- Min/max affinity bounds
+
+**Memory:**
+- Significance threshold (when memories form)
+- Decay resistance calculation
+
+**Decay:**
+- Time-based affinity decay rate
+
+### `combat.ini`
+
+**Damage:**
+- Strength/defense divisors
+- Minimum damage floor
+
+**AI_Personality:**
+- Personality trait multipliers for AI decisions
+
+### `economy.ini`
+
+**Base_Prices:**
+- Ingredient prices by rarity
+
+**Potion_Pricing:**
+- Base multiplier and difficulty scaling
+
+**Quality_Multipliers:**
+- Price modifiers per quality tier
+
+**Market:**
+- Supply/demand min/max bounds
+- Decay rates
+
+**Bulk_Discounts:**
+- Quantity thresholds and discount percentages
+
+**Combat_Rewards:**
+- Base reward and bonus calculations
 
 ### `progression.ini`
 
-Controls all progression system parameters:
+**XP_Curve:**
+- Logarithmic curve parameters
 
-**XP Curve:**
-- `max_xp` - Maximum XP value (default: 100000)
-- `max_stat` - Maximum stat value (default: 100)
-- `curve_scale` - Logarithmic curve scaling (default: 40)
-- `curve_offset` - Logarithmic curve offset (default: 100)
-
-Formula: `stat = curve_scale * log10(xp) - curve_offset`
-
-**Mastery Gains:**
-- `failure` through `masterwork` - Mastery points per craft quality
-
-**Mastery Diminishing Returns:**
-- `threshold_high` / `threshold_mid` - Where gains reduce
-- `multiplier_high` / `multiplier_mid` - Reduction multipliers
-
-**Mastery Bonuses:**
-- Success/quality bonuses at each mastery level
-- Waste reduction percentage
+**Mastery:**
+- Gains per quality tier
+- Diminishing returns thresholds
 
 **Reputation:**
-- Thresholds for Known/Respected/Renowned/Legendary
-- Price modifiers per reputation level
-- Quest access tiers
-- NPC initial affinity bonuses
+- Thresholds and modifiers
 
 **Specializations:**
-- Each specialization has its own section
-- `prereq_*` - Stat prerequisites
-- `bonus_*` - Bonuses granted
-- Supports int, float, and boolean values
+- Prerequisites and bonuses
 
 ## Making Changes
 
 1. Edit the .ini file
 2. Restart the game/testbed
-3. No code changes needed
-4. All formulas automatically use new values
+3. Changes apply immediately
+4. All formulas use new values automatically
 
-## Example: Rebalancing XP Curve
+## Example: Easier Crafting
 
-Want faster early progression?
-
-```ini
-[XP_Curve]
-curve_scale = 50  # Was 40 - makes early levels faster
-curve_offset = 80 # Was 100 - lowers the floor
-```
-
-## Example: New Specialization
-
-Add to `progression.ini`:
+Make crafting more forgiving for early players:
 
 ```ini
-[Specializations.AlchemistSupreme]
-category = crafting
-prereq_knowledge = 80
-prereq_precision = 80
-bonus_knowledge = 10
-bonus_precision = 10
-bonus_quality_bonus = 0.20
+[Success_Chance]
+base_chance = 0.6        # Was 0.5 - +10% success
+difficulty_divisor = 120.0  # Was 100.0 - reduces penalty
 ```
 
-Then update `formulas.py` to load it.
+## Example: Faster Relationships
+
+Speed up relationship building:
+
+```ini
+[Decay]
+decay_per_week = 0.3     # Was 0.5 - slower decay
+
+[Memory]
+significance_threshold = 0.8  # Was 1.0 - easier to create memories
+```
 
 ## Fallback Values
 
-All config values have hardcoded defaults in `config.py`. If the .ini file is missing or malformed, the system falls back to defaults automatically.
+All config values have hardcoded defaults. If .ini files are missing or malformed, systems fall back to defaults automatically.
+
+## Playtester Workflow
+
+1. Playtest and identify balance issues
+2. Designer edits relevant .ini section
+3. Playtesters restart and verify
+4. Iterate until balanced
+
+No code changes. No recompilation. Pure data-driven tuning.

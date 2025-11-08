@@ -189,3 +189,46 @@ class ReputationChanged:
     old_value: int
     new_value: int
     reason: str
+
+
+@dataclass
+class ItemAdded:
+    owner_id: str
+    item_id: str
+    item_type: str
+    quantity: int
+    slot_index: int
+
+
+@dataclass
+class ItemRemoved:
+    owner_id: str
+    item_id: str
+    item_type: str
+    quantity: int
+    slot_index: int
+
+
+@dataclass
+class ItemMoved:
+    from_owner_id: str
+    to_owner_id: str
+    item_id: str
+    item_type: str
+    quantity: int
+
+
+@dataclass
+class ItemStacked:
+    owner_id: str
+    item_id: str
+    from_slot: int
+    to_slot: int
+    quantity: int
+
+
+@dataclass
+class InventoryFull:
+    owner_id: str
+    attempted_item_id: str
+    attempted_quantity: int

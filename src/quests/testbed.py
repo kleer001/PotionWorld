@@ -30,7 +30,7 @@ class QuestTestbed:
         self.active_quest = None
 
         self.event_log = []
-        self.event_bus.subscribe(self._log_event)
+        self.event_bus.subscribe_all(self._log_event)
 
     def _log_event(self, event):
         self.event_log.append(event)

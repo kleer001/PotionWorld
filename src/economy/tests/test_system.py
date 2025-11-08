@@ -1,6 +1,8 @@
 import unittest
 from src.core.event_bus import EventBus
-from src.core.data_structures import Quality, Potion, PriceModifiers
+from src.core.data_structures import Quality
+from src.crafting.data_structures import Potion
+from src.economy.data_structures import PriceModifiers
 from src.core.events import (
     TransactionCompleted,
     GoldChanged,

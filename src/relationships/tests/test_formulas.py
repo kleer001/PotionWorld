@@ -1,5 +1,6 @@
 import unittest
-from src.core.data_structures import Personality, Action, Memory
+from src.core.data_structures import Personality
+from src.relationships.data_structures import Action, Memory
 from src.relationships.formulas import (
     calculate_reaction,
     calculate_decay,

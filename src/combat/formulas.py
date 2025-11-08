@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple
-from src.core.data_structures import (
-    Combatant, StatusEffect, Trigger, Personality, Potion
-)
+from src.core.data_structures import Personality
+from src.crafting.data_structures import Potion
+from src.combat.data_structures import Combatant, StatusEffect, Trigger
 import random
 
 

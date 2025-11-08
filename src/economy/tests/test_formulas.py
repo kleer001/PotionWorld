@@ -1,5 +1,6 @@
 import unittest
-from src.core.data_structures import Quality, PriceModifiers
+from src.core.data_structures import Quality
+from src.economy.data_structures import PriceModifiers
 from src.economy.formulas import (
     calculate_ingredient_base_price,
     calculate_potion_base_price,

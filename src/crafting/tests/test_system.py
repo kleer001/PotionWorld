@@ -1,11 +1,10 @@
 from src.core.event_bus import EventBus
-from src.core.data_structures import (
-    Recipe,
+from src.core.data_structures import Quality
+from src.crafting.data_structures import (Recipe,
     IngredientInstance,
     CrafterStats,
     CraftInput,
-    Quality,
-)
+    Quality,)
 from src.core.events import (
     CraftCompleted,
     PotionCreated,

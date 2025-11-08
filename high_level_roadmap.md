@@ -251,6 +251,19 @@ PotionWorld is a narrative-driven RPG that follows the complete life journey of 
 
 ## Technical Architecture
 
+### Architectural Patterns
+
+#### System-Local Data Structures
+Each system owns its data structures in dedicated `data_structures.py` files:
+
+- `src/core/data_structures.py` - Only shared types (`Quality`, `Personality`)
+- `src/crafting/data_structures.py` - Recipe, Potion, CraftInput, etc.
+- `src/economy/data_structures.py` - Transaction, Wallet, PriceModifiers, etc.
+- `src/combat/data_structures.py` - Combatant, StatusEffect, Trigger, etc.
+- `src/relationships/data_structures.py` - NPC, Memory, Action, etc.
+
+Benefits: Clear ownership, isolation, reduced coupling, SOLID compliance.
+
 ### Core Systems
 
 #### 1. ESENS Engine
@@ -306,6 +319,12 @@ PotionWorld is a narrative-driven RPG that follows the complete life journey of 
   - Alternative path unlocking
 
 ### Data Structures
+
+#### Architecture
+Data structures are organized by system ownership:
+- Each system has its own `data_structures.py`
+- Only truly shared types live in `src/core/data_structures.py`
+- Systems import from each other when needed (e.g., Economy imports Potion from Crafting)
 
 #### JSON Schema Examples
 ```json

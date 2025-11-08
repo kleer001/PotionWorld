@@ -1,5 +1,7 @@
 from src.core.event_bus import EventBus
-from src.core.data_structures import (
+from src.core.data_structures import Personality
+from src.crafting.data_structures import Potion
+from src.combat.data_structures import (
     Combatant, CombatStats, CombatAction,
     Potion, Quality, Personality
 )

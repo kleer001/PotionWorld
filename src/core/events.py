@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional, List
-from src.core.data_structures import Potion, Quality
 
 
 @dataclass
 class CraftCompleted:
     success: bool
     recipe_id: str
-    quality: Optional[Quality]
+    quality: Optional['Quality']
     potion_id: Optional[str]
     crafter_id: str
     timestamp: int
@@ -15,8 +14,8 @@ class CraftCompleted:
 
 @dataclass
 class PotionCreated:
-    potion: Potion
-    quality: Quality
+    potion: 'Potion'
+    quality: 'Quality'
     potency: float
     crafter_id: str
 

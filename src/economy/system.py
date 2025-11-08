@@ -3,13 +3,13 @@ import uuid
 from typing import Dict, Optional
 
 from src.core.event_bus import EventBus
-from src.core.data_structures import (
+from src.core.data_structures import Quality
+from src.crafting.data_structures import Potion
+from src.economy.data_structures import (
     Wallet,
     Transaction,
     PriceModifiers,
     MarketCondition,
-    Quality,
-    Potion,
 )
 from src.core.events import (
     TransactionCompleted,

@@ -1,4 +1,5 @@
-from src.core.data_structures import Quality, PriceModifiers
+from src.core.data_structures import Quality
+from src.economy.data_structures import PriceModifiers
 
 
 def calculate_ingredient_base_price(rarity: str) -> int:

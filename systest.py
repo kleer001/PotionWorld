@@ -13,7 +13,7 @@ def main():
 Examples:
   python systest.py --crafting          Launch crafting testbed
   python systest.py --relationship      Launch relationship testbed
-  python systest.py --combat            Launch combat testbed (coming soon)
+  python systest.py --combat            Launch combat testbed
         """
     )
 
@@ -32,7 +32,7 @@ Examples:
     parser.add_argument(
         '--combat',
         action='store_true',
-        help='Launch the combat system testbed (coming soon)'
+        help='Launch the combat system testbed'
     )
 
     parser.add_argument(
@@ -93,9 +93,11 @@ Examples:
         testbed.run()
 
     elif args.combat:
-        print("Combat system not yet implemented.")
-        print("Coming in Phase 4!")
-        sys.exit(1)
+        print("PotionWorld - Phase 3: Combat System")
+        print("Launching Combat Testbed...\n")
+        from src.combat.testbed import CombatTestbed
+        testbed = CombatTestbed()
+        testbed.run()
 
     elif args.economy:
         print("Economy system not yet implemented.")

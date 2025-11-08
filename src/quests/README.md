@@ -63,40 +63,127 @@ python -m src.quests.tests.test_formulas
 python -m src.quests.tests.test_system
 ```
 
-### Basic Usage
+### Creating Quests with QuestBuilder
+
+**Use the QuestBuilder for clean, readable quest creation:**
+
+```python
+from src.quests.builder import QuestBuilder
+
+quest = (QuestBuilder("first_quest")
+         .name("The Apprentice's Trial")
+         .description("Craft 5 healing potions to prove your skill")
+         .craft_objective("healing_potion", 5)
+         .build())
+```
+
+**Multi-objective quest with prerequisites:**
+
+```python
+quest = (QuestBuilder("advanced_quest")
+         .name("Master Alchemist")
+         .description("Achieve true mastery")
+         .stat_objective("knowledge", 80)
+         .craft_objective("legendary_potion", 1)
+         .duel_objective(5, description="Defeat 5 rivals")
+         .gold_objective(5000)
+         .require_stat("knowledge", 60)
+         .require_affinity("guild_master", 2.0)
+         .require_quest("apprentice_quest")
+         .state(QuestState.LOCKED)
+         .build())
+```
+
+**All objective types:**
+
+```python
+builder = QuestBuilder("comprehensive_quest")
+    .name("Ultimate Challenge")
+    .description("Complete all types of objectives")
+
+    # Count-based objectives
+    .craft_objective("healing_potion", 10)
+    .gather_objective("moonleaf", 50)
+    .duel_objective(3)
+
+    # Threshold objectives
+    .stat_objective("knowledge", 90)
+    .affinity_objective("merchant", 2.5)
+    .gold_objective(10000)
+
+    # Action objectives
+    .talk_objective("grand_master")
+    .deliver_objective("elder")
+
+    # Prerequisites
+    .require_quest("intro_quest")
+    .require_quests(["quest_1", "quest_2"])  # Bulk add
+    .require_stat("precision", 70)
+    .require_affinity("guild", 1.5)
+    .require_item("master_key")
+    .require_reputation("capital", 80)
+
+    .build()
+```
+
+**Custom descriptions (optional):**
+
+```python
+quest = (QuestBuilder("mystery_quest")
+         .name("The Hidden Path")
+         .description("Uncover ancient secrets")
+         .craft_objective("elixir", 3, "Brew the forbidden elixir")
+         .talk_objective("hermit", "Seek the hermit's wisdom")
+         .build())
+```
+
+### Using Quests
 
 ```python
 from src.core.event_bus import EventBus
 from src.quests.system import QuestSystem
-from src.quests.data_structures import Quest, QuestState, Objective, ObjectiveType
 
 bus = EventBus()
 quest_system = QuestSystem(bus)
 
-quest = Quest(
-    id="first_quest",
-    name="The Apprentice's Trial",
-    description="Craft 5 healing potions",
-    objectives=[
-        Objective(
-            id="obj_0",
-            type=ObjectiveType.CRAFT_POTION,
-            target="healing_potion",
-            quantity=5,
-            description="Craft 5 healing potions"
-        )
-    ],
-    state=QuestState.AVAILABLE,
-    prerequisites={}
-)
-
-success, reason = quest_system.start_quest(quest, "player", {})
+# Start the quest
+success, reason = quest_system.start_quest(quest, "player", player_state)
 
 if success:
+    # Objectives auto-update via events, or manually:
     quest_system.update_objective(quest, "obj_0", 1, "player", {})
 
-    progress = quest_system.get_quest_progress(quest, {})
+    # Check progress
+    progress = quest_system.get_quest_progress(quest, player_state)
     print(f"Progress: {progress.objectives_complete}/{progress.objectives_total}")
+
+    # Complete when ready
+    if progress.can_complete:
+        quest_system.complete_quest(quest, "player", player_state)
+```
+
+### Builder Validation
+
+The builder validates quests at build time:
+
+```python
+# Missing name - raises ValueError
+QuestBuilder("bad").description("Test").craft_objective("x", 1).build()
+
+# Missing objectives - raises ValueError
+QuestBuilder("bad").name("Test").description("Test").build()
+
+# Invalid stat range - raises ValueError
+QuestBuilder("bad").name("Test").description("Test")
+    .craft_objective("x", 1)
+    .require_stat("knowledge", 150)  # Must be 0-100
+    .build()
+
+# Invalid affinity range - raises ValueError
+QuestBuilder("bad").name("Test").description("Test")
+    .craft_objective("x", 1)
+    .require_affinity("npc", 10.0)  # Must be -5.0 to 5.0
+    .build()
 ```
 
 ## Events

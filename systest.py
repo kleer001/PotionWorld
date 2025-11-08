@@ -12,7 +12,7 @@ def main():
         epilog="""
 Examples:
   python systest.py --crafting          Launch crafting testbed
-  python systest.py --relationship      Launch relationship testbed (coming soon)
+  python systest.py --relationship      Launch relationship testbed
   python systest.py --combat            Launch combat testbed (coming soon)
         """
     )
@@ -26,7 +26,7 @@ Examples:
     parser.add_argument(
         '--relationship',
         action='store_true',
-        help='Launch the relationship system testbed (coming soon)'
+        help='Launch the relationship system testbed'
     )
 
     parser.add_argument(
@@ -86,9 +86,11 @@ Examples:
         testbed.run()
 
     elif args.relationship:
-        print("Relationship system not yet implemented.")
-        print("Coming in Phase 3!")
-        sys.exit(1)
+        print("PotionWorld - Phase 2: Relationship System")
+        print("Launching Relationship Testbed...\n")
+        from src.relationships.testbed import RelationshipTestbed
+        testbed = RelationshipTestbed()
+        testbed.run()
 
     elif args.combat:
         print("Combat system not yet implemented.")

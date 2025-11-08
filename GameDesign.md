@@ -57,7 +57,7 @@ PotionWorld is designed as a **2D narrative RPG** built in Godot Engine. This ap
 ## Core Pillars
 
 ### 1. **Meaningful Crafting**
-Every potion created has purpose and impact. The ESENS notation system provides depth while maintaining clarity. Crafting is not just about combining ingredients—it's about understanding effects, timing, and consequences.
+Every potion created has purpose and impact. The ESENS notation system (Effect Syntax for Encoded Notation of Substances) provides depth while maintaining clarity—it's a specialized language for describing potion effects that captures everything from who the potion affects (Player/Enemy/Self), to what it does (buffs, debuffs, damage, healing), when effects trigger (on attack, when damaged, at start of turn), and how long they last. This notation gives players precise control over their alchemical creations while keeping the complexity manageable. Crafting is not just about combining ingredients—it's about understanding effects, timing, and consequences.
 
 ### 2. **Reactive World**
 The world responds to player choices. NPCs remember actions, relationships evolve naturally, and moral decisions create visible ripples across seasons.
@@ -160,6 +160,18 @@ Players can develop specializations that provide bonuses:
 - **Ethicist**: Moral choices provide extra reputation
 - **Experimentalist**: Failures provide useful data
 - **Historian**: Access to ancient recipes and lore
+
+**Combat Specializations:**
+- **Tactical Duelist**: +20% Combat Instinct, better potion timing in duels
+- **Defensive Specialist**: +15% to defensive potion effects, resistance bonuses
+- **Aggressive Brewer**: Offensive potions deal +25% damage, -10% to defensive potions
+- **Counter-Alchemist**: Can identify and counter opponent's potions mid-duel
+
+**Investigation Specializations:**
+- **Forensic Analyst**: Can detect potion traces and residues, faster analysis
+- **Pattern Seeker**: +15% Intuition, connects clues more easily
+- **Poison Expert**: Specializes in toxins and antidotes, +20% to counter-brewing
+- **Mystery Solver**: Unlocks special investigation dialogue options, reputation bonus
 
 Players choose one specialization per season (total of 5 by endgame), creating unique builds.
 

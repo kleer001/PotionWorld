@@ -72,3 +72,42 @@ class RelationshipDecayed:
     old_affinity: float
     new_affinity: float
     days_passed: int
+
+
+@dataclass
+class TurnExecuted:
+    combat_id: str
+    turn_number: int
+    actor_id: str
+    action_type: str
+    result_changes: List[str]
+
+
+@dataclass
+class DamageDealt:
+    source_id: str
+    target_id: str
+    amount: int
+    element: Optional[str]
+
+
+@dataclass
+class StatusApplied:
+    target_id: str
+    effect_name: str
+    source_id: str
+    duration: int
+
+
+@dataclass
+class TriggerActivated:
+    combatant_id: str
+    trigger_type: str
+    effect_name: str
+
+
+@dataclass
+class CombatEnded:
+    combat_id: str
+    winner_id: str
+    turn_count: int

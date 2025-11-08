@@ -158,3 +158,34 @@ class ReputationEarned:
     delta: int
     new_value: int
     reason: str
+
+
+@dataclass
+class StatIncreased:
+    player_id: str
+    stat: str
+    old_value: int
+    new_value: int
+
+
+@dataclass
+class MilestoneReached:
+    player_id: str
+    stat: str
+    milestone: int
+    unlocks: List[str]
+
+
+@dataclass
+class SpecializationChosen:
+    player_id: str
+    specialization: 'Specialization'
+
+
+@dataclass
+class ReputationChanged:
+    player_id: str
+    region: str
+    old_value: int
+    new_value: int
+    reason: str

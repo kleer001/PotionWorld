@@ -2,115 +2,91 @@ import math
 from typing import Dict, List
 from src.core.data_structures import Quality
 from src.progression.data_structures import Specialization
+from src.progression.config import (
+    get_xp_curve_params, get_mastery_gains, get_mastery_diminishing,
+    get_mastery_bonus_config, get_reputation_thresholds, get_reputation_modifier_config,
+    get_milestone_interval, load_specialization_from_config
+)
 
 
 def xp_to_stat(xp: int) -> int:
+    params = get_xp_curve_params()
+
     if xp <= 0:
         return 0
-    if xp >= 100000:
-        return 100
+    if xp >= params["max_xp"]:
+        return params["max_stat"]
 
-    stat = 40 * math.log10(xp) - 100
-    return int(min(100, max(0, stat)))
+    stat = params["scale"] * math.log10(xp) - params["offset"]
+    return int(min(params["max_stat"], max(0, stat)))
 
 
 def stat_to_xp(stat: int) -> int:
+    params = get_xp_curve_params()
+
     if stat <= 0:
         return 0
-    if stat >= 100:
-        return 100000
+    if stat >= params["max_stat"]:
+        return params["max_xp"]
 
-    xp = math.pow(10, (stat + 100) / 40)
+    xp = math.pow(10, (stat + params["offset"]) / params["scale"])
     return int(xp)
 
 
 def xp_for_next_milestone(current_xp: int) -> int:
     current_stat = xp_to_stat(current_xp)
-    next_milestone = ((current_stat // 20) + 1) * 20
+    interval = get_milestone_interval()
+    next_milestone = ((current_stat // interval) + 1) * interval
 
-    if next_milestone > 100:
+    params = get_xp_curve_params()
+    if next_milestone > params["max_stat"]:
         return 0
 
     return stat_to_xp(next_milestone) - current_xp
 
 
 def update_mastery(current_mastery: int, success: bool, quality: Quality) -> int:
+    gains = get_mastery_gains()
+    diminishing = get_mastery_diminishing()
+
     if not success:
-        gain = 1
+        gain = gains["failure"]
     else:
         gain_map = {
-            Quality.POOR: 3,
-            Quality.STANDARD: 5,
-            Quality.FINE: 8,
-            Quality.EXCEPTIONAL: 12,
-            Quality.MASTERWORK: 15
+            Quality.POOR: gains["poor"],
+            Quality.STANDARD: gains["standard"],
+            Quality.FINE: gains["fine"],
+            Quality.EXCEPTIONAL: gains["exceptional"],
+            Quality.MASTERWORK: gains["masterwork"]
         }
         gain = gain_map[quality]
 
-    if current_mastery >= 80:
-        gain //= 2
-    elif current_mastery >= 60:
-        gain = int(gain * 0.75)
+    if current_mastery >= diminishing["threshold_high"]:
+        gain = int(gain * diminishing["multiplier_high"])
+    elif current_mastery >= diminishing["threshold_mid"]:
+        gain = int(gain * diminishing["multiplier_mid"])
 
     return min(100, current_mastery + gain)
 
 
 def get_mastery_bonuses(mastery: int) -> Dict[str, float]:
-    level = mastery // 20
+    interval = get_milestone_interval()
+    level = mastery // interval
 
-    bonuses_map = {
-        0: {
-            "success_bonus": 0.0,
-            "quality_bonus": 0.0,
-            "can_teach": False,
-            "can_innovate": False,
-            "batch_craft": False
-        },
-        1: {
-            "success_bonus": 0.10,
-            "quality_bonus": 0.0,
-            "waste_reduction": 0.10,
-            "can_teach": False,
-            "can_innovate": False,
-            "batch_craft": False
-        },
-        2: {
-            "success_bonus": 0.20,
-            "quality_bonus": 0.10,
-            "waste_reduction": 0.10,
-            "can_teach": False,
-            "can_innovate": False,
-            "batch_craft": False
-        },
-        3: {
-            "success_bonus": 0.30,
-            "quality_bonus": 0.20,
-            "waste_reduction": 0.10,
-            "can_teach": True,
-            "can_innovate": False,
-            "batch_craft": True
-        },
-        4: {
-            "success_bonus": 0.40,
-            "quality_bonus": 0.30,
-            "waste_reduction": 0.10,
-            "can_teach": True,
-            "can_innovate": True,
-            "batch_craft": True
-        }
-    }
-
-    return bonuses_map.get(min(4, level), bonuses_map[0])
+    bonuses = get_mastery_bonus_config()
+    return bonuses.get(min(4, level), bonuses[0])
 
 
 def calculate_reputation_level(reputation: int) -> str:
-    if reputation >= 81:
+    thresholds = get_reputation_thresholds()
+
+    if reputation >= thresholds["legendary"]:
         return "Legendary"
-    elif reputation >= 61:
+    elif reputation >= thresholds["renowned"]:
         return "Renowned"
-    elif reputation >= 41:
+    elif reputation >= thresholds["respected"]:
         return "Respected"
-    elif reputation >= 21:
+    elif reputation >= thresholds["known"]:
         return "Known"
     else:
         return "Unknown"
@@ -118,88 +94,18 @@ def calculate_reputation_level(reputation: int) -> str:
 
 def get_reputation_modifiers(reputation: int) -> Dict[str, float]:
     level = calculate_reputation_level(reputation)
-
-    modifiers_map = {
-        "Unknown": {
-            "price_modifier": 0.90,
-            "quest_access": 1,
-            "npc_initial_affinity": -0.5
-        },
-        "Known": {
-            "price_modifier": 1.0,
-            "quest_access": 2,
-            "npc_initial_affinity": 0.0
-        },
-        "Respected": {
-            "price_modifier": 1.05,
-            "quest_access": 3,
-            "npc_initial_affinity": 0.5
-        },
-        "Renowned": {
-            "price_modifier": 1.10,
-            "quest_access": 4,
-            "npc_initial_affinity": 1.0
-        },
-        "Legendary": {
-            "price_modifier": 1.20,
-            "quest_access": 5,
-            "npc_initial_affinity": 1.5
-        }
-    }
-
-    return modifiers_map[level]
+    modifiers = get_reputation_modifier_config()
+    return modifiers[level]
 
 
 SPECIALIZATIONS = [
-    Specialization(
-        id="perfectionist",
-        name="Perfectionist",
-        category="crafting",
-        bonuses={"precision": 20, "quality_bonus": 0.10},
-        prerequisites={"precision": 60}
-    ),
-    Specialization(
-        id="innovator",
-        name="Innovator",
-        category="crafting",
-        bonuses={"intuition": 15, "can_substitute": True},
-        prerequisites={"intuition": 60}
-    ),
-    Specialization(
-        id="speed_brewer",
-        name="Speed Brewer",
-        category="crafting",
-        bonuses={"craft_time": -0.25, "precision": -5},
-        prerequisites={"knowledge": 50}
-    ),
-    Specialization(
-        id="diplomat",
-        name="Diplomat",
-        category="social",
-        bonuses={"affinity_gain": 15},
-        prerequisites={"reputation": 40}
-    ),
-    Specialization(
-        id="merchant",
-        name="Merchant",
-        category="social",
-        bonuses={"profit_margin": 0.20},
-        prerequisites={"business_acumen": 50}
-    ),
-    Specialization(
-        id="analyst",
-        name="Analyst",
-        category="research",
-        bonuses={"reverse_engineer_speed": 0.50},
-        prerequisites={"knowledge": 70}
-    ),
-    Specialization(
-        id="ethicist",
-        name="Ethicist",
-        category="research",
-        bonuses={"moral_rep_bonus": 2},
-        prerequisites={"reputation": 60}
-    )
+    Specialization(**load_specialization_from_config("perfectionist", "Perfectionist")),
+    Specialization(**load_specialization_from_config("innovator", "Innovator")),
+    Specialization(**load_specialization_from_config("speed_brewer", "Speed Brewer")),
+    Specialization(**load_specialization_from_config("diplomat", "Diplomat")),
+    Specialization(**load_specialization_from_config("merchant", "Merchant")),
+    Specialization(**load_specialization_from_config("analyst", "Analyst")),
+    Specialization(**load_specialization_from_config("ethicist", "Ethicist"))
 ]
 
 

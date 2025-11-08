@@ -111,3 +111,51 @@ class CombatEnded:
     combat_id: str
     winner_id: str
     turn_count: int
+
+
+@dataclass
+class TransactionCompleted:
+    transaction_id: str
+    buyer_id: str
+    seller_id: str
+    item_type: str
+    quantity: int
+    total_price: int
+    timestamp: float
+
+
+@dataclass
+class GoldChanged:
+    owner_id: str
+    delta: int
+    new_balance: int
+    reason: str
+
+
+@dataclass
+class PriceCalculated:
+    item_id: str
+    base_price: int
+    final_price: int
+    buyer_id: str
+    seller_id: str
+    modifiers: 'PriceModifiers'
+
+
+@dataclass
+class MarketShifted:
+    item_id: str
+    old_demand: float
+    new_demand: float
+    old_supply: float
+    new_supply: float
+    reason: str
+
+
+@dataclass
+class ReputationEarned:
+    entity_id: str
+    reputation_type: str
+    delta: int
+    new_value: int
+    reason: str

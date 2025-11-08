@@ -14,6 +14,7 @@ Examples:
   python systest.py --crafting          Launch crafting testbed
   python systest.py --relationship      Launch relationship testbed
   python systest.py --combat            Launch combat testbed
+  python systest.py --economy           Launch economy testbed
         """
     )
 
@@ -38,7 +39,7 @@ Examples:
     parser.add_argument(
         '--economy',
         action='store_true',
-        help='Launch the economy system testbed (coming soon)'
+        help='Launch the economy system testbed'
     )
 
     parser.add_argument(
@@ -100,9 +101,12 @@ Examples:
         testbed.run()
 
     elif args.economy:
-        print("Economy system not yet implemented.")
-        print("Coming in Phase 4!")
-        sys.exit(1)
+        print("PotionWorld - Phase 4: Economy System")
+        print("Launching Economy Testbed...\n")
+        from src.economy.testbed import EconomyTestbed
+        testbed = EconomyTestbed()
+        testbed.run_all_tests()
+        testbed.interactive_mode()
 
     elif args.progression:
         print("Progression system not yet implemented.")

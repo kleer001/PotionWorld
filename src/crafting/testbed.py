@@ -1,12 +1,12 @@
 from typing import List
 from src.core.event_bus import EventBus
-from src.core.data_structures import (
+from src.core.data_structures import Quality
+from src.crafting.data_structures import (
     Recipe,
     IngredientInstance,
     CrafterStats,
     CraftInput,
     CraftResult,
-    Quality,
 )
 from src.crafting.system import CraftingSystem
 

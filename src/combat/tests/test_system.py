@@ -1,8 +1,9 @@
 import unittest
 from src.core.event_bus import EventBus
-from src.core.data_structures import (
-    Combatant, CombatStats, CombatAction,
-    Potion, Quality, Personality
+from src.core.data_structures import Personality, Quality
+from src.crafting.data_structures import Potion
+from src.combat.data_structures import (
+    Combatant, CombatStats, CombatAction, StatusEffect, Trigger
 )
 from src.core.events import (
     TurnExecuted, DamageDealt, StatusApplied,

@@ -1,5 +1,5 @@
 from src.core.event_bus import EventBus
-from src.core.data_structures import NPC, Action, Memory, AffinityChange
+from src.relationships.data_structures import NPC, Action, Memory, AffinityChange
 from src.core.events import (
     AffinityChanged,
     ThresholdCrossed,

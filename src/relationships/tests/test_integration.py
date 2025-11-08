@@ -1,6 +1,7 @@
 import unittest
 from src.core.event_bus import EventBus
-from src.core.data_structures import NPC, Personality, Action
+from src.core.data_structures import Personality
+from src.relationships.data_structures import NPC, Action
 from src.core.events import ThresholdCrossed
 from src.relationships.system import RelationshipSystem
 

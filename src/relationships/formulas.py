@@ -1,5 +1,6 @@
 from typing import List, Tuple
-from src.core.data_structures import Personality, Action, Memory
+from src.core.data_structures import Personality
+from src.relationships.data_structures import Action, Memory
 
 
 def calculate_reaction(personality: Personality, action: Action) -> float:

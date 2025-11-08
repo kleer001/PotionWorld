@@ -140,6 +140,7 @@ class InventorySystem:
 
         for slot_index, amount in slots_to_remove:
             slot = inventory.get_slot(slot_index)
+            item_type = slot.item_stack.item_type
             slot.item_stack.quantity -= amount
 
             if slot.item_stack.quantity <= 0:
@@ -148,7 +149,7 @@ class InventorySystem:
             self.event_bus.emit(ItemRemoved(
                 owner_id=owner_id,
                 item_id=item_id,
-                item_type=slot.item_stack.item_type if slot.item_stack else "unknown",
+                item_type=item_type,
                 quantity=amount,
                 slot_index=slot_index
             ))

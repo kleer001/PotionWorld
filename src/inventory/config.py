@@ -1,6 +1,6 @@
 import configparser
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Any
 
 
 class InventoryConfig:
@@ -66,7 +66,7 @@ def get_item_weights() -> Dict[str, float]:
     }
 
 
-def get_auto_sort_config() -> Dict[str, any]:
+def get_auto_sort_config() -> Dict[str, Any]:
     return {
         "enabled": _config.get_bool("Auto_Sort", "enabled", True),
         "sort_by": _config.get_str("Auto_Sort", "sort_by", "type"),

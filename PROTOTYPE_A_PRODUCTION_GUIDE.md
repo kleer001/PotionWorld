@@ -25,11 +25,11 @@
 
 ### 2. **RPG Elements (40%)**
 ✅ Stats matter (Precision affects crafting success)
-✅ Choices have visible consequences (Marcus affinity changes)
+✅ Choices have visible consequences (Ezekiel affinity changes)
 ✅ Build planning (background choice affects playstyle)
 ✅ Progression tracking (XP, mastery levels)
-✅ Multiple valid paths (supporting vs. not supporting Marcus both work)
-✅ Foreshadowing of deeper systems (Kira's nightmare, mysterious note)
+✅ Multiple valid paths (supporting vs. not supporting Ezekiel both work)
+✅ Foreshadowing of deeper systems (Rachel's nightmare, mysterious note)
 
 ---
 
@@ -115,28 +115,28 @@
 
 ### **Minutes 5-12: The Dorm Room (70% Cozy, 30% RPG)**
 
-#### Meeting Kira (Your Roommate)
+#### Meeting Rachel (Your Roommate)
 
 **Scene:**
 - Cozy dorm room (two beds, desks, window overlooking garden)
 - Warm evening light through window
-- Kira's side already decorated (plants, books, colorful blanket)
+- Rachel's side already decorated (plants, books, colorful blanket)
 
-**Kira Introduction:**
+**Rachel Introduction:**
 ```
 [KIRA enters, arms full of books, nearly drops them]
 
-KIRA: "Oh! You're here! Hi! I'm Kira!"
+KIRA: "Oh! You're here! Hi! I'm Rachel!"
 [Sets books down messily]
 "I got here yesterday and I've already explored EVERYTHING. The garden is amazing, the library has this restricted section that's totally mysterious, and—oh, sorry, I'm talking too much, aren't I?"
 
 [Nervous laugh]
 
-"I do that when I'm excited. I'm Kira. Did I say that already?"
+"I do that when I'm excited. I'm Rachel. Did I say that already?"
 ```
 
 **Cozy Element:** Endearing introduction, immediate warmth
-**RPG Element:** Kira's personality visible (High E, High A)
+**RPG Element:** Rachel's personality visible (High E, High A)
 
 **First Choice (Low Stakes, But Revealing):**
 ```
@@ -144,15 +144,15 @@ KIRA: "Want to explore the garden together? Or do you need time to unpack? I tot
 
 → [Let's explore together!]
    Cozy: Immediate friendship, she shows you around
-   RPG: Kira +0.5, High E NPCs like enthusiasm
+   RPG: Rachel +0.5, High E NPCs like enthusiasm
 
 → [I'll unpack first, thanks]
    Cozy: Take your time, no pressure, she understands
-   RPG: Kira +0.0 (neutral), sets "thoughtful" personality flag
+   RPG: Rachel +0.0 (neutral), sets "thoughtful" personality flag
 
 → [Can you help me unpack?]
    Cozy: She helps enthusiastically, bonding moment
-   RPG: Kira +0.7, unlocks "study buddy" option later
+   RPG: Rachel +0.7, unlocks "study buddy" option later
 ```
 
 **Cozy Element:** All choices are valid, no wrong answer
@@ -191,7 +191,7 @@ KIRA: "Want to explore the garden together? Or do you need time to unpack? I tot
 
 #### Setting the Tone
 
-**If with Kira:**
+**If with Rachel:**
 - She chatters enthusiastically about plants
 - Points out interesting things
 - "Oh! Moonbell flowers! They only bloom at night. Aren't they pretty?"
@@ -342,7 +342,7 @@ THORNWOOD: "Welcome to the Royal Academy. I'm Instructor Thornwood. I expect pre
 **Cozy Element:** Gruff-but-kind archetype, grandmother connection
 **RPG Element:** Establishes Thornwood as authority figure, hints at high standards
 
-**Kira's Reaction (if she's with you):**
+**Rachel's Reaction (if she's with you):**
 ```
 KIRA: [Whispers] "That's Thornwood. He's REALLY strict but everyone says he's the best teacher here."
 
@@ -355,7 +355,7 @@ KIRA: [Whispers] "That's Thornwood. He's REALLY strict but everyone says he's th
 "Okay that sounded bad. He's not mean! Just... particular."
 ```
 
-**Cozy Element:** Kira as friendly guide, relatable nervousness
+**Cozy Element:** Rachel as friendly guide, relatable nervousness
 **RPG Element:** Establishes academy hierarchy and reputation systems
 
 ---
@@ -373,7 +373,7 @@ KIRA: [Whispers] "That's Thornwood. He's REALLY strict but everyone says he's th
 ```
 
 **Brief Cutscene (Optional Skip):**
-- Morning routine montage: Getting dressed, Kira rushing, walking to class together
+- Morning routine montage: Getting dressed, Rachel rushing, walking to class together
 - Other students gathering in hallway
 - Warm chatter in background
 - Shows living academy world
@@ -390,9 +390,9 @@ KIRA: [Whispers] "That's Thornwood. He's REALLY strict but everyone says he's th
 - Large windows with morning light
 
 **NPCs Present:**
-- Kira (sits next to you, waves)
-- Marcus (messy hair, curious eyes, sketching in notebook)
-- Sena (nervous, organized desk, reviewing notes)
+- Rachel (sits next to you, waves)
+- Ezekiel (messy hair, curious eyes, sketching in notebook)
+- Miriam (nervous, organized desk, reviewing notes)
 - 5 other students (background, less defined)
 
 **Thornwood Enters:**
@@ -622,7 +622,7 @@ THORNWOOD: [Nods] "Acceptable. You followed instructions precisely."
 **Available Locations:**
 1. 🌿 **Garden** - Gather more ingredients
 2. 📚 **Library** - Read about potion history
-3. 🛏️ **Dormitory** - Talk to Kira
+3. 🛏️ **Dormitory** - Talk to Rachel
 4. ⛲ **Courtyard** - Meet other students
 5. 🏛️ **Main Hall** - Explore academy
 
@@ -639,7 +639,7 @@ THORNWOOD: [Nods] "Acceptable. You followed instructions precisely."
 - 3 students practicing at stone tables
 - Warm afternoon light, birds chirping
 
-**Meet Marcus (Important NPC)**
+**Meet Ezekiel (Important NPC)**
 
 **Visual:**
 - Messy dark hair, intense eyes
@@ -652,7 +652,7 @@ MARCUS: "Hey. You're the new student, right?"
 
 [Doesn't wait for answer]
 
-"I'm Marcus. Watch this."
+"I'm Ezekiel. Watch this."
 
 [Takes ingredients: 2 mushrooms, 1 sap, 1 berry, + crystal dust]
 
@@ -663,19 +663,19 @@ MARCUS: "Hey. You're the new student, right?"
 ```
 → [That sounds cool!]
    Cozy: Enthusiastic support
-   RPG: Marcus +1.0, Openness +1, sets "innovative" path
+   RPG: Ezekiel +1.0, Openness +1, sets "innovative" path
 
 → [What if it goes wrong?]
    Cozy: Cautious but curious
-   RPG: Marcus +0.3, Neuroticism +0.5, sets "careful" path
+   RPG: Ezekiel +0.3, Neuroticism +0.5, sets "careful" path
 
 → [Thornwood said no experimenting]
    Cozy: Rule-following, responsible
-   RPG: Marcus +0.0, Conscientiousness +1, sets "traditional" path
+   RPG: Ezekiel +0.0, Conscientiousness +1, sets "traditional" path
 
 → [Let me try it with you]
    Cozy: Collaborative, supportive
-   RPG: Marcus +1.5, Agreeableness +0.5, unlock joint experiment
+   RPG: Ezekiel +1.5, Agreeableness +0.5, unlock joint experiment
 ```
 
 **Cozy Element:** All responses feel natural, in-character
@@ -705,18 +705,18 @@ MARCUS: "I can FEEL it. Stronger than the standard version."
 
 **Bonding Moment (Cozy Core):**
 - Share potion (symbol of trust)
-- Marcus smiles genuinely
+- Ezekiel smiles genuinely
 - Warm music swell
-- **Marcus Affinity → +2.0** (significant)
+- **Ezekiel Affinity → +2.0** (significant)
 
 **RPG Element:**
 - Learn about ingredient substitution
-- Unlock Marcus as study partner
+- Unlock Ezekiel as study partner
 - Sets up Season 1 friendship arc
 
-#### Meet Sena (Supporting NPC)
+#### Meet Miriam (Supporting NPC)
 
-**After Marcus interaction, notice Sena:**
+**After Ezekiel interaction, notice Miriam:**
 
 **Visual:**
 - Sitting at far table, alone
@@ -743,26 +743,26 @@ SENA: [Muttering to herself] "No, no, no... what did I do wrong?"
 ```
 → [Help her figure it out]
    Cozy: Kind, helpful, investigative
-   RPG: Sena +2.0, Agreeableness +1, mini-puzzle gameplay
+   RPG: Miriam +2.0, Agreeableness +1, mini-puzzle gameplay
 
 → [Reassure her gently]
    Cozy: Emotional support, no pressure
-   RPG: Sena +1.0, reduces her Neuroticism slightly
+   RPG: Miriam +1.0, reduces her Neuroticism slightly
 
 → [Suggest asking Thornwood]
    Cozy: Practical advice
-   RPG: Sena +0.5, Conscientiousness +0.5
+   RPG: Miriam +0.5, Conscientiousness +0.5
 
 → [Say nothing, walk away]
    Cozy: Respects her space
-   RPG: Sena +0.0, no relationship development
+   RPG: Miriam +0.0, no relationship development
 ```
 
 **If player helps:**
 
 **Mini-Puzzle (Cozy Detective Moment):**
 ```
-[Examine Sena's table]
+[Examine Miriam's table]
 
 Ingredients used:
 - Common Mushrooms x4 (should be x2!)
@@ -772,10 +772,10 @@ Ingredients used:
 [Click on mushrooms]
 "She used twice as many mushrooms. That's why it's dark and thick."
 
-→ Explain to Sena
+→ Explain to Miriam
 ```
 
-**Sena's Reaction:**
+**Miriam's Reaction:**
 ```
 SENA: [Realization] "Oh! I counted wrong. I was so nervous I miscounted."
 
@@ -785,7 +785,7 @@ SENA: [Realization] "Oh! I counted wrong. I was so nervous I miscounted."
 
 [Genuine smile]
 
-"I'm Sena. Sorry for the... mess. I get anxious about grades."
+"I'm Miriam. Sorry for the... mess. I get anxious about grades."
 
 [Shyly] "Want to study together sometime? I'm good at memorization, just bad at... not panicking."
 ```
@@ -793,29 +793,29 @@ SENA: [Realization] "Oh! I counted wrong. I was so nervous I miscounted."
 **Cozy Payoff:**
 - Helped someone feel better
 - Made a friend through kindness
-- Sena will return favor later (plants seed)
+- Miriam will return favor later (plants seed)
 
 **RPG Payoff:**
-- Sena +2.0 affinity (big gain)
+- Miriam +2.0 affinity (big gain)
 - Learn about ingredient ratios
-- Unlock Sena study sessions (memory/knowledge bonuses)
+- Unlock Miriam study sessions (memory/knowledge bonuses)
 
 ---
 
-### **Minutes 40-50: The Marcus Dilemma (50% Cozy, 50% RPG)**
+### **Minutes 40-50: The Ezekiel Dilemma (50% Cozy, 50% RPG)**
 
 #### Transition: Dinner Bell
 
 **Bell chimes across courtyard**
 
-**Kira appears:** "Dinner time! Come on!"
+**Rachel appears:** "Dinner time! Come on!"
 
 **Walking to Dining Hall:**
 - Warm chatter of students
 - Smell of food (described)
 - Cozy evening setting
 
-**Incident: Marcus in Trouble**
+**Incident: Ezekiel in Trouble**
 
 **Scene:**
 ```
@@ -824,13 +824,13 @@ SENA: [Realization] "Oh! I counted wrong. I was so nervous I miscounted."
 
 INSTRUCTOR REVAL: "Experimentation is for THIRD-YEARS, Mr. Caldwell!"
 
-[See Marcus standing outside classroom, head down]
+[See Ezekiel standing outside classroom, head down]
 
 REVAL: "I will be reporting this to Headmaster Sinclair. One more incident and you'll be scrubbing cauldrons for a month!"
 
 [Reval storms off]
 
-[Marcus slumps against wall]
+[Ezekiel slumps against wall]
 ```
 
 **Cozy Element:** Witnessing injustice creates empathy
@@ -838,7 +838,7 @@ REVAL: "I will be reporting this to Headmaster Sinclair. One more incident and y
 
 **Choice: Approach or Ignore**
 ```
-→ [Go to Marcus]
+→ [Go to Ezekiel]
    Continue to scene
 
 → [Give him space]
@@ -847,12 +847,12 @@ REVAL: "I will be reporting this to Headmaster Sinclair. One more incident and y
 
 **If approach:**
 
-**Finding Marcus in Garden (Private Moment)**
+**Finding Ezekiel in Garden (Private Moment)**
 
 **Setting:**
 - Garden at twilight
 - Purple Moonbell flowers glowing
-- Marcus sitting on bench, frustrated
+- Ezekiel sitting on bench, frustrated
 
 ```
 MARCUS: [Doesn't look up] "Reval caught me experimenting. Again."
@@ -879,10 +879,10 @@ MARCUS: [Doesn't look up] "Reval caught me experimenting. Again."
 **UI: Choice Screen with Time Pressure (60 seconds)**
 ```
 ╔═══════════════════════════════════════════════════╗
-║  Marcus could be expelled for experimenting.      ║
+║  Ezekiel could be expelled for experimenting.      ║
 ║  What do you believe?                             ║
 ╟───────────────────────────────────────────────────╢
-║  💚 [Support Marcus]                              ║
+║  💚 [Support Ezekiel]                              ║
 ║  "You were just being creative. Reval's wrong."   ║
 ║                                                   ║
 ║  ⚖️ [Gentle Critique]                             ║
@@ -901,7 +901,7 @@ MARCUS: [Doesn't look up] "Reval caught me experimenting. Again."
 
 **Consequences (Visible Immediately + Long-Term):**
 
-**Option 1: Support Marcus**
+**Option 1: Support Ezekiel**
 ```
 MARCUS: [Eyes light up] "Thank you. Everyone else just tells me to follow the rules."
 
@@ -914,13 +914,13 @@ MARCUS: [Eyes light up] "Thank you. Everyone else just tells me to follow the ru
 "I'm not going to stop. But it means a lot that you believe in me."
 
 Immediate:
-- Marcus Affinity +2.5
+- Ezekiel Affinity +2.5
 - Thornwood Affinity -0.5 (he hears about it)
 - PC Trait: "Innovator" unlocked
 
 Long-term (Shown in journal):
-- Marcus will share experimental recipes
-- Unlock: Marcus rebellion arc
+- Ezekiel will share experimental recipes
+- Unlock: Ezekiel rebellion arc
 - Philosophy: Innovation over tradition
 ```
 
@@ -937,13 +937,13 @@ MARCUS: [Disappointed but understanding] "Yeah... maybe you're right."
 "Thanks for being honest, I guess."
 
 Immediate:
-- Marcus Affinity +0.5
+- Ezekiel Affinity +0.5
 - Thornwood Affinity +0.3
 - PC Trait: "Balanced" unlocked
 
 Long-term:
-- Marcus will be more cautious
-- Unlock: Marcus redemption arc
+- Ezekiel will be more cautious
+- Unlock: Ezekiel redemption arc
 - Philosophy: Caution and growth
 ```
 
@@ -958,12 +958,12 @@ MARCUS: [Hurt] "Right. Okay."
 [Walks off alone]
 
 Immediate:
-- Marcus Affinity -0.5
+- Ezekiel Affinity -0.5
 - No other changes
 - PC Trait: "Self-Preserving" unlocked
 
 Long-term:
-- Marcus distances himself
+- Ezekiel distances himself
 - Miss his friendship arc
 - Philosophy: Self over community
 ```
@@ -981,20 +981,20 @@ MARCUS: [Surprised] "You'd do that? Talk to Thornwood?"
 "That's... actually really smart. Thanks."
 
 Immediate:
-- Marcus Affinity +2.0
+- Ezekiel Affinity +2.0
 - Thornwood Affinity +0.5 (respects initiative)
 - PC Trait: "Diplomat" unlocked
 - Unlock: Special conversation with Thornwood
 
 Long-term:
-- Marcus trusts you deeply
+- Ezekiel trusts you deeply
 - Thornwood sees your leadership
 - Unlock: Best of both worlds arc
 - Philosophy: Find middle ground
 ```
 
 **Cozy Elements:**
-- Marcus is vulnerable, not aggressive
+- Ezekiel is vulnerable, not aggressive
 - All choices feel valid emotionally
 - Game respects player values
 - No "right" answer, just different paths
@@ -1010,7 +1010,7 @@ Long-term:
 ╔════════════════════════════════════════╗
 ║  Day 1 Reflection                      ║
 ╟────────────────────────────────────────╢
-║ Marcus got in trouble for experimenting║
+║ Ezekiel got in trouble for experimenting║
 ║ with moonbell petals. He could be      ║
 ║ expelled.                              ║
 ║                                        ║
@@ -1034,19 +1034,19 @@ Long-term:
 
 **Setting:**
 - Nighttime, stars visible through window
-- Kira already in bed, reading
+- Rachel already in bed, reading
 - Soft lamp light, cozy atmosphere
 
-**Kira's Check-In:**
+**Rachel's Check-In:**
 ```
 KIRA: [Looks up from book] "Hey! How was your first day?"
 
 [Warm smile]
 
-"I heard you helped Sena with her potion. That was really nice."
+"I heard you helped Miriam with her potion. That was really nice."
 
-[If you interacted with Marcus:]
-"Also heard Marcus got in trouble again. That's... complicated."
+[If you interacted with Ezekiel:]
+"Also heard Ezekiel got in trouble again. That's... complicated."
 
 [Yawns]
 
@@ -1060,12 +1060,12 @@ KIRA: [Looks up from book] "Hey! How was your first day?"
 **Cozy Element:** Roommate check-in, warm domestic moment
 **RPG Element:** NPCs talk to each other (living world)
 
-**Brief Cutscene: Kira's Nightmare**
+**Brief Cutscene: Rachel's Nightmare**
 
-**After Kira falls asleep:**
+**After Rachel falls asleep:**
 ```
 [Screen darkens]
-[Kira tosses and turns]
+[Rachel tosses and turns]
 
 KIRA: [Sleep-talking] "No... I didn't mean to... it wasn't my fault..."
 
@@ -1078,8 +1078,8 @@ KIRA: [Sleep-talking] "No... I didn't mean to... it wasn't my fault..."
 [Camera close-up on her worried face]
 ```
 
-**Cozy Element:** Humanizes Kira, creates mystery gently
-**RPG Element:** Foreshadows Kira's secret quest arc
+**Cozy Element:** Humanizes Rachel, creates mystery gently
+**RPG Element:** Foreshadows Rachel's secret quest arc
 
 #### Journal & Stats Screen
 
@@ -1090,9 +1090,9 @@ KIRA: [Sleep-talking] "No... I didn't mean to... it wasn't my fault..."
 ╟────────────────────────────────────────────────╢
 ║ RELATIONSHIPS:                                 ║
 ║                                                ║
-║ Kira         [♥♥♥♡♡] +1.5 Friendly            ║
-║ Marcus       [♥♥♥♥♡] +2.5 Warm                ║
-║ Sena         [♥♥♥♡♡] +2.0 Grateful            ║
+║ Rachel         [♥♥♥♡♡] +1.5 Friendly            ║
+║ Ezekiel       [♥♥♥♥♡] +2.5 Warm                ║
+║ Miriam         [♥♥♥♡♡] +2.0 Grateful            ║
 ║ Thornwood    [♥♡♡♡♡] +0.3 Neutral             ║
 ║                                                ║
 ╟────────────────────────────────────────────────╢
@@ -1111,7 +1111,7 @@ KIRA: [Sleep-talking] "No... I didn't mean to... it wasn't my fault..."
 ╟────────────────────────────────────────────────╢
 ║ MAJOR CHOICES:                                 ║
 ║                                                ║
-║ • Supported Marcus's experimentation           ║
+║ • Supported Ezekiel's experimentation           ║
 ║   → Innovation Path                            ║
 ║                                                ║
 ╟────────────────────────────────────────────────╢
@@ -1144,19 +1144,19 @@ KIRA: [Sleep-talking] "No... I didn't mean to... it wasn't my fault..."
 ~ Day 2 - Morning ~
 
 [Sunrise through window]
-[Kira already awake, getting ready]
+[Rachel already awake, getting ready]
 ```
 
-**Kira:** "Morning! Thornwood posted the lesson plan—we're making Stamina Boost today!"
+**Rachel:** "Morning! Thornwood posted the lesson plan—we're making Stamina Boost today!"
 
 **Breakfast Scene (Quick)**
 - Walk to dining hall together
 - Background students chatting (living world)
 - Warm morning atmosphere
 
-**Marcus Approaches:**
+**Ezekiel Approaches:**
 ```
-[If you supported Marcus:]
+[If you supported Ezekiel:]
 MARCUS: [Sits with you] "Hey. Thanks again for yesterday."
 
 [Lowers voice]
@@ -1165,7 +1165,7 @@ MARCUS: [Sits with you] "Hey. Thanks again for yesterday."
 
 [Grins]
 
-Unlock: Marcus Study Sessions (Precision +5/session)
+Unlock: Ezekiel Study Sessions (Precision +5/session)
 
 [If you didn't support:]
 MARCUS: [Sits far away, doesn't make eye contact]
@@ -1190,7 +1190,7 @@ Note reads:
  I have something you need to see.
  -A Friend"
 
-[Kira peeks over shoulder]
+[Rachel peeks over shoulder]
 
 KIRA: [Worried] "That's... creepy. You're not actually going, right?"
 
@@ -1204,7 +1204,7 @@ Choice:
 - Mystery (who sent it?)
 - Intrigue (what do they have?)
 - Choice (go or not?)
-- Kira's reaction (adds stakes)
+- Rachel's reaction (adds stakes)
 
 **Final Scene: Thornwood's Class**
 
@@ -1227,8 +1227,8 @@ THORNWOOD: "Begin."
     Continue to discover:
     • The midnight meeting
     • Advanced crafting challenges
-    • Sena's secret
-    • Marcus's rebellion
+    • Miriam's secret
+    • Ezekiel's rebellion
     • And the mystery of the Moonbell...
 ═══════════════════════════════════════
 ```
@@ -1244,15 +1244,15 @@ THORNWOOD: "Begin."
    - Portraits: Neutral, Happy, Surprised, Determined
    - Sprite: Walking, Gathering, Crafting poses
 
-2. **Kira** - Energetic roommate
+2. **Rachel** - Energetic roommate
    - Portraits: Happy, Excited, Worried, Sleeping
    - Sprite: Various poses
 
-3. **Marcus** - Curious experimenter
+3. **Ezekiel** - Curious experimenter
    - Portraits: Curious, Frustrated, Hopeful, Determined
    - Sprite: Sitting, Standing
 
-4. **Sena** - Anxious student
+4. **Miriam** - Anxious student
    - Portraits: Nervous, Relieved, Shy smile
    - Sprite: Sitting
 
@@ -1331,7 +1331,7 @@ THORNWOOD: "Begin."
 
 ### Cozy Metrics (60%)
 - 80%+ players say "I felt relaxed while playing"
-- 75%+ players say "I care about Kira/Marcus/Sena"
+- 75%+ players say "I care about Rachel/Ezekiel/Miriam"
 - 70%+ players say "Crafting was satisfying"
 - 80%+ players say "The world felt warm and inviting"
 
@@ -1344,7 +1344,7 @@ THORNWOOD: "Begin."
 ### Overall Success:
 - 85%+ want to continue playing after 60 minutes
 - 70%+ understand all core systems
-- 60%+ can explain Marcus's dilemma to someone else
+- 60%+ can explain Ezekiel's dilemma to someone else
 
 ---
 
@@ -1388,7 +1388,7 @@ THORNWOOD: "Begin."
 
 1. **Validate Tone** - Does 60% cozy, 40% RPG feel right in practice?
 2. **Test Crafting Minigame** - Is grinding/mixing fun or tedious?
-3. **Test Marcus Choice** - Do players care enough to feel invested?
+3. **Test Ezekiel Choice** - Do players care enough to feel invested?
 4. **Art Style Test** - Create one character + one environment to validate visual direction
 5. **Music Test** - Compose 1-2 tracks to validate audio direction
 

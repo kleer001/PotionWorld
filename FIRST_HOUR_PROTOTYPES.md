@@ -31,12 +31,12 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 #### **Minutes 5-12: The Dorm Room (Exploration Tutorial)**
 - **Scene:** Arrive at dorm room, roommate already unpacked
-- **Meet:** Kira (High E, High A) - enthusiastic, friendly roommate
-  - AUTO-DIALOGUE: "Oh! You're finally here! I'm Kira! I got here yesterday—have you seen the ingredient garden? It's HUGE!"
+- **Meet:** Rachel (High E, High A) - enthusiastic, friendly roommate
+  - AUTO-DIALOGUE: "Oh! You're finally here! I'm Rachel! I got here yesterday—have you seen the ingredient garden? It's HUGE!"
   - First affinity moment:
-    - Kira: "Want to explore together, or do you need time to unpack?"
-    - → [Explore together] Kira +0.5, immediately go to garden
-    - → [Unpack first] Kira +0.0, solo time to examine room
+    - Rachel: "Want to explore together, or do you need time to unpack?"
+    - → [Explore together] Rachel +0.5, immediately go to garden
+    - → [Unpack first] Rachel +0.0, solo time to examine room
 
 **If player chooses unpack:**
 - **Tutorial:** Click on desk → Recipe book (empty)
@@ -52,7 +52,7 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 #### **Minutes 12-20: The Garden (Gathering Tutorial)**
 - **Scene:** Beautiful ingredient garden with 5-6 marked gathering spots
-- **Meet:** If with Kira, she points things out. If alone, find Instructor Thornwood pruning.
+- **Meet:** If with Rachel, she points things out. If alone, find Instructor Thornwood pruning.
 
 **Tutorial Flow:**
 1. **Approach glowing mushroom patch**
@@ -137,7 +137,7 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 **Available Locations (Hub Menu):**
 - **Garden** (gather more ingredients)
 - **Library** (meet studious NPC, read lore)
-- **Dormitory** (talk to Kira)
+- **Dormitory** (talk to Rachel)
 - **Courtyard** (meet other students)
 
 **Designed Path (but player can choose):**
@@ -145,24 +145,24 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 **Option 1: Courtyard (Social Focus)**
 - Find 3 students practicing potion-making
 - **Meet:**
-  - **Marcus** (High O, Low C) - experimenting with recipe
+  - **Ezekiel** (High O, Low C) - experimenting with recipe
     - "Thornwood says follow the recipe, but what if we add crystal dust?"
-    - → [Encourage] "Try it!" (O +1.0, Marcus likes you)
+    - → [Encourage] "Try it!" (O +1.0, Ezekiel likes you)
     - → [Warn] "Better not get in trouble" (C +0.5, O -0.5)
 
-  - **Sena** (Low E, High N) - looks stressed
+  - **Miriam** (Low E, High N) - looks stressed
     - "I... I think I messed up my potion. It turned brown."
     - → [Help] "Let me see if I can help" (A +1.0, unlock mini-quest)
     - → [Reassure] "First day! Everyone messes up" (N -0.5, gentle comfort)
     - → [Leave] "You'll figure it out" (A -0.3, N +0.3)
 
-**If player helps Sena:**
+**If player helps Miriam:**
 - Mini-quest: "Identify what went wrong"
 - Look at her ingredients: She used twice as many mushrooms
 - → Explain the ratio concept
-- Sena: "Thank you... I was too nervous to ask Thornwood"
-- Sena Affinity → +1.5 (big boost)
-- Unlock: Sena will help you later (plants this seed)
+- Miriam: "Thank you... I was too nervous to ask Thornwood"
+- Miriam Affinity → +1.5 (big boost)
+- Unlock: Miriam will help you later (plants this seed)
 
 **Gameplay Test:** Do players naturally explore socially, or do they need direction?
 
@@ -170,59 +170,59 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 #### **Minutes 40-48: First Moral Choice (Stakes Introduction)**
 - **Scene:** Bell rings for dinner, walking to dining hall
-- **Event:** Overhear Marcus arguing with **Instructor Reval** (Strict disciplinarian)
+- **Event:** Overhear Ezekiel arguing with **Instructor Reval** (Strict disciplinarian)
   - Reval: "Experimentation is for third-years! You'll be scrubbing cauldrons for a week!"
-  - Marcus storms off, clearly upset
+  - Ezekiel storms off, clearly upset
 
-**Player finds Marcus in garden (alone)**
-- Marcus: "Reval's going to report me. I could get expelled if I mess up again."
-- Marcus: "My family saved for years to send me here. If I get kicked out..."
-- Marcus: "I just wanted to try something new. Is that so wrong?"
+**Player finds Ezekiel in garden (alone)**
+- Ezekiel: "Reval's going to report me. I could get expelled if I mess up again."
+- Ezekiel: "My family saved for years to send me here. If I get kicked out..."
+- Ezekiel: "I just wanted to try something new. Is that so wrong?"
 
 **MORAL CHOICE (Timed: 30 seconds to decide):**
 
-**Option A: [Support Marcus]** "You were just being creative"
-- Marcus Affinity +2.0
-- Unlock Marcus friendship path
+**Option A: [Support Ezekiel]** "You were just being creative"
+- Ezekiel Affinity +2.0
+- Unlock Ezekiel friendship path
 - Thornwood Affinity -0.5 (he hears you defended rule-breaking)
 - Sets tone: You value innovation over tradition
 
 **Option B: [Gentle Critique]** "Maybe wait until you're more experienced?"
-- Marcus Affinity +0.5 (appreciates honesty, but disappointed)
+- Ezekiel Affinity +0.5 (appreciates honesty, but disappointed)
 - Thornwood Affinity +0.3 (respects rule-following)
 - Balanced path
 
 **Option C: [Stay Neutral]** "I'm not getting involved"
-- Marcus Affinity -0.5 (hurt)
+- Ezekiel Affinity -0.5 (hurt)
 - No other affinity changes
-- Marcus won't trust you with secrets later
+- Ezekiel won't trust you with secrets later
 
 **Option D: [Offer Solution]** "What if I ask Thornwood about experiment days?"
 - Requires: High O background choice or previous O dialogue
-- Marcus Affinity +1.5
+- Ezekiel Affinity +1.5
 - Thornwood Affinity +0.0 (respects initiative)
 - Unlock special scene: Approach Thornwood later
 
 **Post-Choice:**
 - Journal Entry Auto-Writes:
-  - "First day thoughts: Marcus got in trouble for experimenting. Made me think about Grandmother's letter—technique vs. heart. Who's right?"
+  - "First day thoughts: Ezekiel got in trouble for experimenting. Made me think about Grandmother's letter—technique vs. heart. Who's right?"
 
 **Gameplay Test:** Does the choice feel weighty? Do players understand consequences?
 
 ---
 
 #### **Minutes 48-55: Evening Reflection (System Introduction)**
-- **Scene:** Back in dorm room, Kira already asleep
+- **Scene:** Back in dorm room, Rachel already asleep
 - **Tutorial:** Journal System
   - Opens automatically (first time only)
   - Shows:
-    - **Relationships:** Kira (+0.5), Thornwood (+0.3), Marcus (+2.0), Sena (+1.5)
+    - **Relationships:** Rachel (+0.5), Thornwood (+0.3), Ezekiel (+2.0), Miriam (+1.5)
     - **Stats:** Precision (8/100), Knowledge (25/100)
     - **Recipes Learned:** Simple Healing Tonic (Novice 10/100)
-    - **Choices Made:** Supported Marcus (Innovation path)
+    - **Choices Made:** Supported Ezekiel (Innovation path)
 
 **Foreshadowing:**
-- Brief cutscene: Kira mumbles in sleep
+- Brief cutscene: Rachel mumbles in sleep
   - "No... don't tell them... it wasn't my fault..."
   - Camera close on her worried face
   - Fade to black
@@ -233,17 +233,17 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 #### **Minutes 55-60: Day 2 Morning (Choice Payoff)**
 - **Scene:** Breakfast in dining hall
-- **Event:** Consequence of Marcus choice
+- **Event:** Consequence of Ezekiel choice
 
-**If you supported Marcus:**
-- Marcus sits with you at breakfast
+**If you supported Ezekiel:**
+- Ezekiel sits with you at breakfast
 - "Thanks for having my back. Most people just follow Thornwood blindly."
-- Marcus: "Want to study together? I can show you some tricks I learned."
-- **Unlock:** Marcus Study Sessions (optional activity for bonus Precision)
+- Ezekiel: "Want to study together? I can show you some tricks I learned."
+- **Unlock:** Ezekiel Study Sessions (optional activity for bonus Precision)
 
 **If you stayed neutral:**
-- Marcus sits alone, doesn't make eye contact
-- Kira: "Heard about Marcus. Rough stuff. You staying out of it?"
+- Ezekiel sits alone, doesn't make eye contact
+- Rachel: "Heard about Ezekiel. Rough stuff. You staying out of it?"
 - No study session unlock
 
 **Final Tutorial:**
@@ -253,7 +253,7 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 **Hook for Next Hour:**
 - New ingredient types introduced
 - Harder crafting challenge
-- Sena asks for help again (building relationship)
+- Miriam asks for help again (building relationship)
 - Mysterious note falls out of your recipe book: "Meet me in the library at midnight. -A Friend"
 
 **END OF HOUR ONE**
@@ -264,8 +264,8 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 1. **Engagement:** Do players want to keep playing after 60 minutes?
 2. **Clarity:** Do players understand crafting, gathering, and affinity systems?
-3. **Connection:** Do players care about NPCs (Kira, Marcus, Sena, Thornwood)?
-4. **Agency:** Does the Marcus choice feel meaningful?
+3. **Connection:** Do players care about NPCs (Rachel, Ezekiel, Miriam, Thornwood)?
+4. **Agency:** Does the Ezekiel choice feel meaningful?
 5. **Pacing:** Does this feel too slow? Too fast? Just right?
 
 **Success Criteria:**
@@ -308,8 +308,8 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 **Turn 4: The Choice**
 - Internal monologue: "The mystery potion... Grandmother's recipe. I've never tested it."
-- Kira's voice from crowd: "Don't do it! It's not worth it!"
-- Marcus's voice: "Trust your instinct!"
+- Rachel's voice from crowd: "Don't do it! It's not worth it!"
+- Ezekiel's voice: "Trust your instinct!"
 
 **CHOICE (Timed: 15 seconds):**
 - → [Use Mystery Potion] Risk it
@@ -354,7 +354,7 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 #### **Minutes 15-25: Flashback - First Day, Accelerated**
 - **Scene:** Garden gathering (same as Prototype A, but faster)
-- **Meet Kira:** She's the one who warned you in the arena
+- **Meet Rachel:** She's the one who warned you in the arena
   - Players now care: "Why did she warn me?"
 - **Meet Thornwood:** He's the one who looked disappointed
   - Players now care: "What does he want from me?"
@@ -369,7 +369,7 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 #### **Minutes 25-35: First Crafting (With Foreshadowing)**
 - **Scene:** Crafting Simple Healing Tonic (same as Prototype A)
 - **Addition:** After crafting, you notice a purple flower outside window
-  - Kira: "Don't touch Midnight Bloom. It's banned for first-years."
+  - Rachel: "Don't touch Midnight Bloom. It's banned for first-years."
   - Close-up on purple flower (same color as mystery potion)
 
 **Players connect:** "THAT'S the ingredient in the mystery potion!"
@@ -378,13 +378,13 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 ---
 
-#### **Minutes 35-48: Marcus Choice (Now With Weight)**
+#### **Minutes 35-48: Ezekiel Choice (Now With Weight)**
 - **Same scenario as Prototype A**
-- **Addition:** Marcus whispers: "I've been growing Midnight Bloom in secret"
-- **Players realize:** Marcus is connected to the mystery potion
+- **Addition:** Ezekiel whispers: "I've been growing Midnight Bloom in secret"
+- **Players realize:** Ezekiel is connected to the mystery potion
 
 **Enhanced Choice:**
-- Supporting Marcus = Accessing forbidden knowledge
+- Supporting Ezekiel = Accessing forbidden knowledge
 - Not supporting = Playing it safe (like the arena choice)
 - Parallel choice structure reinforces theme
 
@@ -394,7 +394,7 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 #### **Minutes 48-55: The Secret Meeting**
 - **Scene:** You receive note: "Midnight. Library. Come alone."
-- **Kira warns:** "Whatever this is, be careful."
+- **Rachel warns:** "Whatever this is, be careful."
 - **You go to library**
 
 **Meet:** Mysterious figure in shadows (face not revealed)
@@ -426,7 +426,7 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 - You're standing, but something's wrong
 - Your hands are glowing with strange energy
 - Thornwood shouts: "Everyone out! NOW!"
-- Kira runs toward you: "Your eyes... they're not—"
+- Rachel runs toward you: "Your eyes... they're not—"
 - Screen cuts to black
 
 **END OF HOUR ONE**
@@ -544,7 +544,7 @@ Three distinct approaches to the opening 60 minutes of PotionWorld, each testing
 
 **Each NPC introduces themselves with personality shown:**
 ```
-[Portrait] Kira
+[Portrait] Rachel
 O:0 C:0 E:+1 A:+1 N:0
 Affinity: 0 (Neutral)
 "Hey! Want to study together?"
@@ -562,10 +562,10 @@ Affinity: 0 (Neutral)
 - Personality explanation shows why
 
 **Example:**
-- **Marcus:** "Thornwood's so strict. You think we should always follow rules?"
+- **Ezekiel:** "Thornwood's so strict. You think we should always follow rules?"
 - → [Yes, rules are important] C NPCs like this (+0.5), O NPCs dislike (-0.3)
 - → [No, creativity matters more] O NPCs like this (+0.5), C NPCs dislike (-0.3)
-- **UI shows:** "Marcus (High O): +0.5. Appreciates creative thinking."
+- **UI shows:** "Ezekiel (High O): +0.5. Appreciates creative thinking."
 
 **Gameplay Test:** Is explicit personality system MORE engaging for system-focused players?
 
@@ -646,25 +646,25 @@ Initiative: 12           Initiative: 8
 ---
 
 #### **Minutes 48-55: Choice Efficiency Test**
-- **Scene:** Marcus approaches with dilemma (same as other prototypes)
+- **Scene:** Ezekiel approaches with dilemma (same as other prototypes)
 - **UI Difference:** Shows explicit consequences
 
 **Choice Interface:**
 ```
-Marcus is in trouble for experimenting.
+Ezekiel is in trouble for experimenting.
 
-[Support Marcus]
-Predicted: Marcus +2.0, Thornwood -0.5
-Unlocks: Marcus friendship path
+[Support Ezekiel]
+Predicted: Ezekiel +2.0, Thornwood -0.5
+Unlocks: Ezekiel friendship path
 Philosophy: Innovation over rules
 
 [Stay Neutral]
-Predicted: Marcus -0.5
+Predicted: Ezekiel -0.5
 Unlocks: Nothing
 Philosophy: Self-preservation
 
 [Report to Thornwood]
-Predicted: Thornwood +1.0, Marcus -3.0
+Predicted: Thornwood +1.0, Ezekiel -3.0
 Unlocks: Thornwood's favor
 Philosophy: Authority and tradition
 ```
@@ -693,7 +693,7 @@ Season 1 Specialization Choice (Choose at Day 50):
 → Diplomat (+15 affinity gains)
 
 Current Build Path: Innovation-focused
-- High Marcus affinity = Marcus study bonus
+- High Ezekiel affinity = Ezekiel study bonus
 - Experimentation XP = Intuition focus
 → Recommended Specialization: Innovator
 ```

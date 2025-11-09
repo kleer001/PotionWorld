@@ -24,7 +24,7 @@
 - 85%+ playtesters want to continue playing
 - 80%+ feel the game is "cozy and relaxing"
 - 75%+ say "I care about the characters"
-- 75%+ say "My choice with Marcus felt meaningful"
+- 75%+ say "My choice with Ezekiel felt meaningful"
 
 ---
 
@@ -43,10 +43,10 @@
    - Progress is visible and encouraging
 
 3. **Warm, Memorable Characters**
-   - Kira: Enthusiastic, supportive roommate
-   - Marcus: Vulnerable innovator, not aggressive rebel
-   - Sena: Relatable anxiety, rewarding to help
-   - Thornwood: Strict but fair, gruff-but-kind
+   - Rachel: Enthusiastic, supportive roommate
+   - Ezekiel: Vulnerable innovator, not aggressive rebel
+   - Miriam: Relatable anxiety, rewarding to help
+   - Samuel Thornwood: Strict but fair, gruff-but-kind
 
 4. **Beautiful, Inviting World**
    - Warm color palette (golden hour, soft lamplight)
@@ -55,7 +55,7 @@
 
 ### RPG Elements (40%)
 1. **Meaningful Choices**
-   - Marcus dilemma has 4 distinct outcomes
+   - Ezekiel dilemma has 4 distinct outcomes
    - Choices affect relationships and unlocks
    - Background selection impacts dialogue and stats
    - Long-term consequences visible
@@ -86,18 +86,18 @@ You arrive at the Royal Academy of Alchemical Arts with your grandmother's lette
 ### The Journey (60 Minutes)
 **Minutes 0-20: Welcome & Wonder**
 - Arrive at academy with grandmother's blessing
-- Meet Kira, your warm and energetic roommate
+- Meet Rachel, your warm and energetic roommate
 - Gather ingredients in the beautiful twilight garden
 - Learn the academy's expectations from Instructor Thornwood
 
 **Minutes 20-40: Learning & Connection**
 - Craft your first potion with satisfying tactile gameplay
 - Explore the academy during free time
-- Meet Marcus (curious experimenter) and Sena (anxious perfectionist)
-- Help Sena solve a crafting problem, making a friend
+- Meet Ezekiel (curious experimenter) and Miriam (anxious perfectionist)
+- Help Miriam solve a crafting problem, making a friend
 
 **Minutes 40-60: Choice & Consequence**
-- Marcus gets in trouble for experimenting with forbidden ingredients
+- Ezekiel gets in trouble for experimenting with forbidden ingredients
 - Face a meaningful moral choice: support innovation or follow tradition?
 - See immediate consequences (affinity changes, unlock paths)
 - Receive a mysterious note for a midnight meeting
@@ -129,7 +129,7 @@ Gather Ingredients → Craft Potions → Gain XP → Build Relationships → Mak
 Morning:   Learning & Crafting (Thornwood's class)
 Afternoon: Free Time (Socialize, Gather, Explore)
 Evening:   Reflection & Planning (Journal, relationships)
-Night:     Story Events (Kira's nightmare, mysterious note)
+Night:     Story Events (Rachel's nightmare, mysterious note)
 ```
 
 ---
@@ -155,7 +155,7 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 | Scholarship | 3 | 5 | 0 | 0 | 0 |
 | Wanderer | 0 | 0 | 5 | 3 | 0 |
 
-### Kira - The Roommate
+### Rachel - The Roommate
 **Role:** Warm welcome, emotional support, living-world guide
 
 **Personality (Big 5):**
@@ -178,7 +178,7 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 3. Evening check-in (Minutes 50-55)
 4. Nightmare foreshadowing (Minutes 55-58)
 
-### Marcus - The Innovator
+### Ezekiel - The Innovator
 **Role:** Moral choice catalyst, innovation path representative
 
 **Personality (Big 5):**
@@ -203,7 +203,7 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 
 **Dilemma:** "Is curiosity worth risking expulsion?"
 
-### Sena - The Perfectionist
+### Miriam - The Perfectionist
 **Role:** Help-opportunity, empathy check, alternative path
 
 **Personality (Big 5):**
@@ -226,7 +226,7 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 
 **Challenge:** "Can you help someone struggling?"
 
-### Thornwood - The Instructor
+### Samuel Thornwood - The Instructor
 **Role:** Authority figure, tradition representative, mentor potential
 
 **Personality (Big 5):**
@@ -240,7 +240,7 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 - Establishes academy rules and expectations
 - Catches player in garden (not angry, teaching moment)
 - Teaches first crafting lesson
-- Reacts to player's Marcus choice (indirectly)
+- Reacts to player's Ezekiel choice (indirectly)
 - Softens slightly if player shows respect
 
 **Key Scenes:**
@@ -266,7 +266,7 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 **Mood:** Safe, comfortable, personal space
 **Interactivity:**
 - Click on objects (desk, recipe book, window, equipment)
-- Talk to Kira
+- Talk to Rachel
 - Receive mysterious note
 
 **Clickable Objects:**
@@ -282,7 +282,7 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 **Interactivity:**
 - Gather 5 ingredient types (mushrooms, berries, roots, sap, moonbell)
 - Encounter Thornwood
-- Explore with or without Kira
+- Explore with or without Rachel
 
 **Gathering Spots:**
 1. Mushroom patch (glowing blue)
@@ -307,9 +307,9 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 
 **NPCs Present:**
 - Thornwood (instructor)
-- Kira (classmate)
-- Marcus (classmate)
-- Sena (classmate)
+- Rachel (classmate)
+- Ezekiel (classmate)
+- Miriam (classmate)
 - 5 background students
 
 ### 5. Courtyard (Minutes 30-40)
@@ -317,13 +317,13 @@ Night:     Story Events (Kira's nightmare, mysterious note)
 **Visuals:** Stone courtyard, fountain, practice tables, trees
 **Mood:** Open, social, warm afternoon
 **Interactivity:**
-- Meet Marcus (experimenting)
-- Find Sena (struggling with potion)
+- Meet Ezekiel (experimenting)
+- Find Miriam (struggling with potion)
 - Optional: Explore other areas
 
 **Social Encounters:**
-- Marcus at practice table
-- Sena at far table
+- Ezekiel at practice table
+- Miriam at far table
 - Background students chatting
 
 ---
@@ -344,7 +344,7 @@ Moonbell Flowers x2 (if found)
 **Potion Inventory:**
 ```
 Simple Healing Tonic (Standard Quality) x1
-[More if player experiments with Marcus]
+[More if player experiments with Ezekiel]
 ```
 
 **UI Features:**
@@ -397,9 +397,9 @@ Success Rate: 95% (for beginners)
 **NPCs Tracked:**
 | NPC | Starting Affinity | Possible Range in Demo |
 |-----|-------------------|------------------------|
-| Kira | 0 | 0 to +2.0 |
-| Marcus | 0 | -0.5 to +2.5 |
-| Sena | 0 | 0 to +2.0 |
+| Rachel | 0 | 0 to +2.0 |
+| Ezekiel | 0 | -0.5 to +2.5 |
+| Miriam | 0 | 0 to +2.0 |
 | Thornwood | 0 | -0.5 to +0.7 |
 
 **Affinity Changes:**
@@ -426,9 +426,9 @@ Success Rate: 95% (for beginners)
 
 **XP Sources in Demo:**
 - Craft Simple Healing Tonic: +10 Precision, +25 Knowledge
-- Help Sena: +5 Intuition
+- Help Miriam: +5 Intuition
 - Find Moonbell: +5 Intuition
-- Experiment with Marcus (optional): +10 Intuition
+- Experiment with Ezekiel (optional): +10 Intuition
 
 **Progression Display:**
 - Progress bars with clear numbers
@@ -437,25 +437,25 @@ Success Rate: 95% (for beginners)
 
 ### 5. Choice & Consequence System
 
-**Major Choice: Marcus Dilemma**
+**Major Choice: Ezekiel Dilemma**
 
 **Options:**
-1. **Support Marcus** → Marcus +2.5, Thornwood -0.5, Unlock "Innovator" trait
-2. **Gentle Critique** → Marcus +0.5, Thornwood +0.3, Unlock "Balanced" trait
-3. **Stay Neutral** → Marcus -0.5, Unlock "Self-Preserving" trait
-4. **Offer Solution** → Marcus +2.0, Thornwood +0.5, Unlock "Diplomat" trait (requires Openness background or previous O choices)
+1. **Support Ezekiel** → Ezekiel +2.5, Thornwood -0.5, Unlock "Innovator" trait
+2. **Gentle Critique** → Ezekiel +0.5, Thornwood +0.3, Unlock "Balanced" trait
+3. **Stay Neutral** → Ezekiel -0.5, Unlock "Self-Preserving" trait
+4. **Offer Solution** → Ezekiel +2.0, Thornwood +0.5, Unlock "Diplomat" trait (requires Openness background or previous O choices)
 
 **Consequence Tracking:**
 - Stored in player profile
-- Affects Day 2 Marcus interaction (immediate)
+- Affects Day 2 Ezekiel interaction (immediate)
 - Sets up Season 1 arc (long-term)
 - Journal records choice and reasoning
 
 **Minor Choices:**
-- Explore with Kira vs alone: Kira ±0.5
+- Explore with Rachel vs alone: Rachel ±0.5
 - Response to Thornwood: ±0.5, sets personality flag
-- Help Sena or not: Sena ±2.0
-- Approach Marcus experiment: Marcus ±1.5
+- Help Miriam or not: Miriam ±2.0
+- Approach Ezekiel experiment: Ezekiel ±1.5
 
 ### 6. Journal System
 
@@ -496,10 +496,10 @@ Success Rate: 95% (for beginners)
 ### Scene 2: Dorm Room Exploration (5-12 min)
 
 **Flow:**
-1. Meet Kira (enthusiastic greeting)
+1. Meet Rachel (enthusiastic greeting)
 2. **Choice:** Explore together or unpack first?
 3. **If unpack:** Click on objects (desk, window, shelf)
-4. **If explore:** Skip to garden with Kira
+4. **If explore:** Skip to garden with Rachel
 5. Read grandmother's note in journal
 6. See moonbell flowers through window (foreshadowing)
 7. **Transition:** Exit to garden
@@ -507,7 +507,7 @@ Success Rate: 95% (for beginners)
 **Teaching:**
 - Click to interact
 - Dialogue choices
-- Relationship system basics (Kira affinity)
+- Relationship system basics (Rachel affinity)
 
 ### Scene 3: Garden Gathering (12-20 min)
 
@@ -555,13 +555,13 @@ Success Rate: 95% (for beginners)
 **Flow:**
 1. **Hub menu:** Choose location (Garden, Library, Dorm, Courtyard)
 2. **Designed path:** Courtyard
-3. Meet Marcus experimenting with crystal dust
+3. Meet Ezekiel experimenting with crystal dust
 4. **Choice:** How to respond to experimentation
 5. **Optional:** Experiment together (if supportive)
-6. Notice Sena struggling at far table
-7. **Choice:** Help Sena or not
+6. Notice Miriam struggling at far table
+7. **Choice:** Help Miriam or not
 8. **If help:** Mini-puzzle (identify extra mushrooms)
-9. Sena grateful response, offers to study together
+9. Miriam grateful response, offers to study together
 10. **Transition:** Dinner bell rings
 
 **Teaching:**
@@ -570,16 +570,16 @@ Success Rate: 95% (for beginners)
 - Helping NPCs rewards friendship
 - Multiple simultaneous opportunities
 
-### Scene 6: Marcus Dilemma (40-50 min)
+### Scene 6: Ezekiel Dilemma (40-50 min)
 
 **Flow:**
 1. Walking to dinner, overhear argument
-2. See Marcus being scolded by Instructor Reval
-3. **Choice:** Approach Marcus or give him space
-4. **If approach:** Find Marcus in garden (twilight again)
-5. Marcus confession (family sacrifice, fear of expulsion)
+2. See Ezekiel being scolded by Instructor Reval
+3. **Choice:** Approach Ezekiel or give him space
+4. **If approach:** Find Ezekiel in garden (twilight again)
+5. Ezekiel confession (family sacrifice, fear of expulsion)
 6. **MAJOR CHOICE:** 4 options with visible consequences
-7. Marcus responds based on choice
+7. Ezekiel responds based on choice
 8. Journal entry auto-writes reflection
 9. **Transition:** Return to dorm
 
@@ -593,31 +593,31 @@ Success Rate: 95% (for beginners)
 
 **Flow:**
 1. Dorm room at night
-2. Kira bedtime chat (asks about your day)
-3. Kira falls asleep
-4. **Cutscene:** Kira's nightmare (foreshadowing)
+2. Rachel bedtime chat (asks about your day)
+3. Rachel falls asleep
+4. **Cutscene:** Rachel's nightmare (foreshadowing)
 5. **Journal opens automatically:**
    - Relationships tab (show affinity levels)
    - Stats tab (show progress bars)
    - Recipes tab (show mastery)
-   - Choices tab (show Marcus reflection)
+   - Choices tab (show Ezekiel reflection)
 6. Player can explore journal freely
 7. **Transition:** Fade to "Next Morning"
 
 **Teaching:**
 - Tracking systems (affinity, stats, mastery)
 - Choices are recorded
-- NPCs have hidden depths (Kira's nightmare)
+- NPCs have hidden depths (Rachel's nightmare)
 
 ### Scene 8: Day 2 Hook (58-60 min)
 
 **Flow:**
 1. Morning, getting ready for class
 2. Find mysterious note in recipe book
-3. **Choice:** Tell Kira about note or keep secret
-4. Kira's worried reaction (if told)
+3. **Choice:** Tell Rachel about note or keep secret
+4. Rachel's worried reaction (if told)
 5. Walk to breakfast
-6. **Marcus encounter (outcome varies):**
+6. **Ezekiel encounter (outcome varies):**
    - If supported: Sits with you, offers study sessions
    - If neutral: Sits alone, avoids eye contact
    - If diplomat: Sits with you, discusses Thornwood meeting
@@ -735,7 +735,7 @@ Success Rate: 95% (for beginners)
 3. **Crafting Theme** (Minigame) - Soft percussion, celesta, focused but gentle
 4. **Courtyard Theme** (Social) - Acoustic guitar, light strings, friendly and open
 5. **Evening Theme** (Reflection) - Solo piano, ambient, reflective and soft
-6. **Choice Theme** (Marcus dilemma) - Strings, thoughtful and slightly tense
+6. **Choice Theme** (Ezekiel dilemma) - Strings, thoughtful and slightly tense
 7. **Hook Theme** (Mysterious note) - Ambient, mysterious, anticipatory
 
 ### Sound Effects
@@ -783,7 +783,7 @@ Success Rate: 95% (for beginners)
 **Phase 2: Friends & Family (Week 12)**
 - Test emotional engagement
 - Validate cozy-RPG balance
-- Check if Marcus choice feels meaningful
+- Check if Ezekiel choice feels meaningful
 - Gather general feedback
 
 **Phase 3: External (Post Week 12)**
@@ -810,7 +810,7 @@ Success Rate: 95% (for beginners)
 - % who understand stats: Target 65%+
 
 **Choice Impact:**
-- % who say Marcus choice felt meaningful: Target 75%+
+- % who say Ezekiel choice felt meaningful: Target 75%+
 - % who would replay with different choice: Target 60%+
 
 ### Exit Survey Questions
@@ -827,7 +827,7 @@ Success Rate: 95% (for beginners)
 **Characters:**
 6. Which characters do you remember? (List names)
 7. Which character is your favorite and why?
-8. Did you care about Marcus's situation? (Yes/No/Unsure)
+8. Did you care about Ezekiel's situation? (Yes/No/Unsure)
 
 **Mechanics:**
 9. Was the crafting minigame fun? (Too simple / Just right / Too complex)
@@ -835,7 +835,7 @@ Success Rate: 95% (for beginners)
 11. Did you understand what stats do? (Yes/No/Somewhat)
 
 **Choice:**
-12. What did you choose regarding Marcus? Why?
+12. What did you choose regarding Ezekiel? Why?
 13. Did your choice feel meaningful? (Yes/No/Unsure)
 14. Would you replay to see different outcomes? (Yes/No/Maybe)
 
@@ -852,14 +852,14 @@ Success Rate: 95% (for beginners)
 ### In Scope for Season 0
 ✅ Character creation (name, appearance, background)
 ✅ 5 locations (cart, dorm, garden, classroom, courtyard)
-✅ 5 NPCs (Player, Kira, Marcus, Sena, Thornwood)
+✅ 5 NPCs (Player, Rachel, Ezekiel, Miriam, Thornwood)
 ✅ 1 complete crafting minigame
 ✅ 5 ingredient types
 ✅ 1 craftable recipe (Simple Healing Tonic)
 ✅ Gathering tutorial
 ✅ Relationship system (affinity tracking)
 ✅ Stat progression (Precision, Knowledge, Intuition)
-✅ 1 major choice (Marcus dilemma) with 4 outcomes
+✅ 1 major choice (Ezekiel dilemma) with 4 outcomes
 ✅ Multiple minor choices
 ✅ Journal system (relationships, stats, recipes, choices)
 ✅ Day/night transitions
@@ -878,7 +878,7 @@ Success Rate: 95% (for beginners)
 ❌ Romance options (friendship only)
 ❌ Voice acting (text only with possible barks)
 ❌ Full ESENS notation teaching (shown but not required)
-❌ Experimentation system (hinted but not playable except with Marcus)
+❌ Experimentation system (hinted but not playable except with Ezekiel)
 
 ### Maybe in Scope (If Time Permits)
 🤔 Second recipe (Stamina Boost) for Day 2 teaser
@@ -900,7 +900,7 @@ Success Rate: 95% (for beginners)
 - Iterate based on feedback
 - Have backup simplified version ready
 
-### Risk 2: Players Don't Care About Marcus Choice
+### Risk 2: Players Don't Care About Ezekiel Choice
 **Impact:** High - Emotional core fails
 **Likelihood:** Low
 **Mitigation:**
@@ -982,8 +982,8 @@ Success Rate: 95% (for beginners)
 > With all my love,
 > Grandmother"
 
-### Kira's First Line
-> "Oh! You're here! Hi! I'm Kira!
+### Rachel's First Line
+> "Oh! You're here! Hi! I'm Rachel!
 >
 > [Sets books down messily]
 >
@@ -991,9 +991,9 @@ Success Rate: 95% (for beginners)
 >
 > [Nervous laugh]
 >
-> I do that when I'm excited. I'm Kira. Did I say that already?"
+> I do that when I'm excited. I'm Rachel. Did I say that already?"
 
-### Marcus's Confession
+### Ezekiel's Confession
 > "My family isn't rich. They saved for years to send me here. If I get kicked out...
 >
 > [Voice cracks slightly]
@@ -1021,9 +1021,9 @@ Success Rate: 95% (for beginners)
 
 ### Characters (Art)
 - Player (4 variants x 4 expressions = 16 portraits)
-- Kira (4 expressions)
-- Marcus (4 expressions)
-- Sena (3 expressions)
+- Rachel (4 expressions)
+- Ezekiel (4 expressions)
+- Miriam (3 expressions)
 - Thornwood (3 expressions)
 - Cart Driver (1 portrait, optional)
 
@@ -1031,9 +1031,9 @@ Success Rate: 95% (for beginners)
 
 ### Sprites
 - Player (walking, gathering, crafting)
-- Kira (standing, walking)
-- Marcus (sitting, standing)
-- Sena (sitting, standing)
+- Rachel (standing, walking)
+- Ezekiel (sitting, standing)
+- Miriam (sitting, standing)
 - Thornwood (standing, walking)
 - Background students (5x simple sprites)
 

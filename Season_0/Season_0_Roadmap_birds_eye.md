@@ -2,7 +2,7 @@
 ## 30-Minute Playable Demo
 
 **Scope:**
-- 4 scenes (Gathering → Crafting → Marcus Choice → Consequence)
+- 4 scenes (Gathering → Crafting → Ezekiel Choice → Consequence)
 - 100% free assets
 - Validates: Is crafting + one choice fun?
 
@@ -25,8 +25,8 @@
 - ESENS parser validates
 - Success/failure screen
 
-### Scene 3: Marcus Dilemma
-- Text dialogue: Marcus caught experimenting, might be expelled
+### Scene 3: Ezekiel Dilemma
+- Text dialogue: Ezekiel caught experimenting, might be expelled
 - 3 choices:
   1. Support him
   2. Stay neutral
@@ -53,7 +53,7 @@
 - ESENS parser integration
 - Success/failure screens
 
-### Marcus Dialogue
+### Ezekiel Dialogue
 - Text display system
 - 3 choice buttons + branching
 - Save choice to player data
@@ -100,7 +100,7 @@
 ### Tutorial Pass
 - Tooltips for gathering
 - Recipe explanation
-- Marcus setup clarity
+- Ezekiel setup clarity
 - "How to Play" screen
 
 ### Bug Fixing
@@ -193,7 +193,7 @@
 
 1. Did you finish the 30 minutes?
 2. Was crafting fun? (1-5 scale)
-3. Did you care about Marcus's choice?
+3. Did you care about Ezekiel's choice?
 4. Would you play more of this game?
 5. What was confusing or broken?
 
@@ -212,7 +212,7 @@
 - ESENS parser connection
 - Result screens
 
-### Marcus
+### Ezekiel
 - Dialogue display
 - Choice buttons + branching
 - Choice storage

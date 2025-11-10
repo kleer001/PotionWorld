@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="IngredientResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/ingredients/IngredientResource.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "common_mushroom"
+display_name = "Common Mushroom"
+description = "A small, earthy mushroom found in shaded areas. Forms the basis of many healing tonics."
+rarity = "Common"
+category = "Mushroom"
+glow_color = Color(0.5, 0.7, 1, 0.8)
+particle_color = Color(0.6, 0.8, 1, 1)
+base_value = 5
+weight = 0.1
+properties = ["healing", "growth", "binding"]
+degrades = false
+degradation_time = 0.0
+lore = "These mushrooms have been used in healing potions for centuries. Your grandmother always said they grow best under moonlight."
+discovered_by = "Ancient healers"

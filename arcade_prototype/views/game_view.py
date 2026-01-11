@@ -62,6 +62,12 @@ class GameView(arcade.View):
         self.player.center_y = constants.WINDOW_HEIGHT // 2
         self.player_list.append(self.player)
 
+        # Initialize camera to center on player (no snap on startup)
+        self.camera.position = (
+            self.player.center_x - self.window.width / 2,
+            self.player.center_y - self.window.height / 2
+        )
+
         # Create gathering spots in a grid pattern
         spot_configs = [
             ("common_mushroom", arcade.color.BROWN, arcade.color.DARK_GRAY),

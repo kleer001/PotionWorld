@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="IngredientResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/ingredients/IngredientResource.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "tree_sap"
+display_name = "Tree Sap"
+description = "Golden amber sap that oozes from ancient trees. Sticky and preservative, it extends the life of fragile ingredients."
+rarity = "Common"
+category = "Sap"
+glow_color = Color(1, 0.8, 0.2, 0.8)
+particle_color = Color(1, 0.9, 0.3, 1)
+base_value = 7
+weight = 0.12
+properties = ["preservation", "bonding", "time"]
+degrades = false
+degradation_time = 0.0
+lore = "Tree sap from the old growth forest is prized by alchemists for its ability to suspend other ingredients in time. It takes decades for a tree to produce quality sap."
+discovered_by = "Woodland alchemists"

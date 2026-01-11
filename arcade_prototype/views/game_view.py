@@ -62,11 +62,12 @@ class GameView(arcade.View):
         self.player.center_y = constants.WINDOW_HEIGHT // 2
         self.player_list.append(self.player)
 
-        # Initialize camera to center on player (no snap on startup)
-        self.camera.position = (
-            self.player.center_x - self.window.width / 2,
-            self.player.center_y - self.window.height / 2
-        )
+        print(f"🎯 Player position: ({self.player.center_x}, {self.player.center_y})")
+
+        # Initialize camera to center on player (camera.position is the center point!)
+        self.camera.position = (self.player.center_x, self.player.center_y)
+
+        print(f"📷 Camera position: {self.camera.position}")
 
         # Create gathering spots in a grid pattern
         spot_configs = [
@@ -210,9 +211,9 @@ class GameView(arcade.View):
         # Update nearby interactables
         self.player.update_nearby_interactables(self.gathering_spots)
 
-        # Center camera on player
-        target_x = self.player.center_x - self.window.width / 2
-        target_y = self.player.center_y - self.window.height / 2
+        # Center camera on player (camera.position is the center point!)
+        target_x = self.player.center_x
+        target_y = self.player.center_y
 
         # Smooth camera following
         current_x, current_y = self.camera.position

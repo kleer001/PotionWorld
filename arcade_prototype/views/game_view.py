@@ -6,7 +6,7 @@ from systems.game_state import GameState, GamePhase
 from systems.player_data import PlayerData
 from systems.game_events import GameEvents
 from systems.audio_manager import AudioManager
-from entities.player import Player
+from entities.player_grid import GridPlayer
 from entities.gathering_spot import GatheringSpot
 from ui.notification import NotificationManager
 import constants
@@ -31,7 +31,7 @@ class GameView(arcade.View):
         self.gathering_spots = arcade.SpriteList()
 
         # Entities
-        self.player: Player = None
+        self.player: GridPlayer = None
 
         # Camera
         self.camera = arcade.Camera2D()
@@ -55,10 +55,20 @@ class GameView(arcade.View):
     def setup(self):
         """Initialize the game scene."""
         # Create player
-        self.player = Player()
-        self.player.center_x = constants.WINDOW_WIDTH // 2
-        self.player.center_y = constants.WINDOW_HEIGHT // 2
+        self.player = GridPlayer()
+
+        # Set player to center of screen in grid coordinates
+        center_grid_x = (constants.WINDOW_WIDTH // 2) // constants.TILE_SIZE
+        center_grid_y = (constants.WINDOW_HEIGHT // 2) // constants.TILE_SIZE
+        self.player.set_grid_position(center_grid_x, center_grid_y)
+
         self.player_list.append(self.player)
+
+        # Initialize camera to center on player immediately
+        self.camera.position = (
+            self.player.center_x - self.window.width / 2,
+            self.player.center_y - self.window.height / 2
+        )
 
         # Create gathering spots in a grid pattern
         spot_configs = [
@@ -68,17 +78,28 @@ class GameView(arcade.View):
             ("tree_sap", arcade.color.AMBER, arcade.color.DARK_GRAY),
         ]
 
-        # Create spots in a scattered pattern
+        # Create spots on a grid pattern around the player
         import random
         random.seed(42)  # Consistent layout
 
-        for i in range(12):
-            # Pick random ingredient type
-            ingredient_id, normal_color, depleted_color = random.choice(spot_configs)
+        # Place spots on grid tiles around center
+        spot_positions = [
+            (-5, 3), (-3, 5), (0, 6), (3, 5), (5, 3),
+            (-6, 0), (-4, -2), (0, -5), (4, -2), (6, 0),
+            (-3, -4), (3, -4)
+        ]
 
-            # Random position around the center
-            x = constants.WINDOW_WIDTH // 2 + random.randint(-400, 400)
-            y = constants.WINDOW_HEIGHT // 2 + random.randint(-300, 300)
+        for i, (dx, dy) in enumerate(spot_positions):
+            # Pick ingredient type
+            ingredient_id, normal_color, depleted_color = spot_configs[i % len(spot_configs)]
+
+            # Calculate grid position relative to center
+            grid_x = center_grid_x + dx
+            grid_y = center_grid_y + dy
+
+            # Convert to pixel position (tile center)
+            x = grid_x * constants.TILE_SIZE
+            y = grid_y * constants.TILE_SIZE
 
             spot = GatheringSpot(ingredient_id, x, y)
             spot.set_colors(normal_color, depleted_color)
@@ -180,21 +201,6 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time: float):
         """Update game logic."""
-        # Update player input direction based on pressed keys
-        dx = 0.0
-        dy = 0.0
-
-        if arcade.key.A in self.pressed_keys or arcade.key.LEFT in self.pressed_keys:
-            dx -= 1.0
-        if arcade.key.D in self.pressed_keys or arcade.key.RIGHT in self.pressed_keys:
-            dx += 1.0
-        if arcade.key.S in self.pressed_keys or arcade.key.DOWN in self.pressed_keys:
-            dy -= 1.0
-        if arcade.key.W in self.pressed_keys or arcade.key.UP in self.pressed_keys:
-            dy += 1.0
-
-        self.player.set_input_direction(dx, dy)
-
         # Update entities
         self.player.update_movement(delta_time)
         self.gathering_spots.update(delta_time)
@@ -221,6 +227,21 @@ class GameView(arcade.View):
     def on_key_press(self, key, modifiers):
         """Handle key presses."""
         self.pressed_keys.add(key)
+
+        # Grid-based movement (one tile per keypress)
+        dx, dy = 0, 0
+
+        if key in (arcade.key.W, arcade.key.UP):
+            dy = 1
+        elif key in (arcade.key.S, arcade.key.DOWN):
+            dy = -1
+        elif key in (arcade.key.A, arcade.key.LEFT):
+            dx = -1
+        elif key in (arcade.key.D, arcade.key.RIGHT):
+            dx = 1
+
+        if dx != 0 or dy != 0:
+            self.player.try_move(dx, dy)
 
         # Interaction
         if key == arcade.key.E:

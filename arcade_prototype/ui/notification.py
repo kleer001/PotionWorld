@@ -82,11 +82,11 @@ class NotificationManager:
 
             # Draw background
             bg_color = (0, 0, 0, alpha // 2)
-            arcade.draw_lrtb_rectangle_filled(
+            arcade.draw_lrbt_rectangle_filled(
                 self.window_width - 420,
                 self.window_width - 20,
-                y_offset + 15,
                 y_offset - 15,
+                y_offset + 15,
                 bg_color
             )
 

@@ -106,8 +106,8 @@ class GameView(arcade.View):
         self.camera.use()
 
         # Draw ground (simple green background)
-        arcade.draw_lrtb_rectangle_filled(
-            -5000, 5000, 5000, -5000,
+        arcade.draw_lrbt_rectangle_filled(
+            -5000, 5000, -5000, 5000,
             arcade.color.DARK_GREEN
         )
 

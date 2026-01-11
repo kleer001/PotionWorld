@@ -9,7 +9,7 @@ WINDOW_TITLE = "PotionWorld - Season 0 MVP"
 
 # Game settings - Grid-based movement
 TILE_SIZE = 40  # 40px tiles
-PLAYER_MOVE_SPEED = 120.0  # 120px/s = 3 tiles/second
+PLAYER_MOVE_SPEED = 180.0  # 180px/s = 4.5 tiles/second
 CAMERA_SPEED = 0.2  # Faster camera following
 INPUT_BUFFER_TIME = 0.15  # 150ms input buffer
 CORNER_FORGIVENESS = 6  # 6px corner snap threshold

@@ -57,18 +57,28 @@ class GameView(arcade.View):
         # Create player
         self.player = GridPlayer()
 
-        # Set player to center of screen in grid coordinates
-        center_grid_x = (constants.WINDOW_WIDTH // 2) // constants.TILE_SIZE
-        center_grid_y = (constants.WINDOW_HEIGHT // 2) // constants.TILE_SIZE
-        self.player.set_grid_position(center_grid_x, center_grid_y)
+        # Position player at world coordinates that keep camera in positive space
+        # Use a larger world offset to avoid negative camera coordinates
+        world_center_x = constants.WINDOW_WIDTH  # 1920 pixels from origin
+        world_center_y = constants.WINDOW_HEIGHT  # 1080 pixels from origin
 
+        # Convert to grid position
+        center_grid_x = world_center_x // constants.TILE_SIZE
+        center_grid_y = world_center_y // constants.TILE_SIZE
+
+        self.player.set_grid_position(center_grid_x, center_grid_y)
         self.player_list.append(self.player)
 
-        # Initialize camera to center on player immediately
-        self.camera.position = (
-            self.player.center_x - self.window.width / 2,
-            self.player.center_y - self.window.height / 2
-        )
+        # Debug: Print positions
+        print(f"🎯 Player grid position: ({self.player.grid_x}, {self.player.grid_y})")
+        print(f"🎯 Player pixel position: ({self.player.center_x}, {self.player.center_y})")
+
+        # Initialize camera - center on player
+        cam_x = self.player.center_x - self.window.width / 2
+        cam_y = self.player.center_y - self.window.height / 2
+        print(f"📷 Initial camera position: ({cam_x}, {cam_y})")
+
+        self.camera.position = (cam_x, cam_y)
 
         # Create gathering spots in a grid pattern
         spot_configs = [

@@ -24,11 +24,11 @@ from grammar_mvp.game_state import Character, GameState
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 HAND_Y = 100
-SLOT_Y = 225
+SLOT_Y = 475
 HAND_GAP = 10
 CAST_X = SCREEN_WIDTH // 2 + 300
 DECK_X = 1060
-DECK_PILE_COUNT = 20
+DECK_PILE_COUNT = 10
 DECK_OFFSET = 2
 DECK_BROWNS = [
     (85, 55, 25),
@@ -394,10 +394,9 @@ class BattleView(arcade.View):
     def _build_deck_pile(self):
         """Build the decorative deck pile to the right of the hand."""
         self.deck_pile = arcade.SpriteList()
-        half_height = CARD_HEIGHT // 2
         for i in range(DECK_PILE_COUNT):
             color = random.choice(DECK_BROWNS)
-            card = arcade.SpriteSolidColor(CARD_WIDTH, half_height, color=color)
+            card = arcade.SpriteSolidColor(CARD_WIDTH, CARD_HEIGHT, color=color)
             card.center_x = DECK_X + i * DECK_OFFSET
             card.center_y = HAND_Y + i * DECK_OFFSET
             self.deck_pile.append(card)

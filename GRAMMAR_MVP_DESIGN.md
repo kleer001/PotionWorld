@@ -2,39 +2,122 @@
 
 ## Elevator Pitch
 
-A tiny coming-of-age story told in 7 vignettes. Each vignette teaches one layer
-of ESENS potion notation. Each lesson ends with a **battle** — two NPCs clashing
-in a simple turn-based duel where the hero is doomed to lose... unless the player
-writes the right potion. You learn grammar by saving someone's life.
+You are a **Guardian Angel**. Your heroes are dying. The only way to save them
+is to write the right potion — in a language you're learning as you go.
+
+Hit start. A hero is already getting beaten down by a goblin. An angel descends,
+hands the hero a potion — you see the grammar flash on screen: `P+H10`. The
+hero rises. The goblin falls. The hero kneels and prays to the angel. That
+angel is about to be **you**.
+
+No backstory. No timeline. No village. Just battles, potions, and grammar —
+learned by doing.
 
 **Scope:** ~500-800 lines of new Python on top of the existing ESENS parser.
 Terminal-based or minimal Arcade UI. No Godot, no economy, no gathering, no
-Big 5 personalities. Just story, grammar, and consequence.
+relationships. Just combat and grammar.
+
+---
+
+## The Fantasy
+
+You are a Guardian Angel. Mortals fight. Mortals lose. You intervene with
+potions — divine formulae written in ESENS notation. Each battle you win
+**rewards you with new symbols**, expanding what you can write. Your power
+grows as your vocabulary grows.
+
+The grammar IS the progression system. New tokens are your XP.
+
+---
+
+## The Opening (No Menus, No Exposition)
+
+```
+[PRESS START]
+
+        ⚔️  HERO vs GOBLIN  ⚔️
+
+  Hero    ██░░░░░░░░  12/40 HP       Goblin  ████████░░  35/40 HP
+
+  Goblin attacks! 8 damage!
+  Hero HP: 4/40...
+
+  The hero falls to one knee.
+
+        ✦ A light descends from above ✦
+
+  An angel appears. A vial materializes in the hero's hand.
+
+        ╔═══════════════════════╗
+        ║      P + H 1 0       ║
+        ╚═══════════════════════╝
+
+  The hero drinks. HP restored!
+
+  Hero    ██████░░░░  24/40 HP       Goblin  ████████░░  35/40 HP
+
+  Hero attacks! The goblin falls!
+
+  The hero kneels. "Thank you, Guardian."
+
+        That angel is now YOU.
+
+  ✦ SYMBOLS UNLOCKED: P  +  H  [number] ✦
+```
+
+The player just watched the whole loop — crisis, potion, payoff, reward —
+before they've touched a single key. Now they know what the game is.
 
 ---
 
 ## The Loop
 
 ```
-┌─────────────────────────────────────────────┐
-│  1. STORY BEAT  (3-5 lines of narrative)    │
-│         ↓                                   │
-│  2. GRAMMAR LESSON  (new notation concept)  │
-│         ↓                                   │
-│  3. THE CRISIS  (NPC battle begins,         │
-│                   hero is losing)            │
-│         ↓                                   │
-│  4. WRITE THE POTION  (player input)        │
-│         ↓                                   │
-│  5. WATCH IT WORK  (battle resolves with    │
-│                      the potion applied)     │
-│         ↓                                   │
-│  6. THE ECHO  (one-line emotional coda)     │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│  1. BATTLE STARTS  (hero vs enemy, hero is losing)  │
+│         ↓                                           │
+│  2. CRISIS MOMENT  (hero about to die)              │
+│         ↓                                           │
+│  3. ANGEL PROMPT   (you must write a potion)        │
+│         ↓                                           │
+│  4. WRITE POTION   (player types ESENS notation)    │
+│         ↓                                           │
+│  5. POTION LANDS   (watch the effect play out)      │
+│         ↓                                           │
+│  6. HERO WINS      (battle resolves)                │
+│         ↓                                           │
+│  7. PRAYER + REWARD (new symbols unlocked)          │
+└─────────────────────────────────────────────────────┘
 ```
 
-The battle is the payoff. You don't just validate notation — you watch it
-**land**. The hero was about to die, and the potion you wrote turned the tide.
+No narrator. No cutscenes. The battle IS the story. The grammar IS the reward.
+
+---
+
+## Progression: Symbols as Power
+
+The player starts with NOTHING. The intro demo gives them their first symbols.
+Each battle won unlocks more. Your **symbol inventory** is always visible.
+
+```
+YOUR SYMBOLS:  P  +  H  [number]
+```
+
+After each battle, new symbols appear with a flash:
+
+```
+✦ NEW SYMBOL UNLOCKED ✦
+
+    3T  —  "for 3 turns"
+
+  Potions can now have DURATION.
+  Your power is not permanent. Use it wisely.
+
+YOUR SYMBOLS:  P  E  +  -  H  S  D  [number]  [n]T  C
+```
+
+This is the entire progression system. No XP bars, no skill trees, no level-ups.
+You literally gain **letters and symbols** — the building blocks of the language.
 
 ---
 
@@ -43,7 +126,7 @@ The battle is the payoff. You don't just validate notation — you watch it
 ### Two NPCs, Three Stats Each
 
 ```
-HERO                          VILLAIN
+HERO                          ENEMY
 ┌──────────────────┐          ┌──────────────────┐
 │ HP:  ████████░░  │          │ HP:  ██████████  │
 │ STR: 8           │          │ STR: 12          │
@@ -51,181 +134,213 @@ HERO                          VILLAIN
 └──────────────────┘          └──────────────────┘
 ```
 
-- **HP** — health points (0 = lose)
+- **HP** — health points (0 = dead)
 - **STR** — damage dealt per attack (attack = STR - opponent DEF, min 1)
 - **DEF** — damage reduced
 
-That's it. No mana, no items, no positioning. Three numbers.
+That's it. Three numbers per side. The complexity comes from the POTIONS,
+not the combat.
 
 ### Battle Flow
 
-1. Show the hero and villain with their stats
-2. Run 2-3 "preview turns" so the player can see the hero is losing
-   - Display turn-by-turn: `"Villain attacks! 12 STR - 6 DEF = 6 damage. Hero HP: 34/40"`
-   - Make it clear: at this rate, the hero loses in N turns
-3. **PAUSE** — "The hero reaches for a potion. What does it do?"
-4. Player writes ESENS notation
-5. Parser validates → potion effect is applied to the battle state
-6. Battle resumes with the potion active — hero wins (or at least survives)
-7. Display the result with flair
+1. Show hero and enemy with stats
+2. Auto-play 2-3 turns — hero is losing, player watches
+3. **CRISIS** — hero is low HP, about to die
+4. **ANGEL PROMPT** — "Your hero needs you. Write a potion."
+   - Show available symbols
+   - Show what the hero needs (in plain English): "The hero needs healing"
+5. Player types ESENS notation
+6. Parser validates → effect applied to battle
+7. Battle resumes — hero wins with the potion's help
+8. Hero prays → new symbols unlocked
 
-### Why This Works
+### Why Battles Are Rigged (By Design)
 
-- The parser already outputs structured effect data (target, stat, magnitude, duration)
-- Applying an effect to 3 stats is trivial: `hero.strength += effect.magnitude`
-- Duration tracking is just a counter: decrement each turn, remove at 0
-- Each skip's battle is **designed to be unwinnable without the right grammar concept**
-  - Skip 1: hero needs healing → must learn `P+H`
-  - Skip 4: hero needs reactive defense → must learn triggers
-  - Skip 6: hero needs stacking/AOE → must learn extended modifiers
+Every battle is **unwinnable without the specific grammar concept it teaches**.
+The enemy is always tuned so that:
+- Raw stats alone = hero dies
+- Correct potion = hero wins convincingly
 
----
-
-## The Seven Skips
-
-### Skip 1 — "The Gift" (Age 8)
-
-**Story:** Your grandmother is making dinner. She nicks her finger with a knife
-and winces. She looks at you and smiles. "Why don't you make me something for
-this?" She slides her old potion notebook across the table, open to the first
-page. Three symbols. That's all it takes.
-
-**Grammar:** Target + Effect + Stat + Magnitude
-- New tokens: `P` (player), `+` (increase), `H` (health), numbers
-
-**Battle:** Grandmother vs. Kitchen (not a real fight — she keeps pricking
-herself on rose thorns in the garden, losing 2 HP/turn). She's at 8/20 HP.
-Write a healing potion to get her back up.
-
-**Solution:** `P+H15` (heal player 15 HP)
-
-**The Echo:** "She kissed your forehead. The cut was already gone."
+This isn't difficulty — it's pedagogy. The player can't brute-force old
+symbols. They MUST use the new one.
 
 ---
 
-### Skip 2 — "The Lesson" (Age 14)
+## The Battles (7 Encounters)
 
-**Story:** First day at the academy. Instructor Thornwood chalks a formula on
-the board. "Potions are not permanent," he says, not looking at anyone.
-"Neither are your mistakes. But you must learn how long things last."
+### Battle 0 — THE DEMO (Player watches, doesn't play)
 
-**Grammar:** Duration
-- New tokens: `3T` (3 turns), `C` (combat duration), `P` (permanent)
+**Enemy:** Goblin (STR 8, DEF 4, HP 35)
+**Hero:** Wounded Knight (STR 10, DEF 6, HP 12/40)
 
-**Battle:** Academy sparring match. Senior student (STR 10, DEF 8, HP 30) vs.
-your friend Rachel (STR 7, DEF 5, HP 25). Rachel is outmatched. She needs a
-strength boost, but only for the remaining turns of the match.
+The angel (AI) descends and gives `P+H10`. Hero heals to 22, wins the fight.
+Player sees the full loop demonstrated before they touch anything.
 
-**Solution:** `P+S5 3T` (boost strength by 5 for 3 turns) — enough to close
-the gap and let Rachel win before it wears off.
-
-**The Echo:** "Thornwood didn't smile. But he didn't not smile either."
+**Unlocks:** `P` `+` `H` `[number]`
 
 ---
 
-### Skip 3 — "The Dare" (Age 17)
+### Battle 1 — "HEAL" (Player's first potion)
 
-**Story:** Night in the dormitory. Ezekiel grins at you across a candle.
-"They say you can only brew for yourself. But what about... for someone else?
-Or *to* someone else?" He slides a vial across the table. "Prove it."
+**Enemy:** Wolf (STR 7, DEF 3, HP 25)
+**Hero:** Farmer (STR 6, DEF 4, HP 8/30)
 
-**Grammar:** Multiple targets
-- New tokens: `E` (enemy), `A` (all allies), `X` (all enemies)
+The farmer is almost dead. Simple healing is all that's needed. The player
+writes their first potion with the symbols they just saw demonstrated.
 
-**Battle:** Ezekiel has gotten himself into trouble — challenged a bully in the
-courtyard. The bully (STR 14, DEF 10, HP 40) is destroying Ezekiel (STR 8,
-DEF 6, HP 35). You can't boost Ezekiel — you need to *debuff the bully*.
+**Prompt hint:** "The farmer is bleeding out. He needs health."
+**Solution:** `P+H15` or any `P+H[enough]`
+**Grammar taught:** Target + Effect + Stat + Magnitude (the basics)
 
-**Solution:** `E-S6 C` (reduce enemy strength by 6 for combat) or
-`E-D8 C` (reduce enemy defense by 8 for combat)
-
-**The Echo:** "Ezekiel never told anyone what you did. That was the point."
+**Unlocks:** `E` `-` `S` `D` (enemy targeting, decrease, strength, defense)
 
 ---
 
-### Skip 4 — "The Competition" (Age 22)
+### Battle 2 — "WEAKEN" (Target the enemy)
 
-**Story:** The regional potion duel. Your first real competition. The crowd is
-loud. Your opponent is fast — she strikes before you can think. You realize:
-the best potions don't wait to be used. They *react*.
+**Enemy:** Bandit Captain (STR 14, DEF 10, HP 35)
+**Hero:** Town Guard (STR 9, DEF 7, HP 30)
 
-**Grammar:** Triggers
-- New tokens: `>A` (on attack), `<D` (on defend), `^S` (start of turn)
+The guard can't scratch the bandit — DEF too high. Healing won't help because
+the guard can't deal enough damage to win. The player must target the ENEMY
+for the first time.
 
-**Battle:** Your champion (STR 10, DEF 7, HP 35) vs. a speed duelist (STR 15,
-DEF 5, HP 30). The duelist hits first and hits hard. Raw stats won't save you —
-you need a potion that triggers *when the duelist attacks*, punishing her
-aggression.
+**Prompt hint:** "The guard's blade bounces off. The bandit is too strong."
+**Solution:** `E-D8` or `E-S6` (reduce enemy defense or strength)
+**Grammar taught:** Enemy targeting, debuffs
 
-**Solution:** `P+D10 C<D` (boost defense by 10 for combat, triggers on defend)
-or `P+S8 C>A` (boost strength by 8 for combat, triggers on attack)
-
-**The Echo:** "She bowed to you after. You hadn't expected that."
+**Unlocks:** `[n]T` `C` (duration — turns and combat)
 
 ---
 
-### Skip 5 — "The Elements" (Age 28)
+### Battle 3 — "TIMING" (Duration matters)
 
-**Story:** The desert border. You've traveled further than anyone in your
-family ever has. The sand burns. The creatures here are different — armored in
-fire, weak to water. Your old potions slide off them like rain off stone.
-Everything needs an element now.
+**Enemy:** Dueling Champion (STR 12, DEF 9, HP 40)
+**Hero:** Young Challenger (STR 10, DEF 6, HP 35)
 
-**Grammar:** Elemental tags
-- New tokens: `.F` (fire), `.W` (water), `.E` (earth), `.S` (sky), `.D` (death)
+Close fight, but the hero loses in a war of attrition. A permanent buff would
+be overpowered (and the player doesn't have `P` for permanent yet). They need
+a timed boost — just long enough to win.
 
-**Battle:** A fire-armored sand drake (STR 16, DEF 14, HP 45, Fire-resistant)
-vs. a local ranger (STR 12, DEF 8, HP 35). Normal damage is halved by fire
-resistance. The ranger needs a water-element attack boost to break through.
+**Prompt hint:** "She needs an edge — but only for a few strikes."
+**Solution:** `P+S8 3T` (strength boost for 3 turns)
+**Grammar taught:** Duration — temporary effects, turns vs. combat
 
-**Solution:** `P+S12 C.W` (boost strength by 12, water element, for combat) —
-water element bypasses fire resistance and deals bonus damage.
-
-**The Echo:** "The desert taught you that the world is bigger than your village.
-So are its problems."
+**Unlocks:** `>A` `<D` `^S` (triggers — on attack, on defend, start of turn)
 
 ---
 
-### Skip 6 — "The Masterwork" (Age 35)
+### Battle 4 — "REACT" (Trigger-based potions)
 
-**Story:** The royal court. The queen's champion faces three assassins at once.
-One potion. One chance. It needs to do more than one thing. It needs to *stack*.
-It needs to hit *everyone*.
+**Enemy:** Assassin (STR 18, DEF 4, HP 25)
+**Hero:** Knight (STR 10, DEF 12, HP 40)
 
-**Grammar:** Extended modifiers
-- New tokens: `.ST` (stacking), `.AR` (area effect), `.DOT` (damage over time)
+The assassin hits insanely hard but is fragile. Static buffs aren't enough —
+the assassin will kill the knight in 3 hits. The knight needs a potion that
+activates WHEN she's attacked, turning the assassin's aggression against him.
 
-**Battle:** The champion (STR 14, DEF 12, HP 50) vs. three assassins (STR 10,
-DEF 6, HP 20 each). One-on-one the champion wins, but three-on-one is death.
-The potion must affect all enemies or stack damage over time.
+**Prompt hint:** "The assassin strikes too fast. The knight needs to react."
+**Solution:** `P+D8 C<D` (defense boost on defend) or `E-S10 C>A` (enemy
+loses strength whenever they attack)
+**Grammar taught:** Triggers — potions that respond to events
 
-**Solution:** `X-H5 3T.DOT` (all enemies lose 5 HP per turn for 3 turns, DOT)
-or `X-S6 C.AR` (reduce all enemies' strength by 6 for combat, area effect)
-
-**The Echo:** "The queen never learned your name. The champion never forgot it."
+**Unlocks:** `.F` `.W` `.E` `.S` `.D` (elements)
 
 ---
 
-### Skip 7 — "The Letter" (Age 60)
+### Battle 5 — "ELEMENTS" (Elemental advantage)
 
-**Story:** Your study. Late evening. A letter from your grandchild — they're
-starting at the academy next year. They ask: "What's the most important potion
-you ever made?" You dip your pen. You write one formula. Everything you know,
-in a single line.
+**Enemy:** Flame Wyrm (STR 16, DEF 14, HP 45, Fire element — resists non-water)
+**Hero:** Ranger (STR 12, DEF 8, HP 35)
 
-**Grammar:** Full ESENS — conditionals, chaining, the complete language
+Normal attacks are halved against the wyrm's fire armor. The ranger needs a
+water-element potion to break through. Old notation won't cut it.
 
-**Battle:** The "final exam" — a vision/memory of a legendary battle. An ancient
-golem (STR 20, DEF 18, HP 80, Earth-element) vs. a young hero (STR 10, DEF 8,
-HP 40). Unwinnable by every measure. The player must write a complex,
-multi-layered potion using everything they've learned.
+**Prompt hint:** "Fire armor. Normal steel is useless. Think about what
+beats fire."
+**Solution:** `P+S12 C.W` (water-element strength boost for combat)
+**Grammar taught:** Elements — adding elemental properties to effects
 
-**Solution:** `P+S15 C>A.F.ST.?HP<50%` (boost strength by 15 for combat, on
-attack, fire element, stacking, only when HP below 50%) — or any valid complex
-notation that turns the tide. Multiple correct answers accepted.
+**Unlocks:** `.ST` `.AR` `.DOT` (stacking, area, damage-over-time)
 
-**The Echo:** "You sealed the letter. Some lessons take a lifetime to teach,
-and a single line to write."
+---
+
+### Battle 6 — "OVERWHELM" (Multi-target / stacking)
+
+**Enemy:** 3x Shadow Thieves (STR 9, DEF 5, HP 18 each)
+**Hero:** Paladin (STR 14, DEF 12, HP 50)
+
+The paladin can beat any one thief easily. But three at once deal 3x damage per
+round — she drops fast. The player needs area effect or DOT to handle the group.
+
+**Prompt hint:** "Three against one. She can't fight them all alone."
+**Solution:** `X-H5 3T.DOT` (all enemies lose 5 HP/turn for 3 turns) or
+`X-S5 C.AR` (reduce all enemies' strength for combat, area)
+**Grammar taught:** Extended modifiers — AOE, DOT, stacking
+
+**Unlocks:** `.?HP<` `&` (conditionals, chaining)
+
+---
+
+### Battle 7 — "ASCENSION" (Full grammar, the final test)
+
+**Enemy:** The Fallen Angel (STR 20, DEF 18, HP 80, Death element)
+**Hero:** The Chosen (STR 12, DEF 10, HP 45)
+
+An angel that fell. Your opposite. The stats are impossible. The player must
+compose a complex, multi-layered potion using everything they've learned.
+Multiple valid solutions — this is the creative capstone.
+
+**Prompt hint:** "Everything you've learned. One formula. Make it count."
+**Solution:** Any valid complex notation, e.g.:
+- `P+S15 C>A.S.ST.?HP<50%` (sky-element strength, stacking, triggers on
+  attack, activates when low HP)
+- `E-D12 C.S&P+S10 C>A` (debuff enemy defense + self-buff on attack)
+**Grammar taught:** Full ESENS — conditionals, chaining, the whole language
+
+**Reward:** No new symbols. Instead:
+
+```
+The Fallen Angel dissolves into light.
+The Chosen looks up.
+
+"I don't need you anymore."
+
+They smile.
+
+        ✦ YOUR HERO HAS ASCENDED ✦
+
+  You taught them everything.
+  The grammar of miracles.
+
+                        FIN
+```
+
+---
+
+## Symbol Unlock Progression
+
+| Battle | New Symbols Unlocked                    | Cumulative Vocabulary       |
+|--------|-----------------------------------------|-----------------------------|
+| Demo   | `P` `+` `H` `[number]`                 | 4 tokens                    |
+| 1      | `E` `-` `S` `D`                        | 8 tokens                    |
+| 2      | `[n]T` `C`                              | 10 tokens                   |
+| 3      | `>A` `<D` `^S`                          | 13 tokens                   |
+| 4      | `.F` `.W` `.E` `.S` `.D`               | 18 tokens                   |
+| 5      | `.ST` `.AR` `.DOT`                      | 21 tokens                   |
+| 6      | `.?HP<` `&`                             | 23 tokens                   |
+| 7      | —                                       | COMPLETE                    |
+
+---
+
+## What the Player NEVER Sees
+
+- A menu screen (start drops straight into the demo)
+- A tutorial popup
+- The word "tutorial"
+- A narrator explaining things
+- Any backstory or lore dump
+- An inventory, a shop, a map, a dialogue tree
 
 ---
 
@@ -241,127 +356,66 @@ and a single line to write."
 
 ```
 grammar_mvp/
-├── battle.py          # Minimal combat engine (~100-150 lines)
-│   ├── Character      # dataclass: name, hp, max_hp, strength, defense, element
-│   ├── PotionEffect   # bridges parser output → stat modifications
-│   ├── Battle         # runs turn loop, applies effects, tracks duration
-│   └── BattleDisplay  # formats combat for terminal output
+├── battle.py          # Minimal combat engine (~150 lines)
+│   ├── Character      # dataclass: name, hp, max_hp, str, def, element
+│   ├── apply_potion() # bridges parser output → stat changes
+│   ├── resolve_turn() # one attack round
+│   └── run_battle()   # full battle with potion intervention
 │
-├── story.py           # Story engine (~50-80 lines)
-│   ├── load_skip()    # loads a skip from data
-│   └── display_skip() # renders narrative text with pacing
+├── puzzle.py          # Angel prompt + validation (~80 lines)
+│   ├── prompt_angel() # gets player input, shows available symbols
+│   ├── validate()     # calls ESENS parser
+│   ├── hint()         # progressive hints on failure
+│   └── check_win()    # simulates: does this potion save the hero?
 │
-├── puzzle.py          # Input/validation loop (~60-100 lines)
-│   ├── prompt_potion() # gets player input
-│   ├── validate()      # calls ESENS parser
-│   ├── hint()          # progressive hints on failure
-│   └── grade()         # checks if potion actually solves the battle
+├── game.py            # Main loop — iterate battles (~60 lines)
+│   ├── intro_demo()   # the scripted demo battle
+│   └── play()         # loop through battles 1-7
 │
-├── game.py            # Main game loop (~50-80 lines)
-│   └── play()         # iterates through 7 skips
+├── display.py         # Terminal formatting (~80 lines)
+│   ├── hp_bar()       # ASCII health bars
+│   ├── battle_card()  # side-by-side stat display
+│   ├── flash()        # symbol unlock animation
+│   └── typewriter()   # slow text for dramatic moments
 │
-├── data/
-│   └── skips.json     # All 7 skip definitions (story, battle setup,
-│                      #   valid solutions, hints, grammar concepts)
-│
-└── display.py         # Terminal formatting (~50-80 lines)
-    ├── hp_bar()       # ASCII health bars
-    ├── battle_card()  # character stat display
-    ├── typewriter()   # slow text reveal for story beats
-    └── color()        # ANSI color helpers
+└── data/
+    └── battles.json   # All 8 battle definitions (demo + 7 player battles)
 ```
 
-**Estimated total: ~400-600 lines of new code + ~200 lines of JSON data.**
+**Estimated total: ~400-500 lines of new code + ~150 lines of JSON data.**
 
-### Battle Engine Pseudocode
-
-```python
-@dataclass
-class Character:
-    name: str
-    hp: int
-    max_hp: int
-    strength: int
-    defense: int
-    element: str = None
-    active_effects: list = field(default_factory=list)
-
-def resolve_turn(attacker: Character, defender: Character) -> str:
-    """One attack. Returns narrative string."""
-    damage = max(1, attacker.strength - defender.defense)
-    # Element bonus/resistance
-    if attacker.element and defender.element:
-        damage = apply_element_modifier(damage, attacker.element, defender.element)
-    defender.hp = max(0, defender.hp - damage)
-    return f"{attacker.name} attacks! {damage} damage. {defender.name} HP: {defender.hp}/{defender.max_hp}"
-
-def apply_potion(effect, battle):
-    """Bridge from ESENS parser output to battle state."""
-    target = battle.hero if effect.target == "P" else battle.villain
-    if effect.stat == "H":
-        target.hp = min(target.max_hp, target.hp + effect.magnitude)
-    elif effect.stat == "S":
-        target.strength += effect.magnitude  # (or -= for debuffs)
-    elif effect.stat == "D":
-        target.defense += effect.magnitude
-    # Track duration for removal
-    target.active_effects.append(ActiveEffect(effect, remaining=effect.duration))
-```
-
-### Data Format (One Skip)
+### Battle Data Format
 
 ```json
 {
-  "skip": 1,
-  "title": "The Gift",
-  "age": 8,
-  "narrative": [
-    "Your grandmother is making dinner.",
-    "She nicks her finger and winces.",
-    "She slides her notebook across the table.",
-    "\"Why don't you make me something for this?\""
-  ],
-  "grammar_intro": {
-    "concept": "Target + Effect + Stat + Magnitude",
-    "new_tokens": ["P", "+", "H", "<number>"],
-    "example": "P+H5",
-    "explanation": "Player gains 5 health"
+  "id": 1,
+  "title": "HEAL",
+  "hero": {
+    "name": "Farmer",
+    "hp": 8, "max_hp": 30,
+    "str": 6, "def": 4
   },
-  "battle": {
-    "hero": { "name": "Grandmother", "hp": 8, "max_hp": 20, "str": 3, "def": 2 },
-    "villain": { "name": "Rose Thorns", "hp": 999, "max_hp": 999, "str": 4, "def": 99 },
-    "preview_turns": 2,
-    "win_condition": "hero_survives_3_turns"
+  "enemy": {
+    "name": "Wolf",
+    "hp": 25, "max_hp": 25,
+    "str": 7, "def": 3
   },
-  "valid_solutions": ["P+H*"],
-  "hints": [
-    "Who needs help? (P for player)",
-    "What direction? (+ to increase)",
-    "What stat? (H for health)",
-    "How much? (pick a number)"
-  ],
-  "echo": "She kissed your forehead. The cut was already gone."
+  "preview_turns": 3,
+  "prompt_hint": "The farmer is bleeding out. He needs health.",
+  "valid_pattern": "P\\+H\\d+",
+  "min_heal": 10,
+  "symbols_unlocked": ["E", "-", "S", "D"],
+  "unlock_flavor": "You can now target enemies. And take things away."
 }
 ```
 
 ---
 
-## What This Proves
-
-1. **ESENS is learnable** — players can write notation, not just read it
-2. **Grammar has stakes** — wrong notation = hero dies, right notation = hero lives
-3. **Story carries mechanics** — each grammar concept arrives at an emotionally
-   resonant moment, not as a tutorial popup
-4. **The parser already works** — we're building a game *around* existing tech
-5. **Scope is contained** — 7 screens, 3 stats, no inventory, no economy,
-   no open world. Done in days, not months.
-
----
-
 ## Open Questions
 
-- [ ] Terminal-only or minimal GUI (Arcade)?
-- [ ] Allow freeform input from Skip 1, or scaffold with blanks early on?
-- [ ] Multiple valid solutions per skip, or one canonical answer?
-- [ ] Sound? Even terminal beeps for hits would add juice.
-- [ ] Save progress between skips, or play all 7 in one sitting (~20 min)?
+- [ ] Terminal-only or minimal Arcade/Pygame GUI?
+- [ ] Freeform typing from Battle 1, or drag-drop/fill-blank early on?
+- [ ] Allow creative solutions or require specific notation?
+- [ ] Sound? Even terminal beeps for hits add juice.
+- [ ] One sitting (~15-20 min) or save between battles?
+- [ ] After beating all 7 — endless mode with random battles + full grammar?

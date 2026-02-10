@@ -164,8 +164,10 @@ class BattleView(arcade.View):
 
         # Held card (on top of everything)
         if self.held_card:
-            self.held_card.draw()
-            self._draw_card_texts(arcade.SpriteList([self.held_card]))
+            held_list = arcade.SpriteList()
+            held_list.append(self.held_card)
+            held_list.draw()
+            self._draw_card_texts(held_list)
 
         # HUD
         self.feedback_text.draw()

@@ -14,6 +14,7 @@ from grammar_mvp.cards import (
     CARD_HEIGHT,
     CARD_WIDTH,
     CardSprite,
+    dispatch_action,
     load_cards,
     load_starter_deck,
 )
@@ -189,6 +190,10 @@ class BattleView(arcade.View):
         cards = arcade.get_sprites_at_point((x, y), self.hand_list)
         if cards:
             card = cards[-1]
+            # Action cards play on click — no drag
+            if card.card_data.get("type") == "action":
+                self._play_action_card(card)
+                return
             self.held_card = card
             self.held_offset_x = card.center_x - x
             self.held_offset_y = card.center_y - y
@@ -295,14 +300,52 @@ class BattleView(arcade.View):
         self.feedback_text.color = arcade.color.YELLOW_GREEN
 
     # ------------------------------------------------------------------
+    # Action cards — M8
+    # ------------------------------------------------------------------
+
+    def _play_action_card(self, card: CardSprite):
+        """Play an action card from hand (click, not drag)."""
+        if self.state.mana < 1:
+            return
+        self.state.mana -= 1
+        if card.card_data in self.state.hand:
+            self.state.hand.remove(card.card_data)
+        if card in self.hand_list:
+            self.hand_list.remove(card)
+        dispatch_action(card.card_data, self.state)
+        self._full_sync()
+        self.state.battle_log.append(f"PLAYED: {card.card_data['label']}")
+
+    def _full_sync(self):
+        """Rebuild all sprites from state (after action cards / curses)."""
+        # Rebuild slots if slot_count changed (Extra Slot / Shattered Slot)
+        if len(self.slot_list) != self.state.slot_count:
+            self.slot_list = create_lock_slots(
+                self.state.slot_count, SCREEN_WIDTH, SLOT_Y,
+            )
+            # Trim or extend the lock list to match
+            self.state.lock = self.state.lock[:self.state.slot_count]
+            while len(self.state.lock) < self.state.slot_count:
+                self.state.lock.append(None)
+        self._sync_lock()
+        self._sync_hand()
+        self._update_feedback()
+
+    # ------------------------------------------------------------------
     # State ↔ sprite helpers
     # ------------------------------------------------------------------
 
     def _draw_cards_from_deck(self, count):
-        """Move up to *count* cards from deck to hand."""
+        """Move up to *count* cards from deck to hand. Curses fire on draw."""
         for _ in range(count):
-            if self.state.deck:
-                self.state.hand.append(self.state.deck.pop())
+            if not self.state.deck:
+                break
+            card = self.state.deck.pop()
+            if card.get("type") == "curse" and card.get("on_draw"):
+                dispatch_action(card, self.state)
+                self.state.battle_log.append(f"CURSE: {card['label']}!")
+                continue  # curse fires and vanishes
+            self.state.hand.append(card)
 
     def _sync_hand(self):
         """Rebuild hand_list sprites from state.hand."""
@@ -318,6 +361,21 @@ class BattleView(arcade.View):
             sprite.center_y = HAND_Y
             sprite.home_position = (sprite.center_x, sprite.center_y)
             self.hand_list.append(sprite)
+
+    def _sync_lock(self):
+        """Rebuild lock_list and slot.card references from state.lock."""
+        self.lock_list = arcade.SpriteList()
+        for slot in self.slot_list:
+            card_data = self.state.lock[slot.slot_index]
+            if card_data:
+                sprite = CardSprite(card_data)
+                sprite.position = slot.position
+                sprite.is_locked = True
+                sprite.slot_index = slot.slot_index
+                slot.card = sprite
+                self.lock_list.append(sprite)
+            else:
+                slot.card = None
 
     def _recompute_hand_positions(self):
         """Re-space hand cards without rebuilding sprites."""

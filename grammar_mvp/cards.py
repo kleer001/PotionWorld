@@ -64,6 +64,60 @@ def build_deck(card_ids, card_db):
     return deck
 
 
+# ---------------------------------------------------------------------------
+# Action dispatch — M8
+# ---------------------------------------------------------------------------
+
+
+def redraw_hand(state, args):
+    """Discard current hand, draw a fresh hand."""
+    state.deck.extend(state.hand)
+    state.hand.clear()
+    random.shuffle(state.deck)
+    for _ in range(min(state.hand_size, len(state.deck))):
+        state.hand.append(state.deck.pop())
+
+
+def draw_cards(state, args):
+    """Draw extra cards from deck to hand."""
+    for _ in range(args.get("count", 1)):
+        if state.deck:
+            state.hand.append(state.deck.pop())
+
+
+def modify_state(state, args):
+    """Apply *delta* to a named *field* on state."""
+    field = args["field"]
+    setattr(state, field, getattr(state, field) + args["delta"])
+
+
+def recycle_card(state, args):
+    """Undock the rightmost locked card back to hand, refund 1 mana."""
+    for i in range(len(state.lock) - 1, -1, -1):
+        if state.lock[i] is not None:
+            state.hand.append(state.lock[i])
+            state.lock[i] = None
+            state.mana = min(state.mana + 1, state.max_mana)
+            return
+
+
+ACTION_REGISTRY = {
+    "redraw_hand": redraw_hand,
+    "draw_cards": draw_cards,
+    "modify_state": modify_state,
+    "recycle_card": recycle_card,
+}
+
+
+def dispatch_action(card_data, state):
+    """Look up and call the action/on_draw function for a card."""
+    action_name = card_data.get("action") or card_data.get("on_draw")
+    if not action_name or action_name not in ACTION_REGISTRY:
+        return
+    args = card_data.get("args") or card_data.get("on_draw_args", {})
+    ACTION_REGISTRY[action_name](state, args)
+
+
 class CardSprite(arcade.SpriteSolidColor):
     """An 80×120 solid-color rectangle representing one card."""
 

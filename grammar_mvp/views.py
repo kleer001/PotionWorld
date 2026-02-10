@@ -162,6 +162,11 @@ class BattleView(arcade.View):
         self.hand_list.draw()
         self._draw_card_texts(self.hand_list)
 
+        # Held card (on top of everything)
+        if self.held_card:
+            self.held_card.draw()
+            self._draw_card_texts(arcade.SpriteList([self.held_card]))
+
         # HUD
         self.feedback_text.draw()
         self.mana_text.draw()
@@ -191,20 +196,24 @@ class BattleView(arcade.View):
         if button != arcade.MOUSE_BUTTON_LEFT:
             return
 
-        # Try undocking a locked card first
+        # Try lifting a locked card out of its slot
         cards = arcade.get_sprites_at_point((x, y), self.lock_list)
         if cards:
             card = cards[-1]
-            self._undock_card(card)
+            self._lift_from_slot(card)
             self.held_card = card
             self.held_offset_x = card.center_x - x
             self.held_offset_y = card.center_y - y
             return
 
-        # Try picking up a hand card (grammar and action cards both drag)
+        # Try picking up a hand card — remove from hand so the gap closes
         cards = arcade.get_sprites_at_point((x, y), self.hand_list)
         if cards:
             card = cards[-1]
+            self.hand_list.remove(card)
+            if card.card_data in self.state.hand:
+                self.state.hand.remove(card.card_data)
+            self._recompute_hand_positions()
             self.held_card = card
             self.held_offset_x = card.center_x - x
             self.held_offset_y = card.center_y - y
@@ -222,27 +231,27 @@ class BattleView(arcade.View):
         self.held_card = None
 
         # Attempt to dock into a slot
-        if not card.is_locked and self.state.mana >= 1:
+        if self.state.mana >= 1:
             hits = arcade.check_for_collision_with_list(card, self.slot_list)
             for slot in hits:
                 if slot.card is None:
                     self._dock_card(card, slot)
                     return
 
-        # No dock — return to hand position
-        card.position = card.home_position
+        # Return to hand at the closest position
+        self._insert_into_hand(card)
 
     # ------------------------------------------------------------------
     # Dock / undock helpers
     # ------------------------------------------------------------------
 
     def _dock_card(self, card: CardSprite, slot):
-        """Snap *card* into *slot*, deduct mana, update parser feedback."""
+        """Snap *card* into *slot*, deduct mana, update parser feedback.
+
+        Card must already be removed from hand (picked-up cards are
+        taken out of hand_list/state.hand on mouse press).
+        """
         card.position = slot.position
-        if card in self.hand_list:
-            self.hand_list.remove(card)
-        if card.card_data in self.state.hand:
-            self.state.hand.remove(card.card_data)
         self.lock_list.append(card)
         slot.card = card
         card.is_locked = True
@@ -251,21 +260,39 @@ class BattleView(arcade.View):
         self.state.mana -= 1
         self._update_feedback()
 
-    def _undock_card(self, card: CardSprite):
-        """Pull *card* out of its slot, refund mana."""
+    def _lift_from_slot(self, card: CardSprite):
+        """Lift *card* out of its slot and refund mana. Does NOT return to hand."""
         for slot in self.slot_list:
             if slot.card is card:
                 slot.card = None
                 self.state.lock[slot.slot_index] = None
                 break
         self.lock_list.remove(card)
-        self.hand_list.append(card)
-        self.state.hand.append(card.card_data)
         card.is_locked = False
         card.slot_index = -1
         self.state.mana = min(self.state.mana + 1, self.state.max_mana)
-        self._recompute_hand_positions()
         self._update_feedback()
+
+    def _insert_into_hand(self, card: CardSprite):
+        """Insert *card* into hand at the position closest to its x-coordinate."""
+        count = len(self.state.hand)
+        new_count = count + 1
+        total_width = new_count * CARD_WIDTH + (new_count - 1) * HAND_GAP
+        start_x = (SCREEN_WIDTH - total_width) / 2 + CARD_WIDTH / 2
+
+        # Within a card's height of the hand row → pick nearest gap
+        best_idx = count
+        if abs(card.center_y - HAND_Y) <= CARD_HEIGHT:
+            best_dist = float("inf")
+            for i in range(new_count):
+                pos_x = start_x + i * (CARD_WIDTH + HAND_GAP)
+                dist = abs(card.center_x - pos_x)
+                if dist < best_dist:
+                    best_dist = dist
+                    best_idx = i
+
+        self.state.hand.insert(best_idx, card.card_data)
+        self._sync_hand()
 
     # ------------------------------------------------------------------
     # CAST

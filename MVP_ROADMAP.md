@@ -259,9 +259,11 @@ Add to `BattleView.__init__`:
 - For now: just print to battle log and clear the lock slots
 - Move locked cards to a discard pile (or just remove from lock_list)
 - Refill hand from deck
+- Player stays in build phase — they can cast again while they
+  have mana (multi-cast)
 
 **Done when:** Player docks cards, hits CAST, parser validates, lock
-clears, hand refills from deck.
+clears, hand refills, and player can immediately build another potion.
 
 ---
 
@@ -343,15 +345,22 @@ mana. Draw 2 pulls extra cards. Curses fire on draw.
   - **"preview"**: auto-play turns on a timer (~1 second each).
     Call `resolve_turn` alternating. Append to battle_log.
     After 2-3 turns, switch to **"build"**.
-  - **"build"**: player drags cards, docks, casts. CAST button
-    calls `apply_potion`, then switches to **"resolve"**.
-  - **"resolve"**: auto-play remaining turns on a timer. Tick
-    effects each turn. Check for win/lose. When battle ends,
+  - **"build"**: player drags cards, docks, casts. Action cards
+    playable any time during this phase. On CAST:
+    - `apply_potion` → auto-play 1-2 turns on a timer
+    - After turns resolve, check for win/lose
+    - If battle over → **"reward"** or **"gameover"**
+    - If player has mana remaining → back to **"build"**
+    - If player is out of mana → switch to **"resolve"**
+  - **"resolve"**: auto-play remaining turns until battle ends.
+    Tick effects each turn. When someone drops to 0 HP,
     switch to **"reward"** or **"gameover"**.
-  - **"reward"**: show card choices (M10).
+  - **"reward"**: show card choices (M11).
+  - **"gameover"**: retry button restarts the same battle.
 
-**Done when:** Preview turns play out, player builds and casts a potion,
-battle resumes and resolves to a win or loss.
+**Done when:** Preview turns play out, player builds and casts potions
+(multiple times if they have mana), battle auto-plays between casts,
+resolves to a win or loss.
 
 ---
 
@@ -413,6 +422,7 @@ to deck. On lose: retry.
 **Lose state** (`phase == "gameover"`):
 - Show "YOUR HERO HAS FALLEN" text
 - Show retry button → restart same battle (reshuffle deck, deal hand)
+- No permadeath for MVP — player retries until they win
 
 **Battle progression:**
 - List of enemy stat tuples, hardcoded for MVP:

@@ -56,34 +56,33 @@ Key display elements:
 ## Core Loop
 
 ```
-  ┌──────────────────────────────────────┐
-  │  1. BATTLE OPENS                     │
-  │     Hero vs Enemy stats shown.       │
-  │     2-3 preview turns auto-play.     │
-  │     "Turns to live" is visible.      │
-  │              ↓                       │
-  │  2. HAND DEALT                       │
-  │     Draw cards from your deck.       │
-  │     See your mana pool.              │
-  │              ↓                       │
-  │  3. BUILD PHASE                      │
-  │     Drag cards into slots.           │
-  │     Parser live-validates as you go. │
-  │     Mana cost updates in real-time.  │
-  │              ↓                       │
-  │  4. CAST                             │
-  │     Hit the button.                  │
-  │     Potion effect animates.          │
-  │     Stats change visibly.            │
-  │              ↓                       │
-  │  5. BATTLE RESOLVES                  │
-  │     Remaining turns auto-play.       │
-  │     Hero wins or dies.               │
-  │              ↓                       │
-  │  6. REWARD                           │
-  │     Win → pick new cards for deck.   │
-  │     Lose → try again / game over.    │
-  └──────────────────────────────────────┘
+  ┌──────────────────────────────────────────────┐
+  │  1. BATTLE OPENS                             │
+  │     Hero vs Enemy stats shown.               │
+  │     2-3 preview turns auto-play.             │
+  │     "Turns to live" is visible.              │
+  │              ↓                               │
+  │  2. HAND DEALT                               │
+  │     Draw cards from your deck.               │
+  │     See your mana pool.                      │
+  │              ↓                               │
+  │  3. PLAYER PHASE (repeats while mana > 0)    │
+  │     Drag grammar cards into lock slots.      │
+  │     Play action cards from hand any time.    │
+  │     Parser live-validates as you go.         │
+  │     CAST fires the potion, battle advances.  │
+  │     Hand refills, mana decreases.            │
+  │     Player can cast again or pass.           │
+  │              ↓                               │
+  │  4. BATTLE CONTINUES                         │
+  │     Turns auto-play after each cast.         │
+  │     Player can intervene again if they       │
+  │     have mana and cards.                     │
+  │              ↓                               │
+  │  5. BATTLE ENDS                              │
+  │     Hero wins → reward (pick new card).      │
+  │     Hero dies → retry same battle.           │
+  └──────────────────────────────────────────────┘
 ```
 
 ### The Build Phase In Detail
@@ -106,14 +105,24 @@ docking slots, trying to construct the best potion they can.
   potion will do in plain English. No surprises about grammar — the surprise
   is whether the *strategy* works.
 
-### One Cast Per Battle (MVP)
+### Multiple Casts Per Battle
 
-For the MVP, you get one potion per battle. One build. One cast. This keeps
-it simple and makes each construction feel weighty. If it doesn't save the
-hero, you lose.
+The player can cast as many potions as they want, as long as they have mana.
+Each cast: dock grammar cards, hit CAST, watch a turn or two play out, then
+decide whether to cast again or let the battle run.
 
-Future versions could allow multiple casts per battle (spend more mana, draw
-more cards mid-fight), but MVP = one shot.
+Action cards (Redraw, Grace, etc.) can be played from hand at any time
+during the player phase — before, between, or after casts. They cost 1 mana
+like everything else.
+
+This flow means a player might:
+- Cast a small heal, watch a turn, realize they need defense, cast again
+- Play Redraw to fish for better cards, then cast
+- Play Grace for +3 mana, then cast a bigger potion
+- Cast one potion and let it ride
+
+Mana is the only constraint. When it's gone, the battle plays out with
+whatever effects are active.
 
 ---
 
@@ -396,7 +405,6 @@ variety but less reliability. Classic deckbuilder tension.
 - Legendary cards
 - Ascension difficulty levels (modifiers that make each run harder)
 - Persistent meta-progression (unlock new starter decks, card backs, etc.)
-- Multi-cast battles (spend mana for additional potion casts)
 - Advanced chain and composition cards (&, >Heal, >Expl)
 - Leaderboards (fewest cards used, lowest mana spent, fastest clear)
 
@@ -548,14 +556,6 @@ water. The cost is for adding the modifier, not for the element's power.
 | Enemy-based        | Harder enemies give you more mana         | Self-balancing         |
 | Grace gain on win  | Win streaks increase pool, loss resets     | Momentum mechanic      |
 
-### Multi-Cast Speculation (Post-MVP)
-
-If we allow multiple casts per battle:
-- First cast: costs listed above
-- Second cast: draw 3 new cards, costs 1.5x
-- Third cast: draw 2 new cards, costs 2x
-- Incentivizes getting it right the first time, but gives a safety net
-
 ---
 
 ## The Demo: What The Player Sees From Moment Zero
@@ -619,12 +619,21 @@ That's the game.
 
 ---
 
+## Design Decisions (Resolved)
+
+- **Multiple casts per battle.** Cast as many times as you want while you
+  have mana. This is what makes action cards meaningful.
+- **Action cards playable any time.** Before, between, or after casts.
+  They don't consume a cast — they're instant, cost 1 mana.
+- **Retry on loss.** Hero dies → retry the same battle. No permadeath,
+  no card loss. MVP is forgiving.
+- **Battle turns auto-play.** Preview turns and post-cast turns run on a
+  timer. Pacing adjustable later (may adapt to player skill).
+
 ## Open Design Questions
 
 - [ ] Can the player rearrange cards in slots, or are they left-to-right
       locked? (Rearrangeable feels better — lets them experiment.)
-- [ ] Do non-potion cards (Redraw, Divine Shield) take your whole turn,
-      or can they be played alongside a potion cast?
 - [ ] Should the parser reject invalid sequences live (red glow) or only
       on CAST (let them try and fail)?
 - [ ] Card art direction: abstract symbols? Potion ingredients? Angel
@@ -633,4 +642,3 @@ That's the game.
 - [ ] Duplicate card cap: can you have 5 copies of `+` or is there a max?
 - [ ] Should magnitude cards be fixed (5, 10, 15, 20) or continuous
       (any number)? Fixed is more "card-like" and constrains choices.
-- [ ] What happens on a loss? Retry same battle? Lose a card? Run ends?

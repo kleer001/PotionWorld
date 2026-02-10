@@ -73,24 +73,27 @@ before they've touched a single key. Now they know what the game is.
 ## The Loop
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  1. BATTLE STARTS  (hero vs enemy, hero is losing)  │
-│         ↓                                           │
-│  2. CRISIS MOMENT  (hero about to die)              │
-│         ↓                                           │
-│  3. ANGEL PROMPT   (you must write a potion)        │
-│         ↓                                           │
-│  4. WRITE POTION   (player types ESENS notation)    │
-│         ↓                                           │
-│  5. POTION LANDS   (watch the effect play out)      │
-│         ↓                                           │
-│  6. HERO WINS      (battle resolves)                │
-│         ↓                                           │
-│  7. PRAYER + REWARD (new symbols unlocked)          │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  1. BATTLE STARTS  (hero vs enemy, auto-play begins)     │
+│         ↓                                                │
+│  2. CRISIS MOMENT  (hero is losing, player takes over)   │
+│         ↓                                                │
+│  3. BUILD PHASE    (drag cards into lock slots)          │
+│         ↓                                                │
+│  4. CAST           (potion fires, effect applies)        │
+│         ↓                                                │
+│  5. AUTO-PLAY      (1-2 turns resolve)                   │
+│         ↓                                                │
+│      ┌─── still have mana? ──→ back to step 3           │
+│      ↓                                                   │
+│  6. BATTLE RESOLVES (auto-play until someone drops)      │
+│         ↓                                                │
+│  7. REWARD / RETRY  (win: new card — lose: try again)    │
+└──────────────────────────────────────────────────────────┘
 ```
 
 No narrator. No cutscenes. The battle IS the story. The grammar IS the reward.
+Cast as many potions as you can afford. Action cards playable any time during build.
 
 ---
 
@@ -144,25 +147,16 @@ not the combat.
 ### Battle Flow
 
 1. Show hero and enemy with stats
-2. Auto-play 2-3 turns — hero is losing, player watches
-3. **CRISIS** — hero is low HP, about to die
-4. **ANGEL PROMPT** — "Your hero needs you. Write a potion."
-   - Show available symbols
-   - Show what the hero needs (in plain English): "The hero needs healing"
-5. Player types ESENS notation
-6. Parser validates → effect applied to battle
-7. Battle resumes — hero wins with the potion's help
-8. Hero prays → new symbols unlocked
-
-### Why Battles Are Rigged (By Design)
-
-Every battle is **unwinnable without the specific grammar concept it teaches**.
-The enemy is always tuned so that:
-- Raw stats alone = hero dies
-- Correct potion = hero wins convincingly
-
-This isn't difficulty — it's pedagogy. The player can't brute-force old
-symbols. They MUST use the new one.
+2. **Preview** — auto-play 2-3 turns, hero is losing, player watches
+3. **Build** — player drags grammar cards into lock slots
+   - Action cards (Redraw, Grace, etc.) playable any time
+   - Live parser feedback shows what the potion will do
+4. **Cast** — parser validates → effect applies to battle
+5. **Auto-play** — 1-2 turns resolve on a timer
+6. If player has mana → back to step 3 (cast again)
+7. If player is out of mana → battle auto-plays to conclusion
+8. **Win** → pick a reward card, next battle
+9. **Lose** → retry the same battle (no permadeath in MVP)
 
 ---
 
@@ -411,10 +405,16 @@ grammar_mvp/
 
 ---
 
+## Resolved Decisions
+
+- **Arcade card-based UI** — drag cards into lock slots, not typing
+- **Multi-cast** — player casts as many potions as mana allows
+- **Auto-play** — battle turns resolve automatically between casts
+- **Retry on loss** — no permadeath for MVP
+- **Action cards any time** — play from hand during build phase
+
 ## Open Questions
 
-- [ ] Terminal-only or minimal Arcade/Pygame GUI?
-- [ ] Freeform typing from Battle 1, or drag-drop/fill-blank early on?
 - [ ] Allow creative solutions or require specific notation?
 - [ ] Sound? Even terminal beeps for hits add juice.
 - [ ] One sitting (~15-20 min) or save between battles?

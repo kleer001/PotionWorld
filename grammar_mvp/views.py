@@ -24,11 +24,11 @@ from grammar_mvp.game_state import Character, GameState
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 HAND_Y = 100
-SLOT_Y = 475
+SLOT_Y = 340
 HAND_GAP = 10
 CAST_X = SCREEN_WIDTH // 2 + 300
 DECK_X = 1060
-DECK_PILE_COUNT = 10
+DECK_PILE_COUNT = 5
 DECK_OFFSET = 2
 DECK_BROWNS = [
     (85, 55, 25),
@@ -58,7 +58,6 @@ class BattleView(arcade.View):
         self.held_offset_y: float = 0.0
 
         # Persistent text objects
-        self.title_text: arcade.Text | None = None
         self.feedback_text: arcade.Text | None = None
         self.mana_text: arcade.Text | None = None
         self.mana_label_text: arcade.Text | None = None
@@ -102,13 +101,6 @@ class BattleView(arcade.View):
         )
 
         # Text
-        self.title_text = arcade.Text(
-            "Potion Primer",
-            SCREEN_WIDTH / 2, SCREEN_HEIGHT - 30,
-            color=arcade.color.WHITE,
-            font_size=20,
-            anchor_x="center",
-        )
         self.feedback_text = arcade.Text(
             "",
             SCREEN_WIDTH / 2, SLOT_Y + CARD_HEIGHT // 2 + 15,
@@ -155,8 +147,6 @@ class BattleView(arcade.View):
 
     def on_draw(self):
         self.clear()
-
-        self.title_text.draw()
 
         # Lock slot backgrounds
         self.slot_list.draw()
@@ -394,8 +384,9 @@ class BattleView(arcade.View):
     def _build_deck_pile(self):
         """Build the decorative deck pile to the right of the hand."""
         self.deck_pile = arcade.SpriteList()
-        for i in range(DECK_PILE_COUNT):
-            color = random.choice(DECK_BROWNS)
+        colors = [random.choice(DECK_BROWNS) for _ in range(DECK_PILE_COUNT)]
+        random.shuffle(colors)
+        for i, color in enumerate(colors):
             card = arcade.SpriteSolidColor(CARD_WIDTH, CARD_HEIGHT, color=color)
             card.center_x = DECK_X + i * DECK_OFFSET
             card.center_y = HAND_Y + i * DECK_OFFSET

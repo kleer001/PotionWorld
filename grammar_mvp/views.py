@@ -26,6 +26,16 @@ SCREEN_HEIGHT = 720
 HAND_Y = 100
 SLOT_Y = 350
 HAND_GAP = 10
+DECK_X = 1060
+DECK_PILE_COUNT = 20
+DECK_OFFSET = 2
+DECK_BROWNS = [
+    (85, 55, 25),
+    (101, 67, 33),
+    (120, 80, 40),
+    (139, 90, 43),
+    (160, 110, 60),
+]
 
 
 class BattleView(arcade.View):
@@ -39,6 +49,7 @@ class BattleView(arcade.View):
         self.hand_list: arcade.SpriteList = arcade.SpriteList()
         self.slot_list: arcade.SpriteList = arcade.SpriteList()
         self.lock_list: arcade.SpriteList = arcade.SpriteList()
+        self.deck_pile: arcade.SpriteList = arcade.SpriteList()
 
         # Drag state
         self.held_card: CardSprite | None = None
@@ -81,6 +92,7 @@ class BattleView(arcade.View):
         # Draw initial hand from deck
         self._draw_cards_from_deck(self.state.hand_size)
         self._sync_hand()
+        self._build_deck_pile()
 
         # Lock slots
         self.slot_list = create_lock_slots(
@@ -142,6 +154,9 @@ class BattleView(arcade.View):
         # Locked cards (cards that sit in slots)
         self.lock_list.draw()
         self._draw_card_texts(self.lock_list)
+
+        # Deck pile (decorative)
+        self.deck_pile.draw()
 
         # Hand cards
         self.hand_list.draw()
@@ -335,6 +350,16 @@ class BattleView(arcade.View):
     # ------------------------------------------------------------------
     # State ↔ sprite helpers
     # ------------------------------------------------------------------
+
+    def _build_deck_pile(self):
+        """Build the decorative deck pile to the right of the hand."""
+        self.deck_pile = arcade.SpriteList()
+        for i in range(DECK_PILE_COUNT):
+            color = DECK_BROWNS[i % len(DECK_BROWNS)]
+            card = arcade.SpriteSolidColor(CARD_WIDTH, CARD_HEIGHT, color=color)
+            card.center_x = DECK_X + i * DECK_OFFSET
+            card.center_y = HAND_Y + i * DECK_OFFSET
+            self.deck_pile.append(card)
 
     def _draw_cards_from_deck(self, count):
         """Move up to *count* cards from deck to hand. Curses fire on draw."""

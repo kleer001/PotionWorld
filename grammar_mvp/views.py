@@ -24,7 +24,7 @@ from grammar_mvp.game_state import Character, GameState
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 HAND_Y = 100
-SLOT_Y = 340
+SLOT_Y = 280
 HAND_GAP = 10
 CAST_X = SCREEN_WIDTH // 2 + 300
 DECK_X = 1060

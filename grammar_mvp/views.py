@@ -24,8 +24,9 @@ from grammar_mvp.game_state import Character, GameState
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 HAND_Y = 100
-SLOT_Y = 350
+SLOT_Y = 225
 HAND_GAP = 10
+CAST_X = SCREEN_WIDTH // 2 + 300
 DECK_X = 1060
 DECK_PILE_COUNT = 20
 DECK_OFFSET = 2
@@ -60,6 +61,7 @@ class BattleView(arcade.View):
         self.title_text: arcade.Text | None = None
         self.feedback_text: arcade.Text | None = None
         self.mana_text: arcade.Text | None = None
+        self.mana_label_text: arcade.Text | None = None
 
         # GUI
         self.ui_manager = arcade.gui.UIManager()
@@ -109,16 +111,24 @@ class BattleView(arcade.View):
         )
         self.feedback_text = arcade.Text(
             "",
-            SCREEN_WIDTH / 2, SLOT_Y - 90,
+            SCREEN_WIDTH / 2, SLOT_Y + CARD_HEIGHT // 2 + 15,
             color=arcade.color.GRAY,
             font_size=14,
             anchor_x="center",
         )
+        # Mana numbers + label sit under the CAST button
         self.mana_text = arcade.Text(
-            f"MANA: {self.state.mana}/{self.state.max_mana}",
-            SCREEN_WIDTH / 2, SLOT_Y - 120,
+            f"{self.state.mana}/{self.state.max_mana}",
+            CAST_X, SLOT_Y - 45,
             color=arcade.color.LIGHT_BLUE,
             font_size=16,
+            anchor_x="center",
+        )
+        self.mana_label_text = arcade.Text(
+            "Mana",
+            CAST_X, SLOT_Y - 65,
+            color=arcade.color.LIGHT_BLUE,
+            font_size=12,
             anchor_x="center",
         )
 
@@ -131,7 +141,7 @@ class BattleView(arcade.View):
             anchor_x="center",
             anchor_y="center",
             align_x=300,
-            align_y=-10,
+            align_y=SLOT_Y - SCREEN_HEIGHT // 2,
         )
         self.ui_manager.add(anchor)
         self.ui_manager.enable()
@@ -172,6 +182,7 @@ class BattleView(arcade.View):
         # HUD
         self.feedback_text.draw()
         self.mana_text.draw()
+        self.mana_label_text.draw()
 
         # GUI (CAST button)
         self.ui_manager.draw()
@@ -383,9 +394,10 @@ class BattleView(arcade.View):
     def _build_deck_pile(self):
         """Build the decorative deck pile to the right of the hand."""
         self.deck_pile = arcade.SpriteList()
+        half_height = CARD_HEIGHT // 2
         for i in range(DECK_PILE_COUNT):
-            color = DECK_BROWNS[i % len(DECK_BROWNS)]
-            card = arcade.SpriteSolidColor(CARD_WIDTH, CARD_HEIGHT, color=color)
+            color = random.choice(DECK_BROWNS)
+            card = arcade.SpriteSolidColor(CARD_WIDTH, half_height, color=color)
             card.center_x = DECK_X + i * DECK_OFFSET
             card.center_y = HAND_Y + i * DECK_OFFSET
             self.deck_pile.append(card)
@@ -465,4 +477,4 @@ class BattleView(arcade.View):
                 self.feedback_text.text = "Incomplete notation..."
                 self.feedback_text.color = arcade.color.GRAY
 
-        self.mana_text.text = f"MANA: {self.state.mana}/{self.state.max_mana}"
+        self.mana_text.text = f"{self.state.mana}/{self.state.max_mana}"

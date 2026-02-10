@@ -66,6 +66,12 @@ All cards defined in `grammar_mvp/data/cards.toml`. Each card has:
 Action cards add `action` (function name) and optional `args` table.
 Curse cards add `on_draw` and `on_draw_args`.
 
+**Ref files:** Any card can use `ref = "filename.toml"` to load its full
+definition from a separate file in `grammar_mvp/data/`. The ref file has a
+single `[card]` table. Fields in `cards.toml` override the ref file (local
+wins). Use refs for complex cards with multi-step effects or long configs.
+See `example_complex_card.toml` for the pattern.
+
 ## ESENS Parser
 
 The parser at `ESENS_Parser.py` is complete and working. Do not modify it.

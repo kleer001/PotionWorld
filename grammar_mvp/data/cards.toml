@@ -1,5 +1,19 @@
-# Grammar Cards — ESENS tokens as cards
-# Each card is one token in the potion notation language.
+# Card Definitions
+#
+# Card types: grammar, action, curse
+# Grammar cards dock into lock slots. Action cards play from hand.
+# Curse cards trigger on draw.
+#
+# Any card can use `ref = "filename.toml"` to load its full definition
+# from a separate file in the same directory. The ref file must contain
+# a single [card] table with all fields. Fields in THIS file override
+# the ref file (local wins), so you can ref a complex base and tweak it.
+#
+# Example:
+#   [cards.some_complex_card]
+#   ref = "complex_card.toml"
+#   mana_cost = 2              # overrides whatever the ref file says
+#
 # Grammar cards dock into lock slots. They don't have play effects.
 
 # --- Target Cards ---

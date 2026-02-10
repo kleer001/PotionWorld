@@ -186,14 +186,10 @@ class BattleView(arcade.View):
             self.held_offset_y = card.center_y - y
             return
 
-        # Try picking up a hand card
+        # Try picking up a hand card (grammar and action cards both drag)
         cards = arcade.get_sprites_at_point((x, y), self.hand_list)
         if cards:
             card = cards[-1]
-            # Action cards play on click — no drag
-            if card.card_data.get("type") == "action":
-                self._play_action_card(card)
-                return
             self.held_card = card
             self.held_offset_x = card.center_x - x
             self.held_offset_y = card.center_y - y
@@ -261,27 +257,41 @@ class BattleView(arcade.View):
     # ------------------------------------------------------------------
 
     def _on_cast_click(self, _event):
-        # Compose ESENS string from filled slots (left → right)
-        tokens = []
-        for slot in self.slot_list:
-            if slot.card:
-                tokens.append(slot.card.card_data["token"])
-        esens_string = "".join(tokens)
-
-        if not esens_string:
+        # Nothing docked?
+        has_cards = any(slot.card for slot in self.slot_list)
+        if not has_cards:
             self.feedback_text.text = "Nothing to cast!"
             self.feedback_text.color = arcade.color.RED
             return
 
-        try:
-            result = parse_esens(esens_string)
-        except ESENSParseError:
-            self.feedback_text.text = "Invalid potion!"
-            self.feedback_text.color = arcade.color.RED
-            return
+        # Separate action cards from grammar cards
+        action_cards = []
+        grammar_tokens = []
+        for slot in self.slot_list:
+            if not slot.card:
+                continue
+            if slot.card.card_data.get("type") == "action":
+                action_cards.append(slot.card.card_data)
+            else:
+                grammar_tokens.append(slot.card.card_data["token"])
 
-        # Log the cast
-        self.state.battle_log.append(f"CAST: {result['explanation']}")
+        # Dispatch action cards
+        for card_data in action_cards:
+            dispatch_action(card_data, self.state)
+            self.state.battle_log.append(f"PLAYED: {card_data['label']}")
+
+        # Parse grammar cards as ESENS
+        cast_text = None
+        if grammar_tokens:
+            esens_string = "".join(grammar_tokens)
+            try:
+                result = parse_esens(esens_string)
+                self.state.battle_log.append(f"CAST: {result['explanation']}")
+                cast_text = f"Cast: {result['explanation']}"
+            except ESENSParseError:
+                self.feedback_text.text = "Invalid potion!"
+                self.feedback_text.color = arcade.color.RED
+                return
 
         # Clear lock slots
         for slot in self.slot_list:
@@ -292,29 +302,20 @@ class BattleView(arcade.View):
 
         # Refill hand from deck
         self._draw_cards_from_deck(self.state.hand_size - len(self.state.hand))
-        self._sync_hand()
-        self._update_feedback()
+        self._full_sync()
 
-        # Show what was cast
-        self.feedback_text.text = f"Cast: {result['explanation']}"
-        self.feedback_text.color = arcade.color.YELLOW_GREEN
+        # Show result
+        if cast_text:
+            self.feedback_text.text = cast_text
+            self.feedback_text.color = arcade.color.YELLOW_GREEN
+        elif action_cards:
+            names = ", ".join(c["label"] for c in action_cards)
+            self.feedback_text.text = f"Played: {names}"
+            self.feedback_text.color = arcade.color.YELLOW_GREEN
 
     # ------------------------------------------------------------------
     # Action cards — M8
     # ------------------------------------------------------------------
-
-    def _play_action_card(self, card: CardSprite):
-        """Play an action card from hand (click, not drag)."""
-        if self.state.mana < 1:
-            return
-        self.state.mana -= 1
-        if card.card_data in self.state.hand:
-            self.state.hand.remove(card.card_data)
-        if card in self.hand_list:
-            self.hand_list.remove(card)
-        dispatch_action(card.card_data, self.state)
-        self._full_sync()
-        self.state.battle_log.append(f"PLAYED: {card.card_data['label']}")
 
     def _full_sync(self):
         """Rebuild all sprites from state (after action cards / curses)."""

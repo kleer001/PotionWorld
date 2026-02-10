@@ -1,0 +1,658 @@
+# Card Definitions
+#
+# Card types: grammar, action, curse
+# Grammar cards dock into lock slots. Action cards play from hand.
+# Curse cards trigger on draw.
+#
+# Any card can use `ref = "filename.toml"` to load its full definition
+# from a separate file in the same directory. The ref file must contain
+# a single [card] table with all fields. Fields in THIS file override
+# the ref file (local wins), so you can ref a complex base and tweak it.
+#
+# Example:
+#   [cards.some_complex_card]
+#   ref = "complex_card.toml"
+#   mana_cost = 2              # overrides whatever the ref file says
+#
+# Grammar cards dock into lock slots. They don't have play effects.
+
+# --- Target Cards ---
+
+[cards.target_P]
+token = "P"
+type = "grammar"
+category = "target"
+label = "Player"
+description = "Effect targets the hero"
+mana_cost = 1
+rarity = "common"
+color = "#4488CC"
+
+[cards.target_E]
+token = "E"
+type = "grammar"
+category = "target"
+label = "Enemy"
+description = "Effect targets the enemy"
+mana_cost = 1
+rarity = "uncommon"
+color = "#4488CC"
+
+[cards.target_A]
+token = "A"
+type = "grammar"
+category = "target"
+label = "Allies"
+description = "Effect targets all allies"
+mana_cost = 1
+rarity = "rare"
+color = "#4488CC"
+
+[cards.target_X]
+token = "X"
+type = "grammar"
+category = "target"
+label = "All Foes"
+description = "Effect targets all enemies"
+mana_cost = 1
+rarity = "rare"
+color = "#4488CC"
+
+[cards.target_G]
+token = "G"
+type = "grammar"
+category = "target"
+label = "Global"
+description = "Effect targets everyone"
+mana_cost = 1
+rarity = "epic"
+color = "#4488CC"
+
+# --- Effect Cards ---
+
+[cards.effect_plus]
+token = "+"
+type = "grammar"
+category = "effect"
+label = "Increase"
+description = "Add to a stat"
+mana_cost = 1
+rarity = "common"
+color = "#44CC66"
+
+[cards.effect_minus]
+token = "-"
+type = "grammar"
+category = "effect"
+label = "Decrease"
+description = "Subtract from a stat"
+mana_cost = 1
+rarity = "uncommon"
+color = "#CC4444"
+
+[cards.effect_set]
+token = "="
+type = "grammar"
+category = "effect"
+label = "Set"
+description = "Set stat to exact value"
+mana_cost = 1
+rarity = "rare"
+color = "#CC8844"
+
+[cards.effect_multiply]
+token = "*"
+type = "grammar"
+category = "effect"
+label = "Multiply"
+description = "Multiply a stat"
+mana_cost = 1
+rarity = "epic"
+color = "#CC8844"
+
+[cards.effect_nullify]
+token = "!"
+type = "grammar"
+category = "effect"
+label = "Nullify"
+description = "Zero out a stat"
+mana_cost = 1
+rarity = "epic"
+color = "#CC8844"
+
+[cards.effect_special]
+token = "#"
+type = "grammar"
+category = "effect"
+label = "Special"
+description = "Apply a status condition"
+mana_cost = 1
+rarity = "rare"
+color = "#CC8844"
+
+# --- Stat Cards ---
+
+[cards.stat_H]
+token = "H"
+type = "grammar"
+category = "stat"
+label = "Health"
+description = "Hit points"
+mana_cost = 1
+rarity = "common"
+color = "#DDAA22"
+
+[cards.stat_S]
+token = "S"
+type = "grammar"
+category = "stat"
+label = "Strength"
+description = "Attack damage"
+mana_cost = 1
+rarity = "common"
+color = "#DDAA22"
+
+[cards.stat_D]
+token = "D"
+type = "grammar"
+category = "stat"
+label = "Defense"
+description = "Damage reduction"
+mana_cost = 1
+rarity = "common"
+color = "#DDAA22"
+
+[cards.stat_L]
+token = "L"
+type = "grammar"
+category = "stat"
+label = "Luck"
+description = "Crit chance, drop rates"
+mana_cost = 1
+rarity = "uncommon"
+color = "#DDAA22"
+
+[cards.stat_M]
+token = "M"
+type = "grammar"
+category = "stat"
+label = "Movement"
+description = "Speed / action range"
+mana_cost = 1
+rarity = "uncommon"
+color = "#DDAA22"
+
+[cards.stat_I]
+token = "I"
+type = "grammar"
+category = "stat"
+label = "Initiative"
+description = "Turn order"
+mana_cost = 1
+rarity = "uncommon"
+color = "#DDAA22"
+
+[cards.stat_C]
+token = "C"
+type = "grammar"
+category = "stat"
+label = "Critical"
+description = "Critical hit multiplier"
+mana_cost = 1
+rarity = "uncommon"
+color = "#DDAA22"
+
+[cards.stat_R]
+token = "R"
+type = "grammar"
+category = "stat"
+label = "Resistance"
+description = "Elemental resistance"
+mana_cost = 1
+rarity = "uncommon"
+color = "#DDAA22"
+
+# --- Magnitude Cards ---
+
+[cards.mag_5]
+token = "5"
+type = "grammar"
+category = "magnitude"
+label = "Five"
+description = "Small amount"
+mana_cost = 1
+rarity = "common"
+color = "#CCCCCC"
+
+[cards.mag_10]
+token = "10"
+type = "grammar"
+category = "magnitude"
+label = "Ten"
+description = "Medium amount"
+mana_cost = 1
+rarity = "common"
+color = "#CCCCCC"
+
+[cards.mag_15]
+token = "15"
+type = "grammar"
+category = "magnitude"
+label = "Fifteen"
+description = "Large amount"
+mana_cost = 1
+rarity = "uncommon"
+color = "#CCCCCC"
+
+[cards.mag_20]
+token = "20"
+type = "grammar"
+category = "magnitude"
+label = "Twenty"
+description = "Very large amount"
+mana_cost = 1
+rarity = "rare"
+color = "#CCCCCC"
+
+[cards.mag_percent]
+token = "%"
+type = "grammar"
+category = "magnitude"
+label = "Percent"
+description = "Makes magnitude a percentage"
+mana_cost = 1
+rarity = "uncommon"
+color = "#CCCCCC"
+
+[cards.mag_full]
+token = "F"
+type = "grammar"
+category = "magnitude"
+label = "Full"
+description = "Maximum / restore to full"
+mana_cost = 1
+rarity = "epic"
+color = "#CCCCCC"
+
+# --- Duration Cards ---
+
+[cards.dur_1T]
+token = "1T"
+type = "grammar"
+category = "duration"
+label = "1 Turn"
+description = "Lasts 1 turn"
+mana_cost = 1
+rarity = "common"
+color = "#AA66DD"
+
+[cards.dur_2T]
+token = "2T"
+type = "grammar"
+category = "duration"
+label = "2 Turns"
+description = "Lasts 2 turns"
+mana_cost = 1
+rarity = "common"
+color = "#AA66DD"
+
+[cards.dur_3T]
+token = "3T"
+type = "grammar"
+category = "duration"
+label = "3 Turns"
+description = "Lasts 3 turns"
+mana_cost = 1
+rarity = "uncommon"
+color = "#AA66DD"
+
+[cards.dur_5T]
+token = "5T"
+type = "grammar"
+category = "duration"
+label = "5 Turns"
+description = "Lasts 5 turns"
+mana_cost = 1
+rarity = "rare"
+color = "#AA66DD"
+
+[cards.dur_C]
+token = "C"
+type = "grammar"
+category = "duration"
+label = "Combat"
+description = "Lasts the whole fight"
+mana_cost = 1
+rarity = "rare"
+color = "#AA66DD"
+
+[cards.dur_A]
+token = "A"
+type = "grammar"
+category = "duration"
+label = "Action"
+description = "One single action"
+mana_cost = 1
+rarity = "common"
+color = "#AA66DD"
+
+[cards.dur_P]
+token = "P"
+type = "grammar"
+category = "duration"
+label = "Permanent"
+description = "Lasts forever"
+mana_cost = 1
+rarity = "legendary"
+color = "#AA66DD"
+
+# --- Trigger Cards ---
+
+[cards.trig_attack]
+token = ">A"
+type = "grammar"
+category = "trigger"
+label = "On Attack"
+description = "Fires when hero attacks"
+mana_cost = 1
+rarity = "rare"
+color = "#DD8833"
+
+[cards.trig_defend]
+token = "<D"
+type = "grammar"
+category = "trigger"
+label = "On Defend"
+description = "Fires when hero is attacked"
+mana_cost = 1
+rarity = "rare"
+color = "#DD8833"
+
+[cards.trig_turn_start]
+token = "^S"
+type = "grammar"
+category = "trigger"
+label = "Turn Start"
+description = "Fires at start of each turn"
+mana_cost = 1
+rarity = "rare"
+color = "#DD8833"
+
+[cards.trig_turn_end]
+token = "vE"
+type = "grammar"
+category = "trigger"
+label = "Turn End"
+description = "Fires at end of each turn"
+mana_cost = 1
+rarity = "rare"
+color = "#DD8833"
+
+[cards.trig_kill]
+token = "K"
+type = "grammar"
+category = "trigger"
+label = "On Kill"
+description = "Fires when target gets a kill"
+mana_cost = 1
+rarity = "epic"
+color = "#DD8833"
+
+[cards.trig_chance]
+token = "?%"
+type = "grammar"
+category = "trigger"
+label = "Chance"
+description = "Random percent chance to fire"
+mana_cost = 1
+rarity = "rare"
+color = "#DD8833"
+
+# --- Element Cards ---
+
+[cards.elem_fire]
+token = ".F"
+type = "grammar"
+category = "element"
+label = "Fire"
+description = "Fire element"
+mana_cost = 1
+rarity = "rare"
+color = "#FF4422"
+
+[cards.elem_water]
+token = ".W"
+type = "grammar"
+category = "element"
+label = "Water"
+description = "Water element"
+mana_cost = 1
+rarity = "rare"
+color = "#2266FF"
+
+[cards.elem_earth]
+token = ".E"
+type = "grammar"
+category = "element"
+label = "Earth"
+description = "Earth element"
+mana_cost = 1
+rarity = "rare"
+color = "#886622"
+
+[cards.elem_sky]
+token = ".S"
+type = "grammar"
+category = "element"
+label = "Sky"
+description = "Sky element"
+mana_cost = 1
+rarity = "rare"
+color = "#88CCFF"
+
+[cards.elem_death]
+token = ".D"
+type = "grammar"
+category = "element"
+label = "Death"
+description = "Death element"
+mana_cost = 1
+rarity = "epic"
+color = "#442266"
+
+# --- Modifier Cards ---
+
+[cards.mod_stacking]
+token = ".ST"
+type = "grammar"
+category = "modifier"
+label = "Stacking"
+description = "Effect stacks on reapply"
+mana_cost = 1
+rarity = "epic"
+color = "#999999"
+
+[cards.mod_area]
+token = ".AR"
+type = "grammar"
+category = "modifier"
+label = "Area"
+description = "Splashes to adjacent targets"
+mana_cost = 1
+rarity = "epic"
+color = "#999999"
+
+[cards.mod_dot]
+token = ".DOT"
+type = "grammar"
+category = "modifier"
+label = "Over Time"
+description = "Ticks each turn"
+mana_cost = 1
+rarity = "epic"
+color = "#999999"
+
+[cards.mod_locked]
+token = ".RN"
+type = "grammar"
+category = "modifier"
+label = "Locked"
+description = "Cannot be removed or dispelled"
+mana_cost = 1
+rarity = "epic"
+color = "#999999"
+
+[cards.mod_fragile]
+token = ".RE"
+type = "grammar"
+category = "modifier"
+label = "Fragile"
+description = "Easily dispelled"
+mana_cost = 1
+rarity = "uncommon"
+color = "#999999"
+
+
+# =============================================================================
+# Action Cards — played directly from hand, not docked in lock slots
+# =============================================================================
+# action: a string naming the function to call on GameState
+# args: optional table of arguments passed to that function
+
+[cards.action_redraw]
+token = "REDRAW"
+type = "action"
+category = "utility"
+label = "Redraw"
+description = "Discard hand, draw a fresh hand"
+mana_cost = 1
+rarity = "common"
+color = "#66AACC"
+action = "redraw_hand"
+
+[cards.action_recycle]
+token = "RECYCLE"
+type = "action"
+category = "utility"
+label = "Recycle"
+description = "Return one docked card to hand, refund 1 mana"
+mana_cost = 1
+rarity = "common"
+color = "#66AACC"
+action = "recycle_card"
+
+[cards.action_grace]
+token = "GRACE"
+type = "action"
+category = "blessing"
+label = "Grace"
+description = "+3 mana this battle"
+mana_cost = 1
+rarity = "uncommon"
+color = "#FFDD66"
+action = "modify_state"
+[cards.action_grace.args]
+field = "mana"
+delta = 3
+
+[cards.action_draw2]
+token = "DRAW2"
+type = "action"
+category = "utility"
+label = "Draw 2"
+description = "Draw 2 extra cards from deck"
+mana_cost = 1
+rarity = "uncommon"
+color = "#66AACC"
+action = "draw_cards"
+[cards.action_draw2.args]
+count = 2
+
+[cards.action_extra_slot]
+token = "EXTRASLOT"
+type = "action"
+category = "blessing"
+label = "Extra Slot"
+description = "+1 lock slot this battle"
+mana_cost = 1
+rarity = "rare"
+color = "#FFDD66"
+action = "modify_state"
+[cards.action_extra_slot.args]
+field = "slot_count"
+delta = 1
+
+# --- Curse Cards ---
+# on_draw: effect triggers when card is drawn into hand, not when played
+# Curses cannot be played — they activate on draw then vanish (except Dead Weight)
+
+[cards.curse_dead_weight]
+token = "DEADWEIGHT"
+type = "curse"
+category = "curse"
+label = "Dead Weight"
+description = "Does nothing. Cannot be discarded. Wastes a hand slot."
+mana_cost = 0
+rarity = "common"
+color = "#553355"
+action = "none"
+
+[cards.curse_mana_drain]
+token = "MANADRAIN"
+type = "curse"
+category = "curse"
+label = "Mana Drain"
+description = "Lose 2 mana when drawn"
+mana_cost = 0
+rarity = "uncommon"
+color = "#553355"
+on_draw = "modify_state"
+[cards.curse_mana_drain.on_draw_args]
+field = "mana"
+delta = -2
+
+[cards.curse_heavy_hand]
+token = "HEAVYHAND"
+type = "curse"
+category = "curse"
+label = "Heavy Hand"
+description = "Hand size -2 this battle when drawn"
+mana_cost = 0
+rarity = "uncommon"
+color = "#553355"
+on_draw = "modify_state"
+[cards.curse_heavy_hand.on_draw_args]
+field = "hand_size"
+delta = -2
+
+[cards.curse_shattered_slot]
+token = "SHATTEREDSLOT"
+type = "curse"
+category = "curse"
+label = "Shattered Slot"
+description = "One lock slot disabled this battle when drawn"
+mana_cost = 0
+rarity = "rare"
+color = "#553355"
+on_draw = "modify_state"
+[cards.curse_shattered_slot.on_draw_args]
+field = "slot_count"
+delta = -1
+
+
+# =============================================================================
+# Starter Deck — the cards every player begins with
+# =============================================================================
+
+[starter_deck]
+cards = [
+    "target_P", "target_P",
+    "effect_plus", "effect_plus", "effect_plus",
+    "stat_H", "stat_H",
+    "stat_S",
+    "stat_D",
+    "mag_5", "mag_5",
+    "mag_10",
+    "dur_1T",
+    "action_redraw",
+]

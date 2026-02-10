@@ -1,0 +1,27 @@
+# Example: a complex card that lives in its own file.
+# Referenced from cards.toml via ref = "example_complex_card.toml"
+#
+# This file is NOT loaded by default — it's here as a template.
+# Copy and rename it for real complex cards.
+
+[card]
+token = "CHAOSCAST"
+type = "action"
+category = "gambit"
+label = "Chaos Brew"
+description = "Randomly fill all empty lock slots from hand, then auto-cast"
+mana_cost = 1
+rarity = "legendary"
+color = "#FF00FF"
+action = "chaos_cast"
+
+# Complex cards can define multi-step effects as an array of tables.
+# The game engine processes them in order.
+
+[[card.effects]]
+step = 1
+action = "fill_lock_random"
+
+[[card.effects]]
+step = 2
+action = "auto_cast"

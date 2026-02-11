@@ -49,7 +49,7 @@ LOG_X = SCREEN_WIDTH // 2
 LOG_Y = 520
 
 # Timing
-TURN_DELAY = 1.0          # seconds between auto-played turns
+TURN_DELAY = 5.0          # seconds between auto-played turns
 PREVIEW_TURN_COUNT = 3     # how many turns auto-play in preview phase
 POST_CAST_TURNS = 2        # auto-play turns after a cast
 
@@ -108,7 +108,7 @@ class BattleView(arcade.View):
         random.shuffle(starter)
 
         self.state = GameState(
-            hero=Character("Sir Aldric", 40, 40, 8, 5),
+            hero=Character("Sir Aldric", 30, 30, 6, 3),
             enemy=Character("Goblin", 25, 25, 7, 3),
             mana=10,
             max_mana=10,

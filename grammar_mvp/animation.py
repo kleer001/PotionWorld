@@ -7,11 +7,11 @@ class HitAnimation:
     Parameters
     ----------
     duration : float
-        Total animation time in seconds (default 1.5).
+        Total animation time in seconds (default 0.7).
     amplitude : float
         Peak displacement in pixels at the start (default 20.0).
     period : float
-        Time for one full oscillation cycle in seconds (default 0.2).
+        Time for one full oscillation cycle in seconds (default 0.1).
 
     Usage
     -----
@@ -20,8 +20,8 @@ class HitAnimation:
     horizontal displacement to apply to whatever you're drawing.
     """
 
-    def __init__(self, duration: float = 1.5, amplitude: float = 20.0,
-                 period: float = 0.2):
+    def __init__(self, duration: float = 0.7, amplitude: float = 20.0,
+                 period: float = 0.1):
         self.duration = duration
         self.amplitude = amplitude
         self.period = period

@@ -37,6 +37,15 @@ grammar_mvp/           ← the MVP game (what we're building)
 ESENS_Parser.py        ← DO NOT MODIFY — the existing parser
 ```
 
+### Archived (not deleted)
+```
+archive/monte_carlo/   ← balance sim, mothballed until playtesting
+  monte_carlo.py         combat MC simulator (party RPG, LD50, adaptive difficulty)
+  FINDINGS.md            preliminary balance analysis
+  MANUAL.md              CLI + runtime API reference
+  README.md              revival instructions
+```
+
 ### Core Data Flow
 ```
 cards.toml → Card objects → Deck → Hand (SpriteList)

@@ -8,6 +8,8 @@ SLOT_GAP = 10
 
 # Character panel colours
 PORTRAIT_COLOR = (70, 70, 90)
+HERO_COLOR = (0, 0, 128)       # navy blue
+ENEMY_COLOR = (139, 0, 0)      # deep red
 PORTRAIT_W = 100
 PORTRAIT_H = 120
 
@@ -41,11 +43,11 @@ def create_lock_slots(slot_count, screen_width, y_center):
 class CharacterPanel:
     """Holds draw objects for one combatant (name, portrait, HP)."""
 
-    def __init__(self, character, x, y):
+    def __init__(self, character, x, y, color=PORTRAIT_COLOR):
         self.x = x
         self.y = y
         portrait = arcade.SpriteSolidColor(
-            PORTRAIT_W, PORTRAIT_H, color=PORTRAIT_COLOR,
+            PORTRAIT_W, PORTRAIT_H, color=color,
         )
         portrait.center_x = x
         portrait.center_y = y
@@ -94,11 +96,11 @@ class CharacterPanel:
 
 
 def create_hero_panel(character, x, y):
-    return CharacterPanel(character, x, y)
+    return CharacterPanel(character, x, y, color=HERO_COLOR)
 
 
 def create_enemy_panel(character, x, y):
-    return CharacterPanel(character, x, y)
+    return CharacterPanel(character, x, y, color=ENEMY_COLOR)
 
 
 # ------------------------------------------------------------------

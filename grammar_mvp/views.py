@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from ESENS_Parser import ESENSParseError, parse_esens
 
+from grammar_mvp.battle import apply_potion, check_battle_end, resolve_turn, tick_effects
 from grammar_mvp.cards import (
     CARD_HEIGHT,
     CARD_WIDTH,
@@ -18,7 +19,7 @@ from grammar_mvp.cards import (
     load_cards,
     load_starter_deck,
 )
-from grammar_mvp.display import create_lock_slots
+from grammar_mvp.display import BattleLog, create_hero_panel, create_enemy_panel, create_lock_slots
 from grammar_mvp.game_state import Character, GameState
 
 SCREEN_WIDTH = 1280
@@ -37,6 +38,20 @@ DECK_BROWNS = [
     (139, 90, 43),
     (160, 110, 60),
 ]
+
+# Layout — character panels (top third)
+PANEL_Y = 570
+HERO_PANEL_X = 300
+ENEMY_PANEL_X = SCREEN_WIDTH - 300
+
+# Battle log sits between the two panels
+LOG_X = SCREEN_WIDTH // 2
+LOG_Y = 520
+
+# Timing
+TURN_DELAY = 1.0          # seconds between auto-played turns
+PREVIEW_TURN_COUNT = 3     # how many turns auto-play in preview phase
+POST_CAST_TURNS = 2        # auto-play turns after a cast
 
 
 class BattleView(arcade.View):
@@ -61,6 +76,21 @@ class BattleView(arcade.View):
         self.feedback_text: arcade.Text | None = None
         self.mana_text: arcade.Text | None = None
         self.mana_label_text: arcade.Text | None = None
+
+        # Character panels (M10)
+        self.hero_panel = None
+        self.enemy_panel = None
+
+        # Battle log display (M10)
+        self.battle_log_display: BattleLog | None = None
+
+        # Turn timer (M9)
+        self.turn_timer: float = 0.0
+        self.turns_remaining: int = 0
+        self.hero_attacks_next: bool = True
+
+        # End-of-battle overlay text
+        self.end_text: arcade.Text | None = None
 
         # GUI
         self.ui_manager = arcade.gui.UIManager()
@@ -87,7 +117,7 @@ class BattleView(arcade.View):
             lock=[None] * 5,
             slot_count=5,
             hand_size=5,
-            phase="build",
+            phase="preview",
         )
 
         # Draw initial hand from deck
@@ -108,7 +138,6 @@ class BattleView(arcade.View):
             font_size=14,
             anchor_x="center",
         )
-        # Mana numbers + label sit under the CAST button
         self.mana_text = arcade.Text(
             f"{self.state.mana}/{self.state.max_mana}",
             CAST_X, SLOT_Y - 45,
@@ -138,8 +167,93 @@ class BattleView(arcade.View):
         self.ui_manager.add(anchor)
         self.ui_manager.enable()
 
+        # Character panels (M10)
+        self.hero_panel = create_hero_panel(self.state.hero, HERO_PANEL_X, PANEL_Y)
+        self.enemy_panel = create_enemy_panel(self.state.enemy, ENEMY_PANEL_X, PANEL_Y)
+
+        # Battle log display (M10)
+        self.battle_log_display = BattleLog(LOG_X, LOG_Y)
+
+        # End-of-battle overlay
+        self.end_text = arcade.Text(
+            "",
+            SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+            color=arcade.color.YELLOW,
+            font_size=32,
+            anchor_x="center",
+            anchor_y="center",
+        )
+
+        # Start preview phase
+        self.turns_remaining = PREVIEW_TURN_COUNT
+        self.turn_timer = 0.0
+        self.hero_attacks_next = True
+
     def on_hide_view(self):
         self.ui_manager.disable()
+
+    # ------------------------------------------------------------------
+    # Update (phase-driven timer)
+    # ------------------------------------------------------------------
+
+    def on_update(self, delta_time):
+        phase = self.state.phase
+
+        if phase in ("preview", "resolve", "post_cast"):
+            self.turn_timer += delta_time
+            if self.turn_timer >= TURN_DELAY:
+                self.turn_timer -= TURN_DELAY
+                self._play_one_turn()
+
+    def _play_one_turn(self):
+        """Resolve one attack turn and check for phase transitions."""
+        state = self.state
+
+        # Pick attacker/defender
+        if self.hero_attacks_next:
+            log = resolve_turn(state.hero, state.enemy)
+        else:
+            log = resolve_turn(state.enemy, state.hero)
+        self.hero_attacks_next = not self.hero_attacks_next
+
+        state.turn += 1
+        tick_effects(state.hero)
+        tick_effects(state.enemy)
+
+        state.battle_log.append(log)
+        self.battle_log_display.push(log)
+        self._sync_panels()
+
+        # Check win/lose
+        result = check_battle_end(state)
+        if result:
+            self._enter_end_phase(result)
+            return
+
+        self.turns_remaining -= 1
+
+        if state.phase == "preview" and self.turns_remaining <= 0:
+            state.phase = "build"
+
+        elif state.phase == "post_cast" and self.turns_remaining <= 0:
+            # After post-cast turns, check mana
+            if state.mana > 0:
+                state.phase = "build"
+            else:
+                state.phase = "resolve"
+                self.turns_remaining = 999  # keep going until someone dies
+
+        # "resolve" keeps going until check_battle_end fires
+
+    def _enter_end_phase(self, result: str):
+        if result == "win":
+            self.state.phase = "reward"
+            self.end_text.text = "VICTORY!"
+            self.end_text.color = arcade.color.GOLD
+        else:
+            self.state.phase = "gameover"
+            self.end_text.text = "DEFEAT"
+            self.end_text.color = arcade.color.RED
 
     # ------------------------------------------------------------------
     # Drawing
@@ -147,6 +261,16 @@ class BattleView(arcade.View):
 
     def on_draw(self):
         self.clear()
+
+        # Character panels (M10)
+        if self.hero_panel:
+            self.hero_panel.draw()
+        if self.enemy_panel:
+            self.enemy_panel.draw()
+
+        # Battle log (M10)
+        if self.battle_log_display:
+            self.battle_log_display.draw()
 
         # Lock slot backgrounds
         self.slot_list.draw()
@@ -177,6 +301,10 @@ class BattleView(arcade.View):
         # GUI (CAST button)
         self.ui_manager.draw()
 
+        # End-of-battle overlay
+        if self.state.phase in ("reward", "gameover"):
+            self.end_text.draw()
+
     @staticmethod
     def _draw_card_texts(sprite_list: arcade.SpriteList):
         for card in sprite_list:
@@ -186,6 +314,13 @@ class BattleView(arcade.View):
             card.label_text.x = card.center_x
             card.label_text.y = card.center_y - 30
             card.label_text.draw()
+
+    def _sync_panels(self):
+        """Update panel HP text from current Character data."""
+        if self.hero_panel:
+            self.hero_panel.update(self.state.hero)
+        if self.enemy_panel:
+            self.enemy_panel.update(self.state.enemy)
 
     # ------------------------------------------------------------------
     # Input
@@ -197,6 +332,8 @@ class BattleView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button != arcade.MOUSE_BUTTON_LEFT:
+            return
+        if self.state.phase != "build":
             return
 
         # Try lifting a locked card out of its slot
@@ -302,6 +439,9 @@ class BattleView(arcade.View):
     # ------------------------------------------------------------------
 
     def _on_cast_click(self, _event):
+        if self.state.phase != "build":
+            return
+
         # Nothing docked?
         has_cards = any(slot.card for slot in self.slot_list)
         if not has_cards:
@@ -323,15 +463,22 @@ class BattleView(arcade.View):
         # Dispatch action cards
         for card_data in action_cards:
             dispatch_action(card_data, self.state)
-            self.state.battle_log.append(f"PLAYED: {card_data['label']}")
+            msg = f"PLAYED: {card_data['label']}"
+            self.state.battle_log.append(msg)
+            self.battle_log_display.push(msg)
 
-        # Parse grammar cards as ESENS
+        # Parse grammar cards as ESENS and apply potion
         cast_text = None
         if grammar_tokens:
             esens_string = "".join(grammar_tokens)
             try:
                 result = parse_esens(esens_string)
+                potion_log = apply_potion(result["dict"], self.state)
                 self.state.battle_log.append(f"CAST: {result['explanation']}")
+                self.battle_log_display.push(f"CAST: {result['explanation']}")
+                if potion_log:
+                    self.state.battle_log.append(potion_log)
+                    self.battle_log_display.push(potion_log)
                 cast_text = f"Cast: {result['explanation']}"
             except ESENSParseError:
                 self.feedback_text.text = "Invalid potion!"
@@ -357,6 +504,14 @@ class BattleView(arcade.View):
             names = ", ".join(c["label"] for c in action_cards)
             self.feedback_text.text = f"Played: {names}"
             self.feedback_text.color = arcade.color.YELLOW_GREEN
+
+        # Sync panels after potion effects
+        self._sync_panels()
+
+        # Transition to post_cast auto-play turns
+        self.state.phase = "post_cast"
+        self.turns_remaining = POST_CAST_TURNS
+        self.turn_timer = 0.0
 
     # ------------------------------------------------------------------
     # Action cards — M8
@@ -400,7 +555,10 @@ class BattleView(arcade.View):
             card = self.state.deck.pop()
             if card.get("type") == "curse" and card.get("on_draw"):
                 dispatch_action(card, self.state)
-                self.state.battle_log.append(f"CURSE: {card['label']}!")
+                msg = f"CURSE: {card['label']}!"
+                self.state.battle_log.append(msg)
+                if self.battle_log_display:
+                    self.battle_log_display.push(msg)
                 continue  # curse fires and vanishes
             self.state.hand.append(card)
 

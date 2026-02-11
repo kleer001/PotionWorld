@@ -8,6 +8,7 @@ class Character:
     max_hp: int
     strength: int
     defense: int
+    active_effects: list = field(default_factory=list)
 
 
 @dataclass

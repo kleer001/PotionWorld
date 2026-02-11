@@ -206,7 +206,7 @@ class BattleView(arcade.View):
             self.turns_remaining = 999
             phase = "resolve"
 
-        if phase in ("preview", "resolve", "post_cast"):
+        if phase in ("preview", "build", "resolve", "post_cast"):
             self.turn_timer += delta_time
             if self.turn_timer >= TURN_DELAY:
                 self.turn_timer -= TURN_DELAY

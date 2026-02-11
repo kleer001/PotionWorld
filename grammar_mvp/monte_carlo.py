@@ -1,8 +1,8 @@
 """Monte Carlo battle simulator — balance tool for PotionWorld.
 
 Simulate team battles: an arbitrary number of heroes vs an arbitrary
-number of enemies, fighting sequentially.  When one fighter dies the
-next on that side steps up; the survivor keeps their current HP.
+number of enemies.  Each round every living combatant acts once,
+targeting the frontline enemy.  Standard RPG party combat.
 
 The headline stat is LD50: the turn at which 50% of hero teams are wiped.
 
@@ -84,49 +84,47 @@ def run_battle(
 ) -> dict:
     """Simulate one full battle between hero team and enemy team.
 
-    Fighters engage sequentially — when one dies, the next on that side
-    steps up.  The survivor keeps their current HP.
+    Each round every living combatant acts once.  The side indicated by
+    *hero_first* swings first, then the other side.  Each attacker
+    targets the first living fighter on the opposing side (frontline).
+    One round = one turn for timing purposes.
     """
     h_team = [copy.deepcopy(c) for c in heroes]
     e_team = [copy.deepcopy(c) for c in enemies]
-    hi = 0  # current hero index
-    ei = 0  # current enemy index
-    hero_attacks = hero_first
     turn = 0
-    heroes_fallen = 0
-    enemies_fallen = 0
 
-    while hi < len(h_team) and ei < len(e_team):
-        h = h_team[hi]
-        e = e_team[ei]
+    def living(team):
+        return [c for c in team if c.hp > 0]
 
-        if hero_attacks:
-            resolve_turn(h, e)
+    while living(h_team) and living(e_team):
+        if hero_first:
+            sides = [(living(h_team), e_team), (living(e_team), h_team)]
         else:
-            resolve_turn(e, h)
-        hero_attacks = not hero_attacks
+            sides = [(living(e_team), h_team), (living(h_team), e_team)]
+
+        for attackers, target_team in sides:
+            for attacker in attackers:
+                targets = living(target_team)
+                if targets:
+                    resolve_turn(attacker, targets[0])
+
+        for c in h_team + e_team:
+            if c.hp > 0:
+                tick_effects(c)
+
         turn += 1
-        tick_effects(h)
-        tick_effects(e)
 
-        if e.hp <= 0:
-            ei += 1
-            enemies_fallen += 1
-            hero_attacks = True  # hero strikes first against next enemy
-        if h.hp <= 0:
-            hi += 1
-            heroes_fallen += 1
-            hero_attacks = False  # next hero gets hit first
-
-    hero_side_won = ei >= len(e_team)
-    last_hero_hp = h_team[min(hi, len(h_team) - 1)].hp if hero_side_won else 0
-    last_enemy_hp = e_team[min(ei, len(e_team) - 1)].hp if not hero_side_won else 0
+    heroes_fallen = sum(1 for h in h_team if h.hp <= 0)
+    enemies_fallen = sum(1 for e in e_team if e.hp <= 0)
+    hero_side_won = bool(living(h_team))
+    surviving_heroes = living(h_team)
+    surviving_enemies = living(e_team)
 
     return {
         "result": "win" if hero_side_won else "lose",
         "turns": turn,
-        "last_hero_hp": last_hero_hp,
-        "last_enemy_hp": last_enemy_hp,
+        "last_hero_hp": surviving_heroes[-1].hp if surviving_heroes else 0,
+        "last_enemy_hp": surviving_enemies[-1].hp if surviving_enemies else 0,
         "heroes_fallen": heroes_fallen,
         "enemies_fallen": enemies_fallen,
     }
@@ -323,8 +321,8 @@ def main():
             "Character format:  Name:HP/STR/DEF  or  HP/STR/DEF\n"
             "\n"
             "All --hero flags form one team; all --enemy flags form the\n"
-            "other.  Fighters engage sequentially — when one dies the next\n"
-            "steps up.  The survivor keeps their current HP.\n"
+            "other.  Each round every living combatant acts once, targeting\n"
+            "the frontline enemy.  Standard RPG party combat.\n"
             "\n"
             "Examples:\n"
             "  %(prog)s --hero 'Paladin:40/7/5' --enemy 'Goblin:25/7/3'\n"

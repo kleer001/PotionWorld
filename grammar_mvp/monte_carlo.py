@@ -36,6 +36,7 @@ import argparse
 import copy
 import csv
 import io
+import math
 import statistics
 
 from grammar_mvp.battle import resolve_turn, tick_effects
@@ -186,6 +187,133 @@ def monte_carlo(
         "avg_enemy_hp_on_loss": statistics.mean(lose_hp) if lose_hp else 0,
         "avg_heroes_fallen": statistics.mean(heroes_fallen_counts),
         "avg_enemies_fallen": statistics.mean(enemies_fallen_counts),
+    }
+
+
+# ── Adaptive difficulty (runtime API) ────────────────────────────────
+
+def scale_team(
+    team: list[Character],
+    hp_scale: float = 1.0,
+    str_scale: float = 1.0,
+    def_scale: float = 1.0,
+) -> list[Character]:
+    """Return a deep copy of *team* with stats scaled by the given factors.
+
+    All values are clamped to a minimum of 1.  HP and max_hp are scaled
+    together so the fighter starts at full health.
+    """
+    scaled = []
+    for c in team:
+        hp = max(1, round(c.max_hp * hp_scale))
+        s = max(1, round(c.strength * str_scale))
+        d = max(1, round(c.defense * def_scale))
+        scaled.append(Character(c.name, hp, hp, s, d))
+    return scaled
+
+
+def difficulty_check(
+    heroes: list[Character],
+    enemies: list[Character],
+    target_win_rate: float = 0.65,
+    tolerance: float = 0.10,
+    runs: int = 500,
+    hero_first: bool = True,
+) -> dict:
+    """Assess a matchup and return a difficulty verdict.
+
+    Intended for runtime use: the game calls this before presenting an
+    encounter to see if it needs adjustment.
+
+    Returns a dict with:
+      - win_rate:   simulated hero win rate (0.0–1.0)
+      - target:     the desired win rate
+      - delta:      win_rate - target (positive = too easy)
+      - verdict:    "easy" | "fair" | "hard"
+      - stats:      full monte_carlo() result dict
+    """
+    stats = monte_carlo(heroes, enemies, runs, hero_first)
+    actual = stats["win_rate"]
+    delta = actual - target_win_rate
+
+    if delta > tolerance:
+        verdict = "easy"
+    elif delta < -tolerance:
+        verdict = "hard"
+    else:
+        verdict = "fair"
+
+    return {
+        "win_rate": actual,
+        "target": target_win_rate,
+        "delta": delta,
+        "verdict": verdict,
+        "stats": stats,
+    }
+
+
+def suggest_scaling(
+    heroes: list[Character],
+    enemies: list[Character],
+    target_win_rate: float = 0.65,
+    runs: int = 500,
+    hero_first: bool = True,
+    max_iterations: int = 12,
+    scale_stat: str = "hp",
+) -> dict:
+    """Binary-search an enemy stat multiplier that hits *target_win_rate*.
+
+    *scale_stat* can be ``"hp"``, ``"str"``, ``"def"``, or ``"all"``
+    (scales all three together).
+
+    Always runs all *max_iterations* steps — no early exit.  Monte Carlo
+    noise means a single "close enough" probe can't be trusted, so we let
+    the bounds tighten fully and take the midpoint.
+
+    Returns a dict with:
+      - scale:        the recommended multiplier (e.g. 1.35)
+      - win_rate:     achieved win rate at that scale (from a final
+                      confirmation run at 2x the normal sample size)
+      - target:       the requested target
+      - iterations:   always *max_iterations*
+      - scaled_enemies: the enemy team at the recommended scale
+    """
+    lo, hi = 0.25, 4.0
+
+    def _build_kwargs(factor):
+        kw = {"hp_scale": 1.0, "str_scale": 1.0, "def_scale": 1.0}
+        if scale_stat == "all":
+            return {"hp_scale": factor, "str_scale": factor, "def_scale": factor}
+        if scale_stat in ("hp", "str", "def"):
+            kw[f"{scale_stat}_scale"] = factor
+            return kw
+        raise ValueError(f"Unknown scale_stat: {scale_stat!r}")
+
+    for _ in range(max_iterations):
+        mid = (lo + hi) / 2.0
+        scaled = scale_team(enemies, **_build_kwargs(mid))
+        stats = monte_carlo(heroes, scaled, runs, hero_first)
+        rate = stats["win_rate"]
+
+        # Higher scale = stronger enemies = lower hero win rate.
+        if rate > target_win_rate:
+            lo = mid
+        else:
+            hi = mid
+
+    best_scale = (lo + hi) / 2.0
+    final_kwargs = _build_kwargs(best_scale)
+    final_enemies = scale_team(enemies, **final_kwargs)
+
+    # Confirmation run at 2x samples for a stable final win rate.
+    confirm = monte_carlo(heroes, final_enemies, runs * 2, hero_first)
+
+    return {
+        "scale": round(best_scale, 3),
+        "win_rate": confirm["win_rate"],
+        "target": target_win_rate,
+        "iterations": max_iterations,
+        "scaled_enemies": final_enemies,
     }
 
 
@@ -356,6 +484,18 @@ def main():
         "--csv", action="store_true",
         help="Output as CSV instead of table",
     )
+    parser.add_argument(
+        "--check", type=float, default=None, metavar="TARGET",
+        help="Difficulty check: target hero win rate 0.0–1.0 (e.g. 0.65)",
+    )
+    parser.add_argument(
+        "--auto-scale", type=float, default=None, metavar="TARGET",
+        help="Find enemy stat multiplier to hit target win rate (e.g. 0.65)",
+    )
+    parser.add_argument(
+        "--scale-stat", choices=["hp", "str", "def", "all"], default="hp",
+        help="Which enemy stat to scale with --auto-scale (default: hp)",
+    )
     args = parser.parse_args()
 
     # Defaults
@@ -373,7 +513,43 @@ def main():
     else:
         enemies.append(Character("Goblin", 25, 25, 7, 3))
 
-    # Determine first-strike variants to test
+    hero_first = args.first != "enemy"
+
+    # ── Difficulty check mode ──
+    if args.check is not None:
+        result = difficulty_check(
+            heroes, enemies,
+            target_win_rate=args.check,
+            runs=args.runs,
+            hero_first=hero_first,
+        )
+        print(f"{_char_label(heroes)}  vs  {_char_label(enemies)}")
+        print(f"  Target win rate: {result['target']:.0%}")
+        print(f"  Actual win rate: {result['win_rate']:.1%}")
+        print(f"  Delta:           {result['delta']:+.1%}")
+        print(f"  Verdict:         {result['verdict'].upper()}")
+        return
+
+    # ── Auto-scale mode ──
+    if args.auto_scale is not None:
+        result = suggest_scaling(
+            heroes, enemies,
+            target_win_rate=args.auto_scale,
+            runs=args.runs,
+            hero_first=hero_first,
+            scale_stat=args.scale_stat,
+        )
+        scaled = result["scaled_enemies"]
+        print(f"{_char_label(heroes)}  vs  {_char_label(enemies)}")
+        print(f"  Target:    {result['target']:.0%} hero win rate")
+        print(f"  Achieved:  {result['win_rate']:.1%} ({result['iterations']} iterations)")
+        print(f"  Scale:     {result['scale']:.3f}x ({args.scale_stat})")
+        print(f"  Scaled enemies: {_char_label(scaled)}")
+        for c in scaled:
+            print(f"    {c.name}: {c.max_hp}/{c.strength}/{c.defense}")
+        return
+
+    # ── Standard simulation ──
     first_options = (
         [("hero", True), ("enemy", False)]
         if args.first == "both"
@@ -385,8 +561,8 @@ def main():
     enemy_label = _char_label(enemies)
 
     all_results = []
-    for label, hero_first in first_options:
-        stats = monte_carlo(heroes, enemies, args.runs, hero_first)
+    for label, hero_first_val in first_options:
+        stats = monte_carlo(heroes, enemies, args.runs, hero_first_val)
         all_results.append({
             "hero_label": hero_label,
             "enemy_label": enemy_label,

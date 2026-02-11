@@ -99,6 +99,131 @@ for spreadsheet analysis:
 python -m grammar_mvp.monte_carlo --csv > balance.csv
 ```
 
+### `--check TARGET`
+
+Quick difficulty assessment. Runs the simulation and compares the hero win
+rate against TARGET (0.0-1.0). Prints a verdict: EASY, FAIR, or HARD.
+
+```bash
+# Is this encounter roughly 65% winnable?
+python -m grammar_mvp.monte_carlo \
+    --hero "Paladin:40/7/5" --enemy "Orc:35/8/4" --check 0.65
+```
+
+Output:
+
+```
+Paladin(40/7/5)  vs  Orc(35/8/4)
+  Target win rate: 65%
+  Actual win rate: 71.2%
+  Delta:           +6.2%
+  Verdict:         FAIR
+```
+
+Verdict uses a +/-10% tolerance band around the target. Useful for the
+game backend to quickly test "should I adjust this encounter?" before
+committing to a full auto-scale.
+
+### `--auto-scale TARGET`
+
+Binary-searches an enemy stat multiplier that produces a hero win rate
+close to TARGET. Always runs all 12 iterations (no early exit) so the
+result is stable across runs, then does a confirmation pass at 2x samples.
+
+```bash
+# Scale goblin HP until heroes win ~65% of the time
+python -m grammar_mvp.monte_carlo \
+    --hero "Sir Aldric:30/6/3" --enemy "Goblin:25/7/3" \
+    --auto-scale 0.65
+
+# Scale all enemy stats together
+python -m grammar_mvp.monte_carlo \
+    --hero "Sir Aldric:30/6/3" --enemy "Goblin:25/7/3" \
+    --auto-scale 0.65 --scale-stat all
+```
+
+Output:
+
+```
+Sir Aldric(30/6/3)  vs  Goblin(25/7/3)
+  Target:    65% hero win rate
+  Achieved:  64.3% (12 iterations)
+  Scale:     0.867x (hp)
+  Scaled enemies: Goblin(22/7/3)
+    Goblin: 22/7/3
+```
+
+### `--scale-stat hp|str|def|all`
+
+Which enemy stat to adjust with `--auto-scale`. Default: `hp`.
+
+| Value | Effect |
+|---|---|
+| `hp` (default) | Scale enemy HP only &mdash; safest single knob |
+| `str` | Scale enemy STR &mdash; changes damage output |
+| `def` | Scale enemy DEF &mdash; changes damage taken |
+| `all` | Scale all three together |
+
+## Adaptive Difficulty (Runtime API)
+
+Three functions are importable for use by the game backend:
+
+```python
+from grammar_mvp.monte_carlo import (
+    difficulty_check,
+    suggest_scaling,
+    scale_team,
+)
+```
+
+### `scale_team(team, hp_scale, str_scale, def_scale)`
+
+Returns a deep copy of a team with stats multiplied. All values clamp
+to a minimum of 1.
+
+```python
+tougher_goblins = scale_team(goblins, hp_scale=1.3)
+```
+
+### `difficulty_check(heroes, enemies, target_win_rate, ...)`
+
+Runs a quick MC simulation and returns a verdict dict:
+
+```python
+result = difficulty_check(hero_party, next_enemies, target_win_rate=0.65)
+if result["verdict"] == "hard":
+    # nerf the encounter or offer a potion
+```
+
+Returns: `win_rate`, `target`, `delta`, `verdict` ("easy"/"fair"/"hard"),
+`stats` (full monte_carlo result).
+
+### `suggest_scaling(heroes, enemies, target_win_rate, ...)`
+
+Binary-searches an enemy multiplier to hit the target win rate. Runs all
+iterations for stability, then a 2x confirmation pass.
+
+```python
+result = suggest_scaling(hero_party, base_enemies, target_win_rate=0.65)
+adjusted_enemies = result["scaled_enemies"]
+# result["scale"] is the multiplier (e.g. 1.35)
+```
+
+### Example: adaptive encounter setup
+
+```python
+from grammar_mvp.monte_carlo import difficulty_check, suggest_scaling
+
+def setup_encounter(hero_party, base_enemies, target=0.65):
+    """Adjust enemies so the encounter hits the target win rate."""
+    check = difficulty_check(hero_party, base_enemies, target)
+    if check["verdict"] == "fair":
+        return base_enemies  # already balanced
+
+    result = suggest_scaling(hero_party, base_enemies, target)
+    return result["scaled_enemies"]
+```
+
 ## Combat Model
 
 Each round:

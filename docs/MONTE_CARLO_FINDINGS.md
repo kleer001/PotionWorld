@@ -187,3 +187,59 @@ higher STR. Validates that the combat math is fair.
   buff is noticeable but not fight-changing. STR buffs would be stronger.
 - **Crowd control** (skip enemy turn) would be the most powerful potion
   type, effectively removing one attacker from the action economy per round.
+
+## Adaptive Difficulty — Auto-Scaling Results
+
+The simulator now includes `suggest_scaling()` which binary-searches an
+enemy stat multiplier to hit a target hero win rate. This can be called at
+runtime by the game backend to adjust the next encounter up or down.
+
+### How it works
+
+1. Binary-search over 12 iterations (always runs all of them &mdash; no
+   early exit on noisy MC data).
+2. Each iteration runs N battles at the current scale factor.
+3. After converging, a confirmation pass at 2x samples locks in the final
+   win rate.
+4. Returns the scale factor and pre-built scaled enemy team.
+
+### Auto-scale test: 1v1 default to 65% hero win rate
+
+The default matchup (Sir Aldric 30/6/3 vs Goblin 25/7/3) has a ~45% hero
+win rate.  Auto-scaling goblin HP down to hit 65%:
+
+| Run | Scale | Goblin HP | Achieved |
+|---|---|---|---|
+| 1 | 0.860x | 22 | 62.4% |
+| 2 | 0.850x | 21 | 69.6% |
+| 3 | 0.867x | 22 | 64.3% |
+| 4 | 0.861x | 22 | 62.0% |
+| 5 | 0.862x | 22 | 61.6% |
+
+Converges to Goblin HP 22 (down from 25) in 4/5 runs.  The outlier (HP 21)
+is at the rounding boundary.  Stable enough for runtime use.
+
+### Auto-scale test: party vs boss to 65%
+
+Paladin/Rogue/Cleric vs Dragon (80/12/6) &mdash; baseline ~79% win rate.
+
+| Stat scaled | Scale | Dragon stats | Achieved |
+|---|---|---|---|
+| HP only | 1.087x | 87/12/6 | 63.5% |
+| All stats | 1.041x | 83/12/6 | 71.9% |
+
+HP-only is the cleanest single knob.  Scaling all stats can overshoot
+because STR and DEF compound non-linearly.
+
+### Practical guidance for game integration
+
+- **`difficulty_check()`** is cheap (~500 battles, <100ms). Call it
+  before each encounter to decide if adjustment is needed.
+- **`suggest_scaling()`** is heavier (~12x500 + 1000 confirmation =
+  ~7000 battles). Call it once when building a level/wave, cache the
+  result.
+- **HP is the best single knob.** It scales fight duration linearly
+  without changing the feel of individual hits.  STR scaling changes
+  damage spikiness.  DEF scaling has diminishing returns.
+- **Target 65% for normal encounters.** The player should usually win
+  but occasionally lose.  Boss fights can target 55-70%.

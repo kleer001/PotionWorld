@@ -1,20 +1,26 @@
 """Monte Carlo battle simulator — balance tool for PotionWorld.
 
-Test arbitrary hero/enemy matchups over thousands of runs.
-The headline stat is LD50: the turn at which 50% of heroes are dead.
+Simulate team battles: an arbitrary number of heroes vs an arbitrary
+number of enemies, fighting sequentially.  When one fighter dies the
+next on that side steps up; the survivor keeps their current HP.
+
+The headline stat is LD50: the turn at which 50% of hero teams are wiped.
 
 Usage examples:
 
-  # Simple — current game defaults
+  # Simple — current game defaults (1v1)
   python -m grammar_mvp.monte_carlo
 
-  # Custom matchup
-  python -m grammar_mvp.monte_carlo --hero "Sir Aldric:30/6/3" --enemy "Goblin:25/7/3"
-
-  # Multiple matchups — tests every combination
+  # 1 hero vs 4 skeletons (gauntlet)
   python -m grammar_mvp.monte_carlo \\
-      --hero "Paladin:40/7/5" --hero "Rogue:25/9/2" \\
-      --enemy "Goblin:25/7/3" --enemy "Skeleton:30/5/2" --enemy "Ogre:50/10/4"
+      --hero "Sir Aldric:30/6/3" \\
+      --enemy "Skeleton:30/5/2" --enemy "Skeleton:30/5/2" \\
+      --enemy "Skeleton:30/5/2" --enemy "Skeleton:30/5/2"
+
+  # 3 heroes vs 1 boss
+  python -m grammar_mvp.monte_carlo \\
+      --hero "Paladin:40/7/5" --hero "Rogue:25/9/2" --hero "Cleric:30/5/4" \\
+      --enemy "Ogre:50/10/4"
 
   # With timing info (turn delay in seconds)
   python -m grammar_mvp.monte_carlo --turn-delay 5.0
@@ -32,8 +38,8 @@ import csv
 import io
 import statistics
 
-from grammar_mvp.battle import check_battle_end, resolve_turn, tick_effects
-from grammar_mvp.game_state import Character, GameState
+from grammar_mvp.battle import resolve_turn, tick_effects
+from grammar_mvp.game_state import Character
 
 
 # ── Character parsing ────────────────────────────────────────────────
@@ -53,22 +59,47 @@ def parse_character(spec: str, default_name: str = "Fighter") -> Character:
     return Character(name, hp, hp, strength, defense)
 
 
+def _char_label(chars: list[Character]) -> str:
+    """Short label for a team: 'Goblin' or 'Goblin, Skeleton x2'."""
+    counts: dict[str, int] = {}
+    for c in chars:
+        key = f"{c.name}({c.max_hp}/{c.strength}/{c.defense})"
+        counts[key] = counts.get(key, 0) + 1
+    parts = []
+    for name, n in counts.items():
+        parts.append(f"{name} x{n}" if n > 1 else name)
+    return ", ".join(parts)
+
+
+def _team_total_hp(chars: list[Character]) -> int:
+    return sum(c.max_hp for c in chars)
+
+
 # ── Simulation ───────────────────────────────────────────────────────
 
-def run_battle(hero: Character, enemy: Character, hero_first: bool = True) -> dict:
-    """Simulate one full battle (no potions). Returns result dict."""
-    h = copy.deepcopy(hero)
-    e = copy.deepcopy(enemy)
-    state = GameState(
-        hero=h, enemy=e,
-        mana=0, max_mana=0,
-        deck=[], hand=[], lock=[],
-        slot_count=0, hand_size=0,
-        phase="resolve",
-    )
+def run_battle(
+    heroes: list[Character],
+    enemies: list[Character],
+    hero_first: bool = True,
+) -> dict:
+    """Simulate one full battle between hero team and enemy team.
+
+    Fighters engage sequentially — when one dies, the next on that side
+    steps up.  The survivor keeps their current HP.
+    """
+    h_team = [copy.deepcopy(c) for c in heroes]
+    e_team = [copy.deepcopy(c) for c in enemies]
+    hi = 0  # current hero index
+    ei = 0  # current enemy index
     hero_attacks = hero_first
     turn = 0
-    while True:
+    heroes_fallen = 0
+    enemies_fallen = 0
+
+    while hi < len(h_team) and ei < len(e_team):
+        h = h_team[hi]
+        e = e_team[ei]
+
         if hero_attacks:
             resolve_turn(h, e)
         else:
@@ -77,19 +108,33 @@ def run_battle(hero: Character, enemy: Character, hero_first: bool = True) -> di
         turn += 1
         tick_effects(h)
         tick_effects(e)
-        result = check_battle_end(state)
-        if result:
-            return {
-                "result": result,
-                "turns": turn,
-                "hero_hp": h.hp,
-                "enemy_hp": e.hp,
-            }
+
+        if e.hp <= 0:
+            ei += 1
+            enemies_fallen += 1
+            hero_attacks = True  # hero strikes first against next enemy
+        if h.hp <= 0:
+            hi += 1
+            heroes_fallen += 1
+            hero_attacks = False  # next hero gets hit first
+
+    hero_side_won = ei >= len(e_team)
+    last_hero_hp = h_team[min(hi, len(h_team) - 1)].hp if hero_side_won else 0
+    last_enemy_hp = e_team[min(ei, len(e_team) - 1)].hp if not hero_side_won else 0
+
+    return {
+        "result": "win" if hero_side_won else "lose",
+        "turns": turn,
+        "last_hero_hp": last_hero_hp,
+        "last_enemy_hp": last_enemy_hp,
+        "heroes_fallen": heroes_fallen,
+        "enemies_fallen": enemies_fallen,
+    }
 
 
 def monte_carlo(
-    hero: Character,
-    enemy: Character,
+    heroes: list[Character],
+    enemies: list[Character],
     runs: int,
     hero_first: bool = True,
 ) -> dict:
@@ -99,17 +144,21 @@ def monte_carlo(
     turn_counts = []
     win_hp = []
     lose_hp = []
-    death_turns = []  # turn numbers where the hero died
+    death_turns = []
+    heroes_fallen_counts = []
+    enemies_fallen_counts = []
 
     for _ in range(runs):
-        outcome = run_battle(hero, enemy, hero_first)
+        outcome = run_battle(heroes, enemies, hero_first)
         turn_counts.append(outcome["turns"])
+        heroes_fallen_counts.append(outcome["heroes_fallen"])
+        enemies_fallen_counts.append(outcome["enemies_fallen"])
         if outcome["result"] == "win":
             wins += 1
-            win_hp.append(outcome["hero_hp"])
+            win_hp.append(outcome["last_hero_hp"])
         else:
             losses += 1
-            lose_hp.append(outcome["enemy_hp"])
+            lose_hp.append(outcome["last_enemy_hp"])
             death_turns.append(outcome["turns"])
 
     sorted_turns = sorted(turn_counts)
@@ -119,8 +168,6 @@ def monte_carlo(
         idx = int(n * p / 100)
         return sorted_turns[min(idx, n - 1)]
 
-    # LD50: the median turn at which the hero dies.
-    # If the hero wins >50% of the time, LD50 is None (they usually survive).
     ld50 = statistics.median(death_turns) if death_turns else None
 
     return {
@@ -139,105 +186,107 @@ def monte_carlo(
         "p90_turns": percentile(90),
         "avg_hero_hp_on_win": statistics.mean(win_hp) if win_hp else 0,
         "avg_enemy_hp_on_loss": statistics.mean(lose_hp) if lose_hp else 0,
+        "avg_heroes_fallen": statistics.mean(heroes_fallen_counts),
+        "avg_enemies_fallen": statistics.mean(enemies_fallen_counts),
     }
 
 
 # ── Output ───────────────────────────────────────────────────────────
 
-def format_table(all_results: list[dict], turn_delay: float | None) -> str:
+def format_table(result: dict, turn_delay: float | None) -> str:
     """Pretty-print results as a table."""
     lines = []
-    for r in all_results:
-        hdr = f"{r['hero_name']} vs {r['enemy_name']}"
-        if r.get("first_strike"):
-            hdr += f"  (first: {r['first_strike']})"
-        lines.append(hdr)
-        lines.append("=" * len(hdr))
+    hdr = f"{result['hero_label']}  vs  {result['enemy_label']}"
+    if result.get("first_strike"):
+        hdr += f"  (first: {result['first_strike']})"
+    lines.append(hdr)
+    lines.append("=" * len(hdr))
 
-        stats = r["stats"]
-        lines.append(
-            f"  Hero:  HP={r['hero_hp']}  STR={r['hero_str']}  DEF={r['hero_def']}"
-        )
-        lines.append(
-            f"  Enemy: HP={r['enemy_hp']}  STR={r['enemy_str']}  DEF={r['enemy_def']}"
-        )
-        lines.append(f"  Runs:  {stats['runs']}")
-        lines.append("")
+    lines.append(f"  Heroes: {result['hero_count']}  (total HP {result['hero_total_hp']})")
+    lines.append(f"  Enemies: {result['enemy_count']}  (total HP {result['enemy_total_hp']})")
 
-        # LD50 — headline stat
-        ld50 = stats["ld50"]
-        if ld50 is not None:
-            ld50_line = f"  LD50 (hero):   turn {ld50:.0f}"
-            if turn_delay:
-                ld50_line += f"  ({ld50 * turn_delay:.0f}s / {ld50 * turn_delay / 60:.1f}min)"
-            lines.append(ld50_line)
-        else:
-            lines.append("  LD50 (hero):   N/A (hero never dies)")
+    s = result["stats"]
+    lines.append(f"  Runs:  {s['runs']}")
+    lines.append("")
 
-        lines.append("")
-        lines.append(
-            f"  Win rate:  {stats['win_rate']:.1%}  "
-            f"({stats['wins']}W / {stats['losses']}L)"
-        )
-        lines.append(
-            f"  Turns:     avg {stats['avg_turns']:.1f}  "
-            f"(range {stats['min_turns']}–{stats['max_turns']})"
-        )
-        lines.append(
-            f"  Quartiles: p10={stats['p10_turns']}  p25={stats['p25_turns']}  "
-            f"p50={stats['p50_turns']}  p75={stats['p75_turns']}  p90={stats['p90_turns']}"
-        )
-
+    # LD50 — headline stat
+    ld50 = s["ld50"]
+    if ld50 is not None:
+        ld50_line = f"  LD50 (hero team): turn {ld50:.0f}"
         if turn_delay:
-            avg_secs = stats["avg_turns"] * turn_delay
-            fast_secs = stats["p10_turns"] * turn_delay
-            slow_secs = stats["p90_turns"] * turn_delay
-            lines.append(
-                f"  Duration:  avg {avg_secs:.0f}s ({avg_secs/60:.1f}min)  "
-                f"fast {fast_secs:.0f}s  slow {slow_secs:.0f}s"
-            )
+            ld50_line += f"  ({ld50 * turn_delay:.0f}s / {ld50 * turn_delay / 60:.1f}min)"
+        lines.append(ld50_line)
+    else:
+        lines.append("  LD50 (hero team): N/A (heroes always win)")
 
+    lines.append("")
+    lines.append(
+        f"  Win rate:  {s['win_rate']:.1%}  "
+        f"({s['wins']}W / {s['losses']}L)"
+    )
+    lines.append(
+        f"  Turns:     avg {s['avg_turns']:.1f}  "
+        f"(range {s['min_turns']}–{s['max_turns']})"
+    )
+    lines.append(
+        f"  Quartiles: p10={s['p10_turns']}  p25={s['p25_turns']}  "
+        f"p50={s['p50_turns']}  p75={s['p75_turns']}  p90={s['p90_turns']}"
+    )
+
+    if turn_delay:
+        avg_secs = s["avg_turns"] * turn_delay
+        fast_secs = s["p10_turns"] * turn_delay
+        slow_secs = s["p90_turns"] * turn_delay
         lines.append(
-            f"  Avg hero HP on win:    {stats['avg_hero_hp_on_win']:.1f}"
-        )
-        lines.append(
-            f"  Avg enemy HP on loss:  {stats['avg_enemy_hp_on_loss']:.1f}"
+            f"  Duration:  avg {avg_secs:.0f}s ({avg_secs/60:.1f}min)  "
+            f"fast {fast_secs:.0f}s  slow {slow_secs:.0f}s"
         )
 
-        lines.append("")
+    lines.append(
+        f"  Avg last hero HP on win:   {s['avg_hero_hp_on_win']:.1f}"
+    )
+    lines.append(
+        f"  Avg last enemy HP on loss: {s['avg_enemy_hp_on_loss']:.1f}"
+    )
+    lines.append(
+        f"  Avg heroes fallen:  {s['avg_heroes_fallen']:.1f} / {result['hero_count']}"
+    )
+    lines.append(
+        f"  Avg enemies fallen: {s['avg_enemies_fallen']:.1f} / {result['enemy_count']}"
+    )
 
+    lines.append("")
     return "\n".join(lines)
 
 
-def format_csv(all_results: list[dict], turn_delay: float | None) -> str:
+def format_csv(results: list[dict], turn_delay: float | None) -> str:
     """Format results as CSV."""
     buf = io.StringIO()
     fieldnames = [
-        "hero", "enemy", "first_strike",
-        "hero_hp", "hero_str", "hero_def",
-        "enemy_hp", "enemy_str", "enemy_def",
+        "heroes", "enemies", "first_strike",
+        "hero_count", "hero_total_hp",
+        "enemy_count", "enemy_total_hp",
         "runs", "wins", "losses", "win_rate", "ld50",
         "avg_turns", "min_turns", "max_turns",
         "p10", "p25", "p50", "p75", "p90",
         "avg_hero_hp_on_win", "avg_enemy_hp_on_loss",
+        "avg_heroes_fallen", "avg_enemies_fallen",
     ]
     if turn_delay:
         fieldnames.extend(["avg_duration_s", "ld50_s"])
     writer = csv.DictWriter(buf, fieldnames=fieldnames)
     writer.writeheader()
 
-    for r in all_results:
+    for r in results:
         s = r["stats"]
         row = {
-            "hero": r["hero_name"],
-            "enemy": r["enemy_name"],
+            "heroes": r["hero_label"],
+            "enemies": r["enemy_label"],
             "first_strike": r.get("first_strike", "hero"),
-            "hero_hp": r["hero_hp"],
-            "hero_str": r["hero_str"],
-            "hero_def": r["hero_def"],
-            "enemy_hp": r["enemy_hp"],
-            "enemy_str": r["enemy_str"],
-            "enemy_def": r["enemy_def"],
+            "hero_count": r["hero_count"],
+            "hero_total_hp": r["hero_total_hp"],
+            "enemy_count": r["enemy_count"],
+            "enemy_total_hp": r["enemy_total_hp"],
             "runs": s["runs"],
             "wins": s["wins"],
             "losses": s["losses"],
@@ -253,6 +302,8 @@ def format_csv(all_results: list[dict], turn_delay: float | None) -> str:
             "p90": s["p90_turns"],
             "avg_hero_hp_on_win": f"{s['avg_hero_hp_on_win']:.1f}",
             "avg_enemy_hp_on_loss": f"{s['avg_enemy_hp_on_loss']:.1f}",
+            "avg_heroes_fallen": f"{s['avg_heroes_fallen']:.1f}",
+            "avg_enemies_fallen": f"{s['avg_enemies_fallen']:.1f}",
         }
         if turn_delay:
             row["avg_duration_s"] = f"{s['avg_turns'] * turn_delay:.0f}"
@@ -271,20 +322,25 @@ def main():
         epilog=(
             "Character format:  Name:HP/STR/DEF  or  HP/STR/DEF\n"
             "\n"
+            "All --hero flags form one team; all --enemy flags form the\n"
+            "other.  Fighters engage sequentially — when one dies the next\n"
+            "steps up.  The survivor keeps their current HP.\n"
+            "\n"
             "Examples:\n"
             "  %(prog)s --hero 'Paladin:40/7/5' --enemy 'Goblin:25/7/3'\n"
             "  %(prog)s --hero 30/6/3 --enemy 25/7/3 --turn-delay 5\n"
             "  %(prog)s --hero 30/6/3 --enemy 25/7/3 --first both\n"
+            "  %(prog)s --hero 30/6/3 --enemy 20/5/2 --enemy 20/5/2 --enemy 20/5/2\n"
             "  %(prog)s --csv > balance.csv\n"
         ),
     )
     parser.add_argument(
         "--hero", action="append", dest="heroes", metavar="SPEC",
-        help="Hero spec: 'Name:HP/STR/DEF' or 'HP/STR/DEF' (repeatable)",
+        help="Hero spec: 'Name:HP/STR/DEF' or 'HP/STR/DEF' (repeatable — forms a team)",
     )
     parser.add_argument(
         "--enemy", action="append", dest="enemies", metavar="SPEC",
-        help="Enemy spec: 'Name:HP/STR/DEF' or 'HP/STR/DEF' (repeatable)",
+        help="Enemy spec: 'Name:HP/STR/DEF' or 'HP/STR/DEF' (repeatable — forms a team)",
     )
     parser.add_argument(
         "--runs", type=int, default=1000,
@@ -327,30 +383,29 @@ def main():
         else [("enemy", False)]
     )
 
-    # Run all matchups
+    hero_label = _char_label(heroes)
+    enemy_label = _char_label(enemies)
+
     all_results = []
-    for hero in heroes:
-        for enemy in enemies:
-            for label, hero_first in first_options:
-                stats = monte_carlo(hero, enemy, args.runs, hero_first)
-                all_results.append({
-                    "hero_name": hero.name,
-                    "enemy_name": enemy.name,
-                    "hero_hp": hero.max_hp,
-                    "hero_str": hero.strength,
-                    "hero_def": hero.defense,
-                    "enemy_hp": enemy.max_hp,
-                    "enemy_str": enemy.strength,
-                    "enemy_def": enemy.defense,
-                    "first_strike": label if args.first == "both" else None,
-                    "stats": stats,
-                })
+    for label, hero_first in first_options:
+        stats = monte_carlo(heroes, enemies, args.runs, hero_first)
+        all_results.append({
+            "hero_label": hero_label,
+            "enemy_label": enemy_label,
+            "hero_count": len(heroes),
+            "enemy_count": len(enemies),
+            "hero_total_hp": _team_total_hp(heroes),
+            "enemy_total_hp": _team_total_hp(enemies),
+            "first_strike": label if args.first == "both" else None,
+            "stats": stats,
+        })
 
     # Output
     if args.csv:
         print(format_csv(all_results, args.turn_delay), end="")
     else:
-        print(format_table(all_results, args.turn_delay))
+        for r in all_results:
+            print(format_table(r, args.turn_delay))
 
 
 if __name__ == "__main__":

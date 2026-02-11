@@ -1,5 +1,7 @@
 """Battle engine — turn resolution, potion application, effect ticking."""
 
+import random
+
 from grammar_mvp.game_state import Character, GameState
 
 # Map ESENS stat codes → Character attribute names
@@ -18,10 +20,12 @@ TARGET_MAP = {
 
 def resolve_turn(attacker: Character, defender: Character) -> str:
     """One attack: attacker hits defender. Returns a log string."""
-    damage = max(1, attacker.strength - defender.defense)
+    hit = random.randint(1, attacker.strength)
+    block = random.randint(0, defender.defense)
+    damage = max(1, hit - block)
     defender.hp = max(0, defender.hp - damage)
     return (
-        f"{attacker.name} attacks! {damage} dmg. "
+        f"{attacker.name} attacks! {hit} hit - {block} block = {damage} dmg. "
         f"{defender.name}: {defender.hp}/{defender.max_hp}"
     )
 

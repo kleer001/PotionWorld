@@ -1,5 +1,6 @@
 import arcade
 
+from grammar_mvp.animation import HitAnimation
 from grammar_mvp.cards import CARD_WIDTH, CARD_HEIGHT
 
 SLOT_COLOR = (50, 50, 50)
@@ -66,7 +67,23 @@ class CharacterPanel:
             anchor_x="center",
         )
 
+        self.hit_anim = HitAnimation()
+
+    def shake(self):
+        """Trigger the hit-bounce animation."""
+        self.hit_anim.start()
+
+    def update_animation(self, dt: float):
+        """Advance the hit animation by *dt* seconds."""
+        self.hit_anim.update(dt)
+
     def draw(self):
+        offset = self.hit_anim.offset
+        portrait = self.portrait_list[0]
+        portrait.center_x = self.x + offset
+        self.name_text.x = self.x + offset
+        self.hp_text.x = self.x + offset
+
         self.portrait_list.draw()
         self.name_text.draw()
         self.hp_text.draw()

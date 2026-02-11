@@ -200,6 +200,12 @@ class BattleView(arcade.View):
         state = self.state
         phase = state.phase
 
+        # Tick hit animations every frame
+        if self.hero_panel:
+            self.hero_panel.update_animation(delta_time)
+        if self.enemy_panel:
+            self.enemy_panel.update_animation(delta_time)
+
         # If stuck in build with nothing to play, auto-resolve
         if phase == "build" and not state.hand and not state.deck:
             state.phase = "resolve"
@@ -219,8 +225,12 @@ class BattleView(arcade.View):
         # Pick attacker/defender
         if self.hero_attacks_next:
             log = resolve_turn(state.hero, state.enemy)
+            if self.enemy_panel:
+                self.enemy_panel.shake()
         else:
             log = resolve_turn(state.enemy, state.hero)
+            if self.hero_panel:
+                self.hero_panel.shake()
         self.hero_attacks_next = not self.hero_attacks_next
 
         state.turn += 1

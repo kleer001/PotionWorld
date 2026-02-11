@@ -8,7 +8,7 @@ SLOT_GAP = 10
 
 # Character panel colours
 PORTRAIT_COLOR = (70, 70, 90)
-HERO_COLOR = (0, 0, 128)       # navy blue
+HERO_COLOR = (0, 204, 204)     # robin's egg blue
 ENEMY_COLOR = (139, 0, 0)      # deep red
 PORTRAIT_W = 100
 PORTRAIT_H = 120

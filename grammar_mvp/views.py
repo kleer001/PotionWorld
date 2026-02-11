@@ -18,6 +18,7 @@ from grammar_mvp.cards import (
     dispatch_action,
     load_cards,
     load_starter_deck,
+    redraw_hand,
 )
 from grammar_mvp.display import BattleLog, create_hero_panel, create_enemy_panel, create_lock_slots
 from grammar_mvp.game_state import Character, GameState
@@ -156,15 +157,31 @@ class BattleView(arcade.View):
         # CAST button — positioned to the right of the lock area
         cast_button = arcade.gui.UIFlatButton(text="CAST", width=120, height=50)
         cast_button.on_click = self._on_cast_click
-        anchor = arcade.gui.UIAnchorLayout()
-        anchor.add(
+        cast_anchor = arcade.gui.UIAnchorLayout()
+        cast_anchor.add(
             child=cast_button,
             anchor_x="center",
             anchor_y="center",
             align_x=300,
             align_y=SLOT_Y - SCREEN_HEIGHT // 2,
         )
-        self.ui_manager.add(anchor)
+        self.ui_manager.add(cast_anchor)
+
+        # REDRAW button — below the hand, costs 2 mana
+        redraw_button = arcade.gui.UIFlatButton(
+            text="REDRAW (2 Mana)", width=160, height=40,
+        )
+        redraw_button.on_click = self._on_redraw_click
+        redraw_anchor = arcade.gui.UIAnchorLayout()
+        redraw_anchor.add(
+            child=redraw_button,
+            anchor_x="center",
+            anchor_y="center",
+            align_x=0,
+            align_y=HAND_Y - CARD_HEIGHT // 2 - 40 - SCREEN_HEIGHT // 2,
+        )
+        self.ui_manager.add(redraw_anchor)
+
         self.ui_manager.enable()
 
         # Character panels (M10)
@@ -532,6 +549,24 @@ class BattleView(arcade.View):
         self.state.phase = "post_cast"
         self.turns_remaining = POST_CAST_TURNS
         self.turn_timer = 0.0
+
+    # ------------------------------------------------------------------
+    # REDRAW
+    # ------------------------------------------------------------------
+
+    def _on_redraw_click(self, _event):
+        if self.state.phase != "build":
+            return
+        if self.state.mana < 2:
+            self.feedback_text.text = "Not enough mana to redraw!"
+            self.feedback_text.color = arcade.color.RED
+            return
+
+        self.state.mana -= 2
+        redraw_hand(self.state, {})
+        self._full_sync()
+        self.feedback_text.text = "Hand redrawn!"
+        self.feedback_text.color = arcade.color.YELLOW_GREEN
 
     # ------------------------------------------------------------------
     # Action cards — M8

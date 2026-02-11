@@ -108,7 +108,7 @@ class BattleView(arcade.View):
         random.shuffle(starter)
 
         self.state = GameState(
-            hero=Character("Sir Aldric", 30, 30, 6, 3),
+            hero=Character("Stable Boy", 15, 15, 3, 1),
             enemy=Character("Goblin", 25, 25, 7, 3),
             mana=10,
             max_mana=10,

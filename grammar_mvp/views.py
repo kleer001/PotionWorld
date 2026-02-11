@@ -197,7 +197,14 @@ class BattleView(arcade.View):
     # ------------------------------------------------------------------
 
     def on_update(self, delta_time):
-        phase = self.state.phase
+        state = self.state
+        phase = state.phase
+
+        # If stuck in build with nothing to play, auto-resolve
+        if phase == "build" and not state.hand and not state.deck:
+            state.phase = "resolve"
+            self.turns_remaining = 999
+            phase = "resolve"
 
         if phase in ("preview", "resolve", "post_cast"):
             self.turn_timer += delta_time
@@ -243,7 +250,10 @@ class BattleView(arcade.View):
                 state.phase = "resolve"
                 self.turns_remaining = 999  # keep going until someone dies
 
-        # "resolve" keeps going until check_battle_end fires
+        # If we just entered build but there's nothing to play, auto-resolve
+        if state.phase == "build" and not state.hand and not state.deck:
+            state.phase = "resolve"
+            self.turns_remaining = 999
 
     def _enter_end_phase(self, result: str):
         if result == "win":

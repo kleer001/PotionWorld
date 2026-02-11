@@ -43,11 +43,13 @@ class CharacterPanel:
     def __init__(self, character, x, y):
         self.x = x
         self.y = y
-        self.portrait = arcade.SpriteSolidColor(
+        portrait = arcade.SpriteSolidColor(
             PORTRAIT_W, PORTRAIT_H, color=PORTRAIT_COLOR,
         )
-        self.portrait.center_x = x
-        self.portrait.center_y = y
+        portrait.center_x = x
+        portrait.center_y = y
+        self.portrait_list = arcade.SpriteList()
+        self.portrait_list.append(portrait)
 
         self.name_text = arcade.Text(
             character.name,
@@ -65,7 +67,7 @@ class CharacterPanel:
         )
 
     def draw(self):
-        self.portrait.draw()
+        self.portrait_list.draw()
         self.name_text.draw()
         self.hp_text.draw()
 

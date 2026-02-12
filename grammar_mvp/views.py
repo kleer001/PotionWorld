@@ -1,5 +1,6 @@
 import random
 import sys
+from itertools import permutations
 from pathlib import Path
 
 import arcade
@@ -17,7 +18,6 @@ from grammar_mvp.cards import (
     CardSprite,
     dispatch_action,
     load_cards,
-    redraw_hand,
 )
 from grammar_mvp.display import BattleLog, ManaPips, create_hero_panel, create_enemy_panel, create_lock_slots
 from grammar_mvp.game_state import Character, GameState
@@ -132,6 +132,7 @@ class BattleView(arcade.View):
             slot_count=level["slot_count"],
             hand_size=level["hand_size"],
             phase="build",
+            smooth_draw_n=level.get("smooth_draw_n", 1),
         )
 
         # Build implied card data from level definition
@@ -142,8 +143,8 @@ class BattleView(arcade.View):
                     self.implied_slots[slot_idx] = dict(card_data)
                     break
 
-        # Draw initial hand from deck
-        self._draw_cards_from_deck(self.state.hand_size)
+        # Draw initial hand from deck (smoothed for tutorial levels)
+        self._smoothed_draw(self.state.hand_size)
         self._sync_hand()
         self._build_deck_pile()
 
@@ -610,8 +611,8 @@ class BattleView(arcade.View):
             if self.state.lock[i] and not self.state.lock[i].get("implied"):
                 self.state.lock[i] = None
 
-        # Refill hand from deck
-        self._draw_cards_from_deck(self.state.hand_size - len(self.state.hand))
+        # Refill hand from deck (smoothed for tutorial levels)
+        self._smoothed_draw(self.state.hand_size - len(self.state.hand))
         self._full_sync()
 
         # Show result
@@ -644,7 +645,10 @@ class BattleView(arcade.View):
             return
 
         self.state.mana -= 2
-        redraw_hand(self.state, {})
+        # Return hand to deck, then smoothed redraw
+        self.state.deck.extend(self.state.hand)
+        self.state.hand.clear()
+        self._smoothed_draw(self.state.hand_size)
         self._full_sync()
         self.feedback_text.text = "Hand redrawn!"
         self.feedback_text.color = arcade.color.YELLOW_GREEN
@@ -697,6 +701,84 @@ class BattleView(arcade.View):
                     self.battle_log_display.push(msg)
                 continue  # curse fires and vanishes
             self.state.hand.append(card)
+
+    def _score_hand(self, hand_cards):
+        """Score a candidate hand by counting valid potions composable
+        from these cards combined with the implied cards in lock slots.
+
+        Returns the number of distinct valid ESENS strings that can be
+        formed by placing grammar cards from *hand_cards* into open slots.
+        """
+        grammar_tokens = [
+            c["token"] for c in hand_cards if c.get("type") == "grammar"
+        ]
+        if not grammar_tokens:
+            return 0
+
+        # Implied tokens keyed by slot index
+        implied_tokens = {
+            idx: cd["token"] for idx, cd in self.implied_slots.items()
+        }
+
+        # Open slot indices (not occupied by implied cards)
+        open_slots = [
+            i for i in range(self.state.slot_count)
+            if i not in implied_tokens
+        ]
+        if not open_slots:
+            return 0
+
+        tried: set[str] = set()
+        valid = 0
+        max_place = min(len(grammar_tokens), len(open_slots))
+
+        for size in range(1, max_place + 1):
+            for perm in permutations(grammar_tokens, size):
+                slots = dict(implied_tokens)
+                for i, token in enumerate(perm):
+                    slots[open_slots[i]] = token
+                esens = "".join(
+                    slots.get(idx, "") for idx in range(self.state.slot_count)
+                )
+                if esens in tried:
+                    continue
+                tried.add(esens)
+                try:
+                    parse_esens(esens)
+                    valid += 1
+                except ESENSParseError:
+                    pass
+        return valid
+
+    def _smoothed_draw(self, count):
+        """Arena-style hand smoothing: shuffle deck N times, peek at what
+        would be drawn, score for potion viability, keep the best shuffle,
+        then draw normally.  N comes from ``state.smooth_draw_n``.
+
+        When N <= 1 (default for non-tutorial levels), this is a plain draw.
+        """
+        n = self.state.smooth_draw_n
+        if n <= 1 or not self.state.deck:
+            self._draw_cards_from_deck(count)
+            return
+
+        best_score = -1
+        best_order = None
+        peek_count = min(count, len(self.state.deck))
+
+        for _ in range(n):
+            random.shuffle(self.state.deck)
+            # Peek at the top cards (drawn via pop from end)
+            top = self.state.deck[-peek_count:]
+            score = self._score_hand(
+                [c for c in top if c.get("type") != "curse"]
+            )
+            if score > best_score:
+                best_score = score
+                best_order = list(self.state.deck)
+
+        self.state.deck = best_order
+        self._draw_cards_from_deck(count)
 
     def _sync_hand(self):
         """Rebuild hand_list sprites from state.hand."""

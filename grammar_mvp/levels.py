@@ -67,6 +67,7 @@ def load_levels(path: Path | None = None) -> list[dict]:
             "slot_count": raw.get("slot_count", 5),
             "hand_size": raw.get("hand_size", 5),
             "deck_extras": raw.get("deck_extras", []),
+            "smooth_draw_n": raw.get("smooth_draw_n", 1),
         }
 
         # Implied cards

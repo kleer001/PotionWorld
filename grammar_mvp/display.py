@@ -1,6 +1,6 @@
 import arcade
 
-from grammar_mvp.animation import HitAnimation
+from grammar_mvp.animation import DamageFloat, HitAnimation
 from grammar_mvp.cards import CARD_WIDTH, CARD_HEIGHT
 
 SLOT_COLOR = (50, 50, 50)
@@ -70,14 +70,28 @@ class CharacterPanel:
         )
 
         self.hit_anim = HitAnimation()
+        self.dmg_float = DamageFloat()
+        self.dmg_text = arcade.Text(
+            "", x, y,
+            color=arcade.color.WHITE,
+            font_size=20,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True,
+        )
 
     def shake(self):
         """Trigger the hit-bounce animation."""
         self.hit_anim.start()
 
+    def show_damage(self, amount: int):
+        """Spawn a floating damage number (e.g. ``-5``)."""
+        self.dmg_float.start(f"-{amount}")
+
     def update_animation(self, dt: float):
         """Advance the hit animation by *dt* seconds."""
         self.hit_anim.update(dt)
+        self.dmg_float.update(dt)
 
     def draw(self):
         offset = self.hit_anim.offset
@@ -89,6 +103,15 @@ class CharacterPanel:
         self.portrait_list.draw()
         self.name_text.draw()
         self.hp_text.draw()
+
+        # Floating damage number
+        if self.dmg_float.active:
+            self.dmg_text.text = self.dmg_float.label
+            self.dmg_text.x = self.x + self.dmg_float.x_offset
+            self.dmg_text.y = self.y + self.dmg_float.y_offset
+            a = self.dmg_float.alpha
+            self.dmg_text.color = (255, 80, 80, a)
+            self.dmg_text.draw()
 
     def update(self, character):
         """Sync displayed HP from Character data."""

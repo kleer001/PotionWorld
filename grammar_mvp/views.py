@@ -241,13 +241,19 @@ class BattleView(arcade.View):
 
         # Pick attacker/defender
         if self.hero_attacks_next:
+            hp_before = state.enemy.hp
             log = resolve_turn(state.hero, state.enemy)
+            damage = hp_before - state.enemy.hp
             if self.enemy_panel:
                 self.enemy_panel.shake()
+                self.enemy_panel.show_damage(damage)
         else:
+            hp_before = state.hero.hp
             log = resolve_turn(state.enemy, state.hero)
+            damage = hp_before - state.hero.hp
             if self.hero_panel:
                 self.hero_panel.shake()
+                self.hero_panel.show_damage(damage)
         self.hero_attacks_next = not self.hero_attacks_next
 
         state.turn += 1

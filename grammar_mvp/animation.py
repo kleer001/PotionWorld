@@ -1,5 +1,7 @@
 """Reusable animations for sprites, panels, or any positioned drawable."""
 
+import math
+
 
 class HitAnimation:
     """Damped triangle-wave horizontal shake.
@@ -58,3 +60,65 @@ class HitAnimation:
             wave = -3.0 + 4.0 * phase       # -1 → +1
 
         self.offset = wave * envelope * self.amplitude
+
+
+class DamageFloat:
+    """Floating damage number that rises, wobbles, and fades out.
+
+    Parameters
+    ----------
+    duration : float
+        Total animation time in seconds (default 1.5).
+    rise : float
+        Total upward travel in pixels (default 32.0).
+    wobble_amp : float
+        Half-width of the sine wobble in pixels (default 4.0).
+    wobble_period : float
+        Time for one full sine cycle in seconds (default 0.2).
+    """
+
+    def __init__(self, duration: float = 1.5, rise: float = 32.0,
+                 wobble_amp: float = 4.0, wobble_period: float = 0.2):
+        self.duration = duration
+        self.rise = rise
+        self.wobble_amp = wobble_amp
+        self.wobble_period = wobble_period
+        self.elapsed: float = 0.0
+        self.active: bool = False
+        self.x_offset: float = 0.0
+        self.y_offset: float = 0.0
+        self.alpha: int = 255
+        self.label: str = ""
+
+    def start(self, label: str):
+        """Begin the float animation with the given text (e.g. ``'-5'``)."""
+        self.label = label
+        self.elapsed = 0.0
+        self.active = True
+        self.x_offset = 0.0
+        self.y_offset = 0.0
+        self.alpha = 255
+
+    def update(self, dt: float):
+        """Advance the animation by *dt* seconds."""
+        if not self.active:
+            return
+
+        self.elapsed += dt
+        if self.elapsed >= self.duration:
+            self.active = False
+            self.alpha = 0
+            return
+
+        t = self.elapsed / self.duration  # 0 → 1
+
+        # Rise linearly
+        self.y_offset = t * self.rise
+
+        # Sine wobble
+        self.x_offset = math.sin(
+            self.elapsed * 2.0 * math.pi / self.wobble_period
+        ) * self.wobble_amp
+
+        # Linear fade-out
+        self.alpha = int(255 * (1.0 - t))

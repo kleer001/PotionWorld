@@ -1,0 +1,70 @@
+# Level Definitions
+#
+# Each [[levels]] block is one battle.
+# First entry's heroes carry forward to later levels unless redefined.
+#
+# symbols: "TOKEN@COUNT" — grammar cards auto-built into the deck.
+#          Omit @COUNT to default to 2 copies.
+# implied_cards: "TOKEN@SLOT" — pre-filled, locked cards in slot positions.
+# deck_extras: card IDs from cards.toml (action/curse cards added to deck).
+# heroes: first character = the one the player protects.
+# enemies: opponent(s).
+
+[[levels]]
+id = "1-1"
+title = "Intro"
+hint = "H means Health. Drag it into the slot!"
+implied_cards = ["P@0", "+@1"]
+symbols = ["H@3", "5@3", "10@2"]
+deck_extras = ["action_redraw"]
+mana = 6
+slot_count = 4
+hand_size = 4
+heroes = [
+    {name = "Stable Boy", hp = 15, strength = 3, defense = 1},
+]
+enemies = [
+    {name = "Goblin", hp = 12, strength = 4, defense = 1},
+]
+
+[[levels]]
+id = "1-2"
+title = "A Stronger Brew"
+hint = "Bigger numbers make stronger potions. Try 10!"
+implied_cards = ["P@0", "+@1"]
+symbols = ["H@3", "S@2", "5@3", "10@3"]
+deck_extras = ["action_redraw"]
+mana = 8
+slot_count = 4
+hand_size = 5
+enemies = [
+    {name = "Wolf", hp = 18, strength = 5, defense = 2},
+]
+
+[[levels]]
+id = "1-3"
+title = "Shield Up"
+hint = "D means Defense. Buff it before the enemy hits!"
+implied_cards = ["P@0", "+@1"]
+symbols = ["H@3", "S@2", "D@2", "5@3", "10@2"]
+deck_extras = ["action_redraw", "action_grace"]
+mana = 8
+slot_count = 5
+hand_size = 5
+enemies = [
+    {name = "Bandit", hp = 20, strength = 6, defense = 3},
+]
+
+[[levels]]
+id = "1-4"
+title = "The Other Side"
+hint = "E targets the enemy. Try E-S5 to weaken them!"
+implied_cards = []
+symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@2", "D@2", "5@3", "10@2"]
+deck_extras = ["action_redraw", "action_grace"]
+mana = 10
+slot_count = 5
+hand_size = 5
+enemies = [
+    {name = "Orc Warrior", hp = 30, strength = 8, defense = 4},
+]

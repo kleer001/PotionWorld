@@ -17,10 +17,11 @@ from grammar_mvp.cards import (
     CardSprite,
     dispatch_action,
     load_cards,
-    load_starter_deck,
+    redraw_hand,
 )
 from grammar_mvp.display import BattleLog, create_hero_panel, create_enemy_panel, create_lock_slots
 from grammar_mvp.game_state import Character, GameState
+from grammar_mvp.levels import LevelManager, build_level_deck
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -56,10 +57,14 @@ POST_CAST_TURNS = 2        # auto-play turns after a cast
 
 class BattleView(arcade.View):
 
-    def __init__(self):
+    def __init__(self, level_manager: LevelManager | None = None):
         super().__init__()
+        self.level_mgr = level_manager or LevelManager()
         self.state: GameState | None = None
         self.card_db: dict = {}
+
+        # Implied card tracking: slot_index → card_data dict
+        self.implied_slots: dict[int, dict] = {}
 
         # Sprite lists
         self.hand_list: arcade.SpriteList = arcade.SpriteList()
@@ -76,6 +81,8 @@ class BattleView(arcade.View):
         self.feedback_text: arcade.Text | None = None
         self.mana_text: arcade.Text | None = None
         self.mana_label_text: arcade.Text | None = None
+        self.level_title_text: arcade.Text | None = None
+        self.hint_text: arcade.Text | None = None
 
         # Character panels (M10)
         self.hero_panel = None
@@ -102,23 +109,40 @@ class BattleView(arcade.View):
     def on_show_view(self):
         self.window.background_color = (30, 30, 40)
 
-        # Load card data
+        # Load card database
         self.card_db = load_cards()
-        starter = load_starter_deck(self.card_db)
-        random.shuffle(starter)
+
+        # Build game state from current level
+        level = self.level_mgr.current_level
+        deck = build_level_deck(level, self.card_db)
+
+        hero_src = level["heroes"][0]
+        enemy_src = level["enemies"][0]
+        hero = Character(hero_src.name, hero_src.hp, hero_src.max_hp,
+                         hero_src.strength, hero_src.defense)
+        enemy = Character(enemy_src.name, enemy_src.hp, enemy_src.max_hp,
+                          enemy_src.strength, enemy_src.defense)
 
         self.state = GameState(
-            hero=Character("Sir Aldric", 30, 30, 6, 3),
-            enemy=Character("Goblin", 25, 25, 7, 3),
-            mana=10,
-            max_mana=10,
-            deck=starter,
+            hero=hero,
+            enemy=enemy,
+            mana=level["mana"],
+            max_mana=level["mana"],
+            deck=deck,
             hand=[],
-            lock=[None] * 5,
-            slot_count=5,
-            hand_size=5,
+            lock=[None] * level["slot_count"],
+            slot_count=level["slot_count"],
+            hand_size=level["hand_size"],
             phase="preview",
         )
+
+        # Build implied card data from level definition
+        self.implied_slots = {}
+        for token, slot_idx in level["implied_cards"]:
+            for card_id, card_data in self.card_db.items():
+                if card_data.get("token") == token and card_data.get("type") == "grammar":
+                    self.implied_slots[slot_idx] = dict(card_data)
+                    break
 
         # Draw initial hand from deck
         self._draw_cards_from_deck(self.state.hand_size)
@@ -130,7 +154,28 @@ class BattleView(arcade.View):
             self.state.slot_count, SCREEN_WIDTH, SLOT_Y,
         )
 
-        # Text
+        # Place implied cards into their lock slots
+        self._place_implied_cards()
+        self._sync_lock()
+
+        # Level title and hint
+        self.level_title_text = arcade.Text(
+            f"{level['id']}: {level['title']}",
+            SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20,
+            color=arcade.color.WHITE,
+            font_size=18,
+            anchor_x="center",
+            anchor_y="center",
+        )
+        self.hint_text = arcade.Text(
+            level.get("hint", ""),
+            SCREEN_WIDTH // 2, SCREEN_HEIGHT - 45,
+            color=arcade.color.YELLOW,
+            font_size=12,
+            anchor_x="center",
+        )
+
+        # HUD text
         self.feedback_text = arcade.Text(
             "",
             SCREEN_WIDTH / 2, SLOT_Y + CARD_HEIGHT // 2 + 15,
@@ -156,15 +201,31 @@ class BattleView(arcade.View):
         # CAST button — positioned to the right of the lock area
         cast_button = arcade.gui.UIFlatButton(text="CAST", width=120, height=50)
         cast_button.on_click = self._on_cast_click
-        anchor = arcade.gui.UIAnchorLayout()
-        anchor.add(
+        cast_anchor = arcade.gui.UIAnchorLayout()
+        cast_anchor.add(
             child=cast_button,
             anchor_x="center",
             anchor_y="center",
             align_x=300,
             align_y=SLOT_Y - SCREEN_HEIGHT // 2,
         )
-        self.ui_manager.add(anchor)
+        self.ui_manager.add(cast_anchor)
+
+        # REDRAW button — below the hand, costs 2 mana
+        redraw_button = arcade.gui.UIFlatButton(
+            text="REDRAW (2 Mana)", width=160, height=40,
+        )
+        redraw_button.on_click = self._on_redraw_click
+        redraw_anchor = arcade.gui.UIAnchorLayout()
+        redraw_anchor.add(
+            child=redraw_button,
+            anchor_x="center",
+            anchor_y="center",
+            align_x=0,
+            align_y=HAND_Y - CARD_HEIGHT // 2 - 40 - SCREEN_HEIGHT // 2,
+        )
+        self.ui_manager.add(redraw_anchor)
+
         self.ui_manager.enable()
 
         # Character panels (M10)
@@ -193,12 +254,31 @@ class BattleView(arcade.View):
         self.ui_manager.disable()
 
     # ------------------------------------------------------------------
+    # Implied cards
+    # ------------------------------------------------------------------
+
+    def _place_implied_cards(self):
+        """Populate state.lock with implied card data (marked with 'implied' flag)."""
+        for slot_idx, card_data in self.implied_slots.items():
+            if slot_idx >= self.state.slot_count:
+                continue
+            implied_data = dict(card_data)
+            implied_data["implied"] = True
+            self.state.lock[slot_idx] = implied_data
+
+    # ------------------------------------------------------------------
     # Update (phase-driven timer)
     # ------------------------------------------------------------------
 
     def on_update(self, delta_time):
         state = self.state
         phase = state.phase
+
+        # Tick hit animations every frame
+        if self.hero_panel:
+            self.hero_panel.update_animation(delta_time)
+        if self.enemy_panel:
+            self.enemy_panel.update_animation(delta_time)
 
         # If stuck in build with nothing to play, auto-resolve
         if phase == "build" and not state.hand and not state.deck:
@@ -218,9 +298,19 @@ class BattleView(arcade.View):
 
         # Pick attacker/defender
         if self.hero_attacks_next:
+            hp_before = state.enemy.hp
             log = resolve_turn(state.hero, state.enemy)
+            damage = hp_before - state.enemy.hp
+            if self.enemy_panel:
+                self.enemy_panel.shake()
+                self.enemy_panel.show_damage(damage)
         else:
+            hp_before = state.hero.hp
             log = resolve_turn(state.enemy, state.hero)
+            damage = hp_before - state.hero.hp
+            if self.hero_panel:
+                self.hero_panel.shake()
+                self.hero_panel.show_damage(damage)
         self.hero_attacks_next = not self.hero_attacks_next
 
         state.turn += 1
@@ -257,13 +347,47 @@ class BattleView(arcade.View):
 
     def _enter_end_phase(self, result: str):
         if result == "win":
-            self.state.phase = "reward"
-            self.end_text.text = "VICTORY!"
-            self.end_text.color = arcade.color.GOLD
+            if self.level_mgr.is_last_level:
+                self.state.phase = "gamecomplete"
+                self.end_text.text = "GAME COMPLETE!"
+                self.end_text.color = arcade.color.GOLD
+                self._add_end_button("PLAY AGAIN", self._on_restart_game)
+            else:
+                self.state.phase = "reward"
+                self.end_text.text = "VICTORY!"
+                self.end_text.color = arcade.color.GOLD
+                self._add_end_button("NEXT LEVEL", self._on_next_level)
         else:
             self.state.phase = "gameover"
             self.end_text.text = "DEFEAT"
             self.end_text.color = arcade.color.RED
+            self._add_end_button("TRY AGAIN", self._on_retry)
+
+    def _add_end_button(self, text: str, callback):
+        """Add a centered button below the end-of-battle text."""
+        btn = arcade.gui.UIFlatButton(text=text, width=200, height=50)
+        btn.on_click = callback
+        anchor = arcade.gui.UIAnchorLayout()
+        anchor.add(
+            child=btn,
+            anchor_x="center",
+            anchor_y="center",
+            align_x=0,
+            align_y=-60,
+        )
+        self.ui_manager.add(anchor)
+
+    def _on_next_level(self, _event):
+        self.level_mgr.advance()
+        self.window.show_view(BattleView(self.level_mgr))
+
+    def _on_retry(self, _event):
+        self.level_mgr.restart_level()
+        self.window.show_view(BattleView(self.level_mgr))
+
+    def _on_restart_game(self, _event):
+        self.level_mgr.restart_game()
+        self.window.show_view(BattleView(self.level_mgr))
 
     # ------------------------------------------------------------------
     # Drawing
@@ -271,6 +395,12 @@ class BattleView(arcade.View):
 
     def on_draw(self):
         self.clear()
+
+        # Level title and hint
+        if self.level_title_text:
+            self.level_title_text.draw()
+        if self.hint_text:
+            self.hint_text.draw()
 
         # Character panels (M10)
         if self.hero_panel:
@@ -312,7 +442,7 @@ class BattleView(arcade.View):
         self.ui_manager.draw()
 
         # End-of-battle overlay
-        if self.state.phase in ("reward", "gameover"):
+        if self.state.phase in ("reward", "gameover", "gamecomplete"):
             self.end_text.draw()
 
     @staticmethod
@@ -346,10 +476,12 @@ class BattleView(arcade.View):
         if self.state.phase != "build":
             return
 
-        # Try lifting a locked card out of its slot
+        # Try lifting a locked card out of its slot (skip implied cards)
         cards = arcade.get_sprites_at_point((x, y), self.lock_list)
         if cards:
             card = cards[-1]
+            if getattr(card, "is_implied", False):
+                return  # implied cards cannot be picked up
             self._lift_from_slot(card)
             self.held_card = card
             self.held_offset_x = card.center_x - x
@@ -452,14 +584,17 @@ class BattleView(arcade.View):
         if self.state.phase != "build":
             return
 
-        # Nothing docked?
-        has_cards = any(slot.card for slot in self.slot_list)
-        if not has_cards:
+        # Check for player-placed cards (not just implied)
+        has_player_cards = any(
+            slot.card and not getattr(slot.card, "is_implied", False)
+            for slot in self.slot_list
+        )
+        if not has_player_cards:
             self.feedback_text.text = "Nothing to cast!"
             self.feedback_text.color = arcade.color.RED
             return
 
-        # Separate action cards from grammar cards
+        # Separate action cards from grammar cards (all slots, including implied)
         action_cards = []
         grammar_tokens = []
         for slot in self.slot_list:
@@ -495,12 +630,10 @@ class BattleView(arcade.View):
                 self.feedback_text.color = arcade.color.RED
                 return
 
-        # Clear lock slots
-        for slot in self.slot_list:
-            if slot.card:
-                self.lock_list.remove(slot.card)
-                slot.card = None
-        self.state.lock = [None] * self.state.slot_count
+        # Clear non-implied lock slots from state
+        for i in range(self.state.slot_count):
+            if self.state.lock[i] and not self.state.lock[i].get("implied"):
+                self.state.lock[i] = None
 
         # Refill hand from deck
         self._draw_cards_from_deck(self.state.hand_size - len(self.state.hand))
@@ -522,6 +655,24 @@ class BattleView(arcade.View):
         self.state.phase = "post_cast"
         self.turns_remaining = POST_CAST_TURNS
         self.turn_timer = 0.0
+
+    # ------------------------------------------------------------------
+    # REDRAW
+    # ------------------------------------------------------------------
+
+    def _on_redraw_click(self, _event):
+        if self.state.phase != "build":
+            return
+        if self.state.mana < 2:
+            self.feedback_text.text = "Not enough mana to redraw!"
+            self.feedback_text.color = arcade.color.RED
+            return
+
+        self.state.mana -= 2
+        redraw_hand(self.state, {})
+        self._full_sync()
+        self.feedback_text.text = "Hand redrawn!"
+        self.feedback_text.color = arcade.color.YELLOW_GREEN
 
     # ------------------------------------------------------------------
     # Action cards — M8
@@ -597,6 +748,12 @@ class BattleView(arcade.View):
                 sprite.position = slot.position
                 sprite.is_locked = True
                 sprite.slot_index = slot.slot_index
+                # Dim implied cards so the player knows they're fixed
+                if card_data.get("implied"):
+                    sprite.is_implied = True
+                    sprite.alpha = 140
+                    sprite.token_text.color = (200, 200, 200, 140)
+                    sprite.label_text.color = (200, 200, 200, 140)
                 slot.card = sprite
                 self.lock_list.append(sprite)
             else:

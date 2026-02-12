@@ -1,5 +1,6 @@
 import arcade
 
+from grammar_mvp.animation import DamageFloat, HitAnimation
 from grammar_mvp.cards import CARD_WIDTH, CARD_HEIGHT
 
 SLOT_COLOR = (50, 50, 50)
@@ -7,6 +8,8 @@ SLOT_GAP = 10
 
 # Character panel colours
 PORTRAIT_COLOR = (70, 70, 90)
+HERO_COLOR = (0, 204, 204)     # robin's egg blue
+ENEMY_COLOR = (139, 0, 0)      # deep red
 PORTRAIT_W = 100
 PORTRAIT_H = 120
 
@@ -40,11 +43,11 @@ def create_lock_slots(slot_count, screen_width, y_center):
 class CharacterPanel:
     """Holds draw objects for one combatant (name, portrait, HP)."""
 
-    def __init__(self, character, x, y):
+    def __init__(self, character, x, y, color=PORTRAIT_COLOR):
         self.x = x
         self.y = y
         portrait = arcade.SpriteSolidColor(
-            PORTRAIT_W, PORTRAIT_H, color=PORTRAIT_COLOR,
+            PORTRAIT_W, PORTRAIT_H, color=color,
         )
         portrait.center_x = x
         portrait.center_y = y
@@ -66,10 +69,49 @@ class CharacterPanel:
             anchor_x="center",
         )
 
+        self.hit_anim = HitAnimation()
+        self.dmg_float = DamageFloat()
+        self.dmg_text = arcade.Text(
+            "", x, y,
+            color=arcade.color.WHITE,
+            font_size=20,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True,
+        )
+
+    def shake(self):
+        """Trigger the hit-bounce animation."""
+        self.hit_anim.start()
+
+    def show_damage(self, amount: int):
+        """Spawn a floating damage number (e.g. ``-5``)."""
+        self.dmg_float.start(f"-{amount}")
+
+    def update_animation(self, dt: float):
+        """Advance the hit animation by *dt* seconds."""
+        self.hit_anim.update(dt)
+        self.dmg_float.update(dt)
+
     def draw(self):
+        offset = self.hit_anim.offset
+        portrait = self.portrait_list[0]
+        portrait.center_x = self.x + offset
+        self.name_text.x = self.x + offset
+        self.hp_text.x = self.x + offset
+
         self.portrait_list.draw()
         self.name_text.draw()
         self.hp_text.draw()
+
+        # Floating damage number
+        if self.dmg_float.active:
+            self.dmg_text.text = self.dmg_float.label
+            self.dmg_text.x = self.x + self.dmg_float.x_offset
+            self.dmg_text.y = self.y + self.dmg_float.y_offset
+            a = self.dmg_float.alpha
+            self.dmg_text.color = (255, 80, 80, a)
+            self.dmg_text.draw()
 
     def update(self, character):
         """Sync displayed HP from Character data."""
@@ -77,11 +119,11 @@ class CharacterPanel:
 
 
 def create_hero_panel(character, x, y):
-    return CharacterPanel(character, x, y)
+    return CharacterPanel(character, x, y, color=HERO_COLOR)
 
 
 def create_enemy_panel(character, x, y):
-    return CharacterPanel(character, x, y)
+    return CharacterPanel(character, x, y, color=ENEMY_COLOR)
 
 
 # ------------------------------------------------------------------

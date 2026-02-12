@@ -608,9 +608,13 @@ class BattleView(arcade.View):
                     self.battle_log_display.push(potion_log)
                 cast_text = f"Cast: {result['explanation']}"
             except ESENSParseError:
-                self.feedback_text.text = "Invalid potion!"
-                self.feedback_text.color = arcade.color.RED
-                return
+                if not action_cards:
+                    # No valid grammar AND no actions — reject entirely
+                    self.feedback_text.text = "Invalid potion!"
+                    self.feedback_text.color = arcade.color.RED
+                    return
+                # Actions fired; potion fizzled but cast proceeds
+                cast_text = "Potion fizzles... but actions played!"
 
         # Clear non-implied lock slots from state
         for i in range(self.state.slot_count):

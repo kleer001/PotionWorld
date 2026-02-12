@@ -20,7 +20,7 @@ deck_extras = ["action_redraw"]
 mana = 6
 slot_count = 4
 hand_size = 4
-smooth_draw_n = 3
+smooth_draws = 3
 heroes = [
     {name = "Stable Boy", hp = 15, strength = 3, defense = 1},
 ]
@@ -38,7 +38,7 @@ deck_extras = ["action_redraw"]
 mana = 8
 slot_count = 4
 hand_size = 5
-smooth_draw_n = 3
+smooth_draws = 3
 enemies = [
     {name = "Wolf", hp = 18, strength = 5, defense = 2},
 ]
@@ -53,7 +53,7 @@ deck_extras = ["action_redraw", "action_grace"]
 mana = 8
 slot_count = 5
 hand_size = 5
-smooth_draw_n = 3
+smooth_draws = 3
 enemies = [
     {name = "Bandit", hp = 20, strength = 6, defense = 3},
 ]
@@ -68,7 +68,7 @@ deck_extras = ["action_redraw", "action_grace"]
 mana = 10
 slot_count = 5
 hand_size = 5
-smooth_draw_n = 3
+smooth_draws = 3
 enemies = [
     {name = "Orc Warrior", hp = 30, strength = 8, defense = 4},
 ]

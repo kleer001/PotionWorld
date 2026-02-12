@@ -23,6 +23,7 @@ class GameState:
     slot_count: int
     hand_size: int
     phase: str          # "preview", "build", "resolve", "reward"
-    smooth_draw_n: int = 1  # Arena-style hand smoothing: draw N hands, pick best
+    smooth_draws: int = 0    # how many full-hand draws get Arena-style smoothing
+    smooth_draws_left: int = 0  # remaining smoothed draws this battle
     battle_log: list = field(default_factory=list)
     turn: int = 0

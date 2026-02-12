@@ -132,7 +132,8 @@ class BattleView(arcade.View):
             slot_count=level["slot_count"],
             hand_size=level["hand_size"],
             phase="build",
-            smooth_draw_n=level.get("smooth_draw_n", 1),
+            smooth_draws=level.get("smooth_draws", 0),
+            smooth_draws_left=level.get("smooth_draws", 0),
         )
 
         # Build implied card data from level definition
@@ -611,8 +612,8 @@ class BattleView(arcade.View):
             if self.state.lock[i] and not self.state.lock[i].get("implied"):
                 self.state.lock[i] = None
 
-        # Refill hand from deck (smoothed for tutorial levels)
-        self._smoothed_draw(self.state.hand_size - len(self.state.hand))
+        # Refill hand from deck (plain draw — smoothing is for full hands only)
+        self._draw_cards_from_deck(self.state.hand_size - len(self.state.hand))
         self._full_sync()
 
         # Show result
@@ -751,22 +752,27 @@ class BattleView(arcade.View):
         return valid
 
     def _smoothed_draw(self, count):
-        """Arena-style hand smoothing: shuffle deck N times, peek at what
-        would be drawn, score for potion viability, keep the best shuffle,
-        then draw normally.  N comes from ``state.smooth_draw_n``.
+        """Arena-style hand smoothing for full-hand draws only.
 
-        When N <= 1 (default for non-tutorial levels), this is a plain draw.
+        While ``smooth_draws_left > 0``, shuffle the deck 3 times, peek
+        at what would be drawn, score for potion viability, and keep the
+        best shuffle.  Each call decrements the budget by one.
+
+        Once the budget is spent (or was zero to begin with), this is a
+        plain draw — honest RNG.
         """
-        n = self.state.smooth_draw_n
-        if n <= 1 or not self.state.deck:
+        if self.state.smooth_draws_left <= 0 or not self.state.deck:
             self._draw_cards_from_deck(count)
             return
+
+        self.state.smooth_draws_left -= 1
+        n_candidates = 3
 
         best_score = -1
         best_order = None
         peek_count = min(count, len(self.state.deck))
 
-        for _ in range(n):
+        for _ in range(n_candidates):
             random.shuffle(self.state.deck)
             # Peek at the top cards (drawn via pop from end)
             top = self.state.deck[-peek_count:]

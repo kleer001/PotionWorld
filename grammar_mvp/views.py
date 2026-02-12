@@ -51,7 +51,6 @@ LOG_Y = 520
 
 # Timing
 TURN_DELAY = 5.0          # seconds between auto-played turns
-PREVIEW_TURN_COUNT = 3     # how many turns auto-play in preview phase
 POST_CAST_TURNS = 2        # auto-play turns after a cast
 
 
@@ -133,7 +132,7 @@ class BattleView(arcade.View):
             lock=[None] * level["slot_count"],
             slot_count=level["slot_count"],
             hand_size=level["hand_size"],
-            phase="preview",
+            phase="build",
         )
 
         # Build implied card data from level definition
@@ -211,9 +210,9 @@ class BattleView(arcade.View):
         )
         self.ui_manager.add(cast_anchor)
 
-        # REDRAW button — below the hand, costs 2 mana
+        # REDRAW button — to the right of CAST
         redraw_button = arcade.gui.UIFlatButton(
-            text="REDRAW (2 Mana)", width=160, height=40,
+            text="REDRAW (2)", width=120, height=50,
         )
         redraw_button.on_click = self._on_redraw_click
         redraw_anchor = arcade.gui.UIAnchorLayout()
@@ -221,8 +220,8 @@ class BattleView(arcade.View):
             child=redraw_button,
             anchor_x="center",
             anchor_y="center",
-            align_x=0,
-            align_y=HAND_Y - CARD_HEIGHT // 2 - 40 - SCREEN_HEIGHT // 2,
+            align_x=440,
+            align_y=SLOT_Y - SCREEN_HEIGHT // 2,
         )
         self.ui_manager.add(redraw_anchor)
 
@@ -245,8 +244,7 @@ class BattleView(arcade.View):
             anchor_y="center",
         )
 
-        # Start preview phase
-        self.turns_remaining = PREVIEW_TURN_COUNT
+        # Start combat timer
         self.turn_timer = 0.0
         self.hero_attacks_next = True
 
@@ -280,13 +278,7 @@ class BattleView(arcade.View):
         if self.enemy_panel:
             self.enemy_panel.update_animation(delta_time)
 
-        # If stuck in build with nothing to play, auto-resolve
-        if phase == "build" and not state.hand and not state.deck:
-            state.phase = "resolve"
-            self.turns_remaining = 999
-            phase = "resolve"
-
-        if phase in ("preview", "build", "resolve", "post_cast"):
+        if phase not in ("reward", "gameover", "gamecomplete"):
             self.turn_timer += delta_time
             if self.turn_timer >= TURN_DELAY:
                 self.turn_timer -= TURN_DELAY
@@ -327,23 +319,10 @@ class BattleView(arcade.View):
             self._enter_end_phase(result)
             return
 
-        self.turns_remaining -= 1
-
-        if state.phase == "preview" and self.turns_remaining <= 0:
-            state.phase = "build"
-
-        elif state.phase == "post_cast" and self.turns_remaining <= 0:
-            # After post-cast turns, check mana
-            if state.mana > 0:
+        if state.phase == "post_cast":
+            self.turns_remaining -= 1
+            if self.turns_remaining <= 0:
                 state.phase = "build"
-            else:
-                state.phase = "resolve"
-                self.turns_remaining = 999  # keep going until someone dies
-
-        # If we just entered build but there's nothing to play, auto-resolve
-        if state.phase == "build" and not state.hand and not state.deck:
-            state.phase = "resolve"
-            self.turns_remaining = 999
 
     def _enter_end_phase(self, result: str):
         if result == "win":
@@ -473,7 +452,7 @@ class BattleView(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         if button != arcade.MOUSE_BUTTON_LEFT:
             return
-        if self.state.phase != "build":
+        if self.state.phase in ("reward", "gameover", "gamecomplete"):
             return
 
         # Try lifting a locked card out of its slot (skip implied cards)
@@ -581,7 +560,7 @@ class BattleView(arcade.View):
     # ------------------------------------------------------------------
 
     def _on_cast_click(self, _event):
-        if self.state.phase != "build":
+        if self.state.phase in ("reward", "gameover", "gamecomplete"):
             return
 
         # Check for player-placed cards (not just implied)
@@ -661,7 +640,7 @@ class BattleView(arcade.View):
     # ------------------------------------------------------------------
 
     def _on_redraw_click(self, _event):
-        if self.state.phase != "build":
+        if self.state.phase in ("reward", "gameover", "gamecomplete"):
             return
         if self.state.mana < 2:
             self.feedback_text.text = "Not enough mana to redraw!"

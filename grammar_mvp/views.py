@@ -50,7 +50,7 @@ LOG_X = SCREEN_WIDTH // 2
 LOG_Y = 520
 
 # Timing
-TURN_DELAY = 5.0          # seconds between auto-played turns
+TURN_DELAY = 3.0          # seconds between auto-played turns
 POST_CAST_TURNS = 2        # auto-play turns after a cast
 
 
@@ -576,6 +576,7 @@ class BattleView(arcade.View):
         # Separate action cards from grammar cards (all slots, including implied)
         action_cards = []
         grammar_tokens = []
+        has_player_grammar = False
         for slot in self.slot_list:
             if not slot.card:
                 continue
@@ -583,6 +584,8 @@ class BattleView(arcade.View):
                 action_cards.append(slot.card.card_data)
             else:
                 grammar_tokens.append(slot.card.card_data["token"])
+                if not getattr(slot.card, "is_implied", False):
+                    has_player_grammar = True
 
         # Dispatch action cards
         for card_data in action_cards:
@@ -591,9 +594,9 @@ class BattleView(arcade.View):
             self.state.battle_log.append(msg)
             self.battle_log_display.push(msg)
 
-        # Parse grammar cards as ESENS and apply potion
+        # Parse grammar cards as ESENS — only if player placed grammar cards
         cast_text = None
-        if grammar_tokens:
+        if grammar_tokens and has_player_grammar:
             esens_string = "".join(grammar_tokens)
             try:
                 result = parse_esens(esens_string)
@@ -755,7 +758,7 @@ class BattleView(arcade.View):
         """Re-parse lock contents and update feedback + mana text."""
         tokens = []
         for slot in self.slot_list:
-            if slot.card:
+            if slot.card and slot.card.card_data.get("type") != "action":
                 tokens.append(slot.card.card_data["token"])
         esens_string = "".join(tokens)
 

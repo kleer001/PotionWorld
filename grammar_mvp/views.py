@@ -19,7 +19,7 @@ from grammar_mvp.cards import (
     load_cards,
     redraw_hand,
 )
-from grammar_mvp.display import BattleLog, create_hero_panel, create_enemy_panel, create_lock_slots
+from grammar_mvp.display import BattleLog, ManaPips, create_hero_panel, create_enemy_panel, create_lock_slots
 from grammar_mvp.game_state import Character, GameState
 from grammar_mvp.levels import LevelManager, build_level_deck
 
@@ -78,8 +78,7 @@ class BattleView(arcade.View):
 
         # Persistent text objects
         self.feedback_text: arcade.Text | None = None
-        self.mana_text: arcade.Text | None = None
-        self.mana_label_text: arcade.Text | None = None
+        self.mana_pips: ManaPips | None = None
         self.level_title_text: arcade.Text | None = None
         self.hint_text: arcade.Text | None = None
 
@@ -182,19 +181,10 @@ class BattleView(arcade.View):
             font_size=14,
             anchor_x="center",
         )
-        self.mana_text = arcade.Text(
-            f"{self.state.mana}/{self.state.max_mana}",
-            CAST_X, SLOT_Y - 45,
-            color=arcade.color.LIGHT_BLUE,
-            font_size=16,
-            anchor_x="center",
-        )
-        self.mana_label_text = arcade.Text(
-            "Mana",
-            CAST_X, SLOT_Y - 65,
-            color=arcade.color.LIGHT_BLUE,
-            font_size=12,
-            anchor_x="center",
+        self.mana_pips = ManaPips(
+            right_x=CAST_X + 50,
+            y=SLOT_Y - 45,
+            max_mana=self.state.max_mana,
         )
 
         # CAST button — positioned to the right of the lock area
@@ -414,8 +404,7 @@ class BattleView(arcade.View):
 
         # HUD
         self.feedback_text.draw()
-        self.mana_text.draw()
-        self.mana_label_text.draw()
+        self.mana_pips.draw()
 
         # GUI (CAST button)
         self.ui_manager.draw()
@@ -778,4 +767,9 @@ class BattleView(arcade.View):
                 self.feedback_text.text = "Incomplete notation..."
                 self.feedback_text.color = arcade.color.GRAY
 
-        self.mana_text.text = f"{self.state.mana}/{self.state.max_mana}"
+        # Count docked (non-implied) cards as pending cast cost
+        docked = sum(
+            1 for s in self.slot_list
+            if s.card and not getattr(s.card, "is_implied", False)
+        )
+        self.mana_pips.update(self.state.mana, self.state.max_mana, docked)

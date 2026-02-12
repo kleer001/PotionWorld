@@ -156,3 +156,65 @@ class BattleLog:
     def draw(self):
         for line in self.lines:
             line.draw()
+
+
+# ------------------------------------------------------------------
+# Mana pips
+# ------------------------------------------------------------------
+
+PIP_RADIUS = 7
+PIP_GAP = 6
+PIP_COLOR_REMAINING = arcade.color.WHITE
+PIP_COLOR_COST = (220, 40, 40)          # red — pending cast cost
+PIP_COLOR_SPENT_FILL = (30, 30, 30)     # near-black interior
+PIP_COLOR_SPENT_OUTLINE = arcade.color.WHITE
+
+
+class ManaPips:
+    """Visual mana pips: white=remaining, red=cast cost, hollow=spent.
+
+    Pips are laid out right-to-left so remaining mana is anchored to the
+    right side and spent mana drains from the left.
+    """
+
+    def __init__(self, right_x: float, y: float, max_mana: int):
+        self.right_x = right_x
+        self.y = y
+        self.max_mana = max_mana
+        self.mana = max_mana
+        self.cast_cost = 0
+        self.label = arcade.Text(
+            "Mana",
+            right_x, y - 20,
+            color=arcade.color.LIGHT_BLUE,
+            font_size=12,
+            anchor_x="right",
+        )
+
+    def update(self, mana: int, max_mana: int, cast_cost: int):
+        self.mana = mana
+        self.max_mana = max_mana
+        self.cast_cost = cast_cost
+
+    def draw(self):
+        # Pips are drawn right-to-left: rightmost pip = pip index 0 = first
+        # "remaining" pip.  Walking left: remaining → cost → spent.
+        for i in range(self.max_mana):
+            cx = self.right_x - i * (PIP_RADIUS * 2 + PIP_GAP)
+            # Which bucket does this pip fall into?
+            # Right-to-left order: remaining (mana), then cost, then spent.
+            if i < self.mana:
+                # Remaining — solid white
+                arcade.draw_circle_filled(cx, self.y, PIP_RADIUS,
+                                          PIP_COLOR_REMAINING)
+            elif i < self.mana + self.cast_cost:
+                # Will be spent on cast — solid red
+                arcade.draw_circle_filled(cx, self.y, PIP_RADIUS,
+                                          PIP_COLOR_COST)
+            else:
+                # Already spent — hollow (outline only)
+                arcade.draw_circle_filled(cx, self.y, PIP_RADIUS,
+                                          PIP_COLOR_SPENT_FILL)
+                arcade.draw_circle_outline(cx, self.y, PIP_RADIUS,
+                                           PIP_COLOR_SPENT_OUTLINE, 2)
+        self.label.draw()

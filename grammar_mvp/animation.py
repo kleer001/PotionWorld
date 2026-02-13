@@ -125,26 +125,33 @@ class DamageFloat:
 
 
 class BurnAnimation:
-    """Card burns away: tints orange, shrinks, and fades out.
+    """Card burns away: rises, wobbles, tints orange, and fades out.
+
+    Same motion style as :class:`DamageFloat` — the card drifts up
+    with a sine wobble while fading and tinting toward burn-orange.
 
     Parameters
     ----------
     duration : float
-        Total burn time in seconds (default 0.6).
-
-    Usage
-    -----
-    Call :meth:`start` to begin, :meth:`update` every frame.
-    Read :attr:`scale`, :attr:`alpha`, and :attr:`tint` to apply
-    to whatever sprite you're drawing.  ``tint`` goes 0→1 (original
-    colour → burn orange).
+        Total burn time in seconds (default 0.8).
+    rise : float
+        Total upward travel in pixels (default 48.0).
+    wobble_amp : float
+        Half-width of the sine wobble in pixels (default 6.0).
+    wobble_period : float
+        Time for one full sine cycle in seconds (default 0.2).
     """
 
-    def __init__(self, duration: float = 0.6):
+    def __init__(self, duration: float = 0.8, rise: float = 48.0,
+                 wobble_amp: float = 6.0, wobble_period: float = 0.2):
         self.duration = duration
+        self.rise = rise
+        self.wobble_amp = wobble_amp
+        self.wobble_period = wobble_period
         self.elapsed: float = 0.0
         self.active: bool = False
-        self.scale: float = 1.0
+        self.x_offset: float = 0.0
+        self.y_offset: float = 0.0
         self.alpha: int = 255
         self.tint: float = 0.0  # 0 = original, 1 = full orange
 
@@ -152,7 +159,8 @@ class BurnAnimation:
         """(Re)start the burn from the beginning."""
         self.elapsed = 0.0
         self.active = True
-        self.scale = 1.0
+        self.x_offset = 0.0
+        self.y_offset = 0.0
         self.alpha = 255
         self.tint = 0.0
 
@@ -164,14 +172,18 @@ class BurnAnimation:
         self.elapsed += dt
         if self.elapsed >= self.duration:
             self.active = False
-            self.scale = 0.0
             self.alpha = 0
             return
 
         t = self.elapsed / self.duration  # 0 → 1
 
-        # Shrink: 1.0 → 0.3
-        self.scale = 1.0 - 0.7 * t
+        # Rise linearly
+        self.y_offset = t * self.rise
+
+        # Sine wobble
+        self.x_offset = math.sin(
+            self.elapsed * 2.0 * math.pi / self.wobble_period
+        ) * self.wobble_amp
 
         # Fade out
         self.alpha = int(255 * (1.0 - t))

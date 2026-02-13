@@ -454,6 +454,8 @@ class BattleView(arcade.View):
         sprite = CardSprite(card_data)
         sprite.center_x = x
         sprite.center_y = y
+        # Stash the origin so we can apply offsets each frame
+        sprite._burn_origin = (x, y)
         anim = BurnAnimation()
         anim.start()
         self.burn_queue.append((sprite, anim))
@@ -464,7 +466,9 @@ class BattleView(arcade.View):
         for sprite, anim in self.burn_queue:
             anim.update(dt)
             if anim.active:
-                sprite.scale = anim.scale
+                ox, oy = sprite._burn_origin
+                sprite.center_x = ox + anim.x_offset
+                sprite.center_y = oy + anim.y_offset
                 sprite.alpha = anim.alpha
                 # Blend original colour toward burn orange
                 orig = sprite.color[:3]
@@ -484,11 +488,11 @@ class BattleView(arcade.View):
             burn_list.draw()
             # Fade card text to match
             sprite.token_text.x = sprite.center_x
-            sprite.token_text.y = sprite.center_y + 10 * anim.scale
+            sprite.token_text.y = sprite.center_y + 10
             sprite.token_text.color = (255, 255, 255, anim.alpha)
             sprite.token_text.draw()
             sprite.label_text.x = sprite.center_x
-            sprite.label_text.y = sprite.center_y - 30 * anim.scale
+            sprite.label_text.y = sprite.center_y - 30
             sprite.label_text.color = (255, 255, 255, anim.alpha)
             sprite.label_text.draw()
 

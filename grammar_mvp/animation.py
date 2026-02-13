@@ -122,3 +122,59 @@ class DamageFloat:
 
         # Linear fade-out
         self.alpha = int(255 * (1.0 - t))
+
+
+class BurnAnimation:
+    """Card burns away: tints orange, shrinks, and fades out.
+
+    Parameters
+    ----------
+    duration : float
+        Total burn time in seconds (default 0.6).
+
+    Usage
+    -----
+    Call :meth:`start` to begin, :meth:`update` every frame.
+    Read :attr:`scale`, :attr:`alpha`, and :attr:`tint` to apply
+    to whatever sprite you're drawing.  ``tint`` goes 0→1 (original
+    colour → burn orange).
+    """
+
+    def __init__(self, duration: float = 0.6):
+        self.duration = duration
+        self.elapsed: float = 0.0
+        self.active: bool = False
+        self.scale: float = 1.0
+        self.alpha: int = 255
+        self.tint: float = 0.0  # 0 = original, 1 = full orange
+
+    def start(self):
+        """(Re)start the burn from the beginning."""
+        self.elapsed = 0.0
+        self.active = True
+        self.scale = 1.0
+        self.alpha = 255
+        self.tint = 0.0
+
+    def update(self, dt: float):
+        """Advance the animation by *dt* seconds."""
+        if not self.active:
+            return
+
+        self.elapsed += dt
+        if self.elapsed >= self.duration:
+            self.active = False
+            self.scale = 0.0
+            self.alpha = 0
+            return
+
+        t = self.elapsed / self.duration  # 0 → 1
+
+        # Shrink: 1.0 → 0.3
+        self.scale = 1.0 - 0.7 * t
+
+        # Fade out
+        self.alpha = int(255 * (1.0 - t))
+
+        # Tint toward orange: ramps up fast in the first half, then holds
+        self.tint = min(1.0, t * 2.0)

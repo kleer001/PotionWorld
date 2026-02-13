@@ -1,6 +1,6 @@
 import arcade
 
-from grammar_mvp.animation import DamageFloat, HitAnimation
+from grammar_mvp.animation import BurnAnimation, DamageFloat, HitAnimation
 from grammar_mvp.cards import CARD_WIDTH, CARD_HEIGHT
 
 SLOT_COLOR = (50, 50, 50)

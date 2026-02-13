@@ -19,6 +19,7 @@ from grammar_mvp.cards import (
     dispatch_action,
     load_cards,
 )
+from grammar_mvp.animation import BurnAnimation
 from grammar_mvp.display import BattleLog, ManaPips, create_hero_panel, create_enemy_panel, create_lock_slots
 from grammar_mvp.game_state import Character, GameState
 from grammar_mvp.levels import LevelManager, build_level_deck
@@ -93,6 +94,9 @@ class BattleView(arcade.View):
         self.turn_timer: float = 0.0
         self.turns_remaining: int = 0
         self.hero_attacks_next: bool = True
+
+        # Burn animation queue: [(CardSprite, BurnAnimation), ...]
+        self.burn_queue: list[tuple[CardSprite, BurnAnimation]] = []
 
         # End-of-battle overlay text
         self.end_text: arcade.Text | None = None
@@ -270,6 +274,9 @@ class BattleView(arcade.View):
         if self.enemy_panel:
             self.enemy_panel.update_animation(delta_time)
 
+        # Tick burn animations
+        self._tick_burns(delta_time)
+
         if phase not in ("reward", "gameover", "gamecomplete"):
             self.turn_timer += delta_time
             if self.turn_timer >= TURN_DELAY:
@@ -397,6 +404,9 @@ class BattleView(arcade.View):
         self.hand_list.draw()
         self._draw_card_texts(self.hand_list)
 
+        # Burning cards (on top of hand, below held card)
+        self._draw_burns()
+
         # Held card (on top of everything)
         if self.held_card:
             held_list = arcade.SpriteList()
@@ -431,6 +441,56 @@ class BattleView(arcade.View):
             self.hero_panel.update(self.state.hero)
         if self.enemy_panel:
             self.enemy_panel.update(self.state.enemy)
+
+    # ------------------------------------------------------------------
+    # Burn animation
+    # ------------------------------------------------------------------
+
+    # Burn orange target colour (R, G, B)
+    _BURN_COLOR = (255, 140, 40)
+
+    def _start_burn(self, card_data: dict, x: float, y: float):
+        """Spawn a card sprite at (*x*, *y*) and start its burn animation."""
+        sprite = CardSprite(card_data)
+        sprite.center_x = x
+        sprite.center_y = y
+        anim = BurnAnimation()
+        anim.start()
+        self.burn_queue.append((sprite, anim))
+
+    def _tick_burns(self, dt: float):
+        """Advance all active burns; discard finished ones."""
+        alive = []
+        for sprite, anim in self.burn_queue:
+            anim.update(dt)
+            if anim.active:
+                sprite.scale = anim.scale
+                sprite.alpha = anim.alpha
+                # Blend original colour toward burn orange
+                orig = sprite.color[:3]
+                t = anim.tint
+                r = int(orig[0] * (1 - t) + self._BURN_COLOR[0] * t)
+                g = int(orig[1] * (1 - t) + self._BURN_COLOR[1] * t)
+                b = int(orig[2] * (1 - t) + self._BURN_COLOR[2] * t)
+                sprite.color = (r, g, b, anim.alpha)
+                alive.append((sprite, anim))
+        self.burn_queue = alive
+
+    def _draw_burns(self):
+        """Draw all currently-burning card sprites."""
+        for sprite, anim in self.burn_queue:
+            burn_list = arcade.SpriteList()
+            burn_list.append(sprite)
+            burn_list.draw()
+            # Fade card text to match
+            sprite.token_text.x = sprite.center_x
+            sprite.token_text.y = sprite.center_y + 10 * anim.scale
+            sprite.token_text.color = (255, 255, 255, anim.alpha)
+            sprite.token_text.draw()
+            sprite.label_text.x = sprite.center_x
+            sprite.label_text.y = sprite.center_y - 30 * anim.scale
+            sprite.label_text.color = (255, 255, 255, anim.alpha)
+            sprite.label_text.draw()
 
     # ------------------------------------------------------------------
     # Input
@@ -700,6 +760,8 @@ class BattleView(arcade.View):
                 self.state.battle_log.append(msg)
                 if self.battle_log_display:
                     self.battle_log_display.push(msg)
+                # Burn animation: card appears near deck then burns away
+                self._start_burn(card, DECK_X, HAND_Y)
                 continue  # curse fires and vanishes
             self.state.hand.append(card)
 

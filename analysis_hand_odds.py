@@ -30,7 +30,7 @@ from grammar_mvp.levels import load_levels, build_level_deck
 # Constants
 # ---------------------------------------------------------------------------
 
-NUM_TRIALS = 50_000
+NUM_TRIALS = 5_000
 HAND_SIZES_TO_TEST = [4, 5, 6, 7]
 
 

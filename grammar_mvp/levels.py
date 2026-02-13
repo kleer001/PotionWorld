@@ -1,5 +1,6 @@
 """Level loader — parse levels.toml, auto-build decks, track progression."""
 
+import json
 import random
 import tomllib
 from pathlib import Path
@@ -134,12 +135,16 @@ def build_level_deck(level: dict, card_db: dict) -> list[dict]:
 # Progression
 # ------------------------------------------------------------------
 
+_SAVE_PATH = _DATA_DIR / "save.json"
+
+
 class LevelManager:
     """Tracks which level the player is on and provides level data."""
 
     def __init__(self, levels: list[dict] | None = None):
         self.levels = levels if levels is not None else load_levels()
         self.current_index: int = 0
+        self.load()
 
     @property
     def current_level(self) -> dict:
@@ -154,6 +159,7 @@ class LevelManager:
         if self.is_last_level:
             return False
         self.current_index += 1
+        self.save()
         return True
 
     def restart_level(self):
@@ -163,3 +169,22 @@ class LevelManager:
     def restart_game(self):
         """Reset to the very first level."""
         self.current_index = 0
+        self.save()
+
+    # -- persistence --
+
+    def save(self):
+        """Write current progress to disk."""
+        _SAVE_PATH.write_text(
+            json.dumps({"level_index": self.current_index}),
+        )
+
+    def load(self):
+        """Restore progress from disk (silently defaults to 0)."""
+        try:
+            data = json.loads(_SAVE_PATH.read_text())
+            idx = data.get("level_index", 0)
+            if 0 <= idx < len(self.levels):
+                self.current_index = idx
+        except (FileNotFoundError, json.JSONDecodeError, KeyError):
+            pass

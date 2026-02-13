@@ -339,10 +339,12 @@ class BattleView(arcade.View):
             self.state.phase = "gameover"
             self.end_text.text = "DEFEAT"
             self.end_text.color = arcade.color.RED
-            self._add_end_button("TRY AGAIN", self._on_retry)
+            self._add_end_button("START OVER", self._on_restart_game, align_x=-220)
+            self._add_end_button("REPLAY", self._on_retry, align_x=0)
+            self._add_end_button("QUIT", self._on_quit, align_x=220)
 
-    def _add_end_button(self, text: str, callback):
-        """Add a centered button below the end-of-battle text."""
+    def _add_end_button(self, text: str, callback, *, align_x: int = 0):
+        """Add a button below the end-of-battle text."""
         btn = arcade.gui.UIFlatButton(text=text, width=200, height=50)
         btn.on_click = callback
         anchor = arcade.gui.UIAnchorLayout()
@@ -350,7 +352,7 @@ class BattleView(arcade.View):
             child=btn,
             anchor_x="center",
             anchor_y="center",
-            align_x=0,
+            align_x=align_x,
             align_y=-60,
         )
         self.ui_manager.add(anchor)
@@ -366,6 +368,9 @@ class BattleView(arcade.View):
     def _on_restart_game(self, _event):
         self.level_mgr.restart_game()
         self.window.show_view(BattleView(self.level_mgr))
+
+    def _on_quit(self, _event):
+        arcade.close_window()
 
     # ------------------------------------------------------------------
     # Drawing

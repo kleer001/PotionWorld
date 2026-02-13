@@ -10,6 +10,9 @@
 # heroes: first character = the one the player protects.
 # enemies: opponent(s).
 
+# Global tuning knobs
+turn_delay = 3.0   # seconds between auto-played enemy turns
+
 [[levels]]
 id = "1-1"
 title = "Intro"
@@ -46,7 +49,7 @@ enemies = [
 [[levels]]
 id = "1-3"
 title = "Shield Up"
-hint = "D means Defense. Buff it before the enemy hits!"
+hint = "Now YOU place the +. Drag + then D to buff Defense!"
 implied_cards = ["P@0"]
 symbols = ["+@3", "H@3", "S@2", "D@2", "5@3", "10@2"]
 deck_extras = ["action_redraw", "action_grace"]

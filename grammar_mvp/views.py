@@ -22,6 +22,7 @@ from grammar_mvp.cards import (
 from grammar_mvp.animation import BurnAnimation
 from grammar_mvp.display import BattleLog, ManaPips, create_hero_panel, create_enemy_panel, create_lock_slots
 from grammar_mvp.game_state import Character, GameState
+from grammar_mvp import levels as levels_mod
 from grammar_mvp.levels import LevelManager, build_level_deck
 
 SCREEN_WIDTH = 1280
@@ -50,8 +51,7 @@ ENEMY_PANEL_X = SCREEN_WIDTH - 300
 LOG_X = SCREEN_WIDTH // 2
 LOG_Y = 520
 
-# Timing
-TURN_DELAY = 3.0          # seconds between auto-played turns
+# Timing — turn_delay is read from levels.toml at runtime
 POST_CAST_TURNS = 2        # auto-play turns after a cast
 
 
@@ -279,8 +279,8 @@ class BattleView(arcade.View):
 
         if phase not in ("reward", "gameover", "gamecomplete"):
             self.turn_timer += delta_time
-            if self.turn_timer >= TURN_DELAY:
-                self.turn_timer -= TURN_DELAY
+            if self.turn_timer >= levels_mod.turn_delay:
+                self.turn_timer -= levels_mod.turn_delay
                 self._play_one_turn()
 
     def _play_one_turn(self):

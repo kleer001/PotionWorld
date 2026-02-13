@@ -11,6 +11,9 @@ from grammar_mvp.game_state import Character
 _DATA_DIR = Path(__file__).parent / "data"
 _LEVELS_PATH = _DATA_DIR / "levels.toml"
 
+# Global tuning knobs (populated by load_levels)
+turn_delay: float = 3.0
+
 
 # ------------------------------------------------------------------
 # Parsing
@@ -54,6 +57,10 @@ def load_levels(path: Path | None = None) -> list[dict]:
         path = _LEVELS_PATH
     with open(path, "rb") as f:
         data = tomllib.load(f)
+
+    # Expose global tuning knobs as module-level attributes
+    global turn_delay
+    turn_delay = data.get("turn_delay", 3.0)
 
     raw_levels = data.get("levels", [])
     levels: list[dict] = []

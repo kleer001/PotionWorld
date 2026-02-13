@@ -532,14 +532,16 @@ action = "redraw_hand"
 
 [cards.action_recycle]
 token = "RECYCLE"
-type = "action"
+type = "grammar"
 category = "utility"
 label = "Recycle"
-description = "Return one docked card to hand, refund 1 mana"
+description = "Dock in lock slot. Burns the card to its right, refunds 3 mana."
 mana_cost = 1
 rarity = "common"
 color = "#66AACC"
 action = "recycle_card"
+[cards.action_recycle.args]
+refund = 3
 
 [cards.action_grace]
 token = "GRACE"

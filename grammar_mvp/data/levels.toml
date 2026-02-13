@@ -131,7 +131,7 @@ enemies = [
 [[levels]]
 id = "2-4"
 title = "Take It Back"
-hint = "Recycle undocks a card and refunds 1 mana. Mistakes are free!"
+hint = "Dock Recycle next to junk — it burns the card to its right and refunds mana!"
 implied_cards = []
 symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@2", "D@2", "5@3", "10@3"]
 deck_extras = ["action_redraw", "action_recycle", "action_recycle"]

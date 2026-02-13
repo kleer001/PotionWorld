@@ -72,3 +72,118 @@ smooth_draws = 3
 enemies = [
     {name = "Orc Warrior", hp = 30, strength = 8, defense = 4},
 ]
+
+# =============================================================================
+# World 2 — No training wheels
+# =============================================================================
+# No implied cards. Player builds every potion from scratch.
+# Stable Boy defined once at 2-1, carries forward for all of World 2.
+# hand_size = 7 throughout (proven playable with smooth draws).
+
+[[levels]]
+id = "2-1"
+title = "Mana Pressure"
+hint = "Only 6 mana. Every card counts — choose wisely!"
+implied_cards = []
+symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@2", "D@2", "5@3", "10@2"]
+deck_extras = ["action_redraw"]
+mana = 6
+slot_count = 5
+hand_size = 7
+smooth_draws = 3
+heroes = [
+    {name = "Stable Boy", hp = 18, strength = 4, defense = 2},
+]
+enemies = [
+    {name = "Troll", hp = 25, strength = 5, defense = 6},
+]
+
+[[levels]]
+id = "2-2"
+title = "Dead Weight"
+hint = "Grey cards can't be played. Work around them!"
+implied_cards = []
+symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@2", "D@2", "5@3", "10@2"]
+deck_extras = ["action_redraw", "curse_dead_weight", "curse_dead_weight", "curse_dead_weight"]
+mana = 8
+slot_count = 5
+hand_size = 7
+smooth_draws = 3
+enemies = [
+    {name = "Rat Swarm", hp = 14, strength = 7, defense = 1},
+]
+
+[[levels]]
+id = "2-3"
+title = "Lifeline"
+hint = "Redraw dumps your hand for a fresh one. Use it!"
+implied_cards = []
+symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@2", "D@2", "5@3", "10@2"]
+deck_extras = ["action_redraw", "action_redraw", "curse_dead_weight", "curse_dead_weight", "curse_heavy_hand"]
+mana = 8
+slot_count = 5
+hand_size = 7
+smooth_draws = 2
+enemies = [
+    {name = "Cursed Knight", hp = 20, strength = 6, defense = 4},
+]
+
+[[levels]]
+id = "2-4"
+title = "Take It Back"
+hint = "Recycle undocks a card and refunds 1 mana. Mistakes are free!"
+implied_cards = []
+symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@2", "D@2", "5@3", "10@3"]
+deck_extras = ["action_redraw", "action_recycle", "action_recycle"]
+mana = 8
+slot_count = 5
+hand_size = 7
+smooth_draws = 3
+enemies = [
+    {name = "Shield Bearer", hp = 22, strength = 5, defense = 8},
+]
+
+[[levels]]
+id = "2-5"
+title = "Two Fronts"
+hint = "He hits hard but breaks easy. Debuff AND defend!"
+implied_cards = []
+symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@3", "D@3", "5@3", "10@2"]
+deck_extras = ["action_redraw", "action_recycle"]
+mana = 10
+slot_count = 5
+hand_size = 7
+smooth_draws = 3
+enemies = [
+    {name = "Berserker", hp = 18, strength = 12, defense = 2},
+]
+
+[[levels]]
+id = "2-6"
+title = "Mana Thief"
+hint = "Purple cards steal mana when drawn. Be efficient!"
+implied_cards = []
+symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@2", "D@2", "5@3", "10@2"]
+deck_extras = ["action_redraw", "action_recycle", "curse_mana_drain", "curse_mana_drain"]
+mana = 10
+slot_count = 5
+hand_size = 7
+smooth_draws = 3
+enemies = [
+    {name = "Witch", hp = 16, strength = 5, defense = 3},
+]
+
+[[levels]]
+id = "2-7"
+title = "The Warlord"
+hint = "Everything you've learned. Good luck, Guardian."
+implied_cards = []
+symbols = ["P@3", "E@3", "+@3", "-@3", "H@3", "S@3", "D@3", "5@3", "10@3"]
+deck_extras = ["action_redraw", "action_recycle", "action_grace", "curse_dead_weight", "curse_dead_weight", "curse_mana_drain"]
+mana = 10
+slot_count = 5
+hand_size = 7
+smooth_draws = 2
+enemies = [
+    {name = "Warlord", hp = 30, strength = 10, defense = 6},
+]
